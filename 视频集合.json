@@ -132,7 +132,7 @@
   },
   {
     "name": "Auete",
-    "api": "https://www.au1080.com",
+    "api": "https://www.aeete.com",
     "type": 2,
     "categories": [
       { "name": "电影", "url": "/Movie/index{{page}}.html", "url2": "/Movie/index.html" },

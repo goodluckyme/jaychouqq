@@ -39,8 +39,6 @@ class Spider(Spider):
             {'type_id': '25', 'type_name': '综艺'},
         ]
         self.web_sign = ''
-        # 站点真实播放页 XHR 使用这个公共 client id；错误的 x-client 会导致聚合线路拿不到。
-        self.x_client = 'YOUR_PUBLIC_CLIENT_ID'
 
     def init(self, extend=''):
         try:
@@ -54,7 +52,6 @@ class Spider(Spider):
                 if site:
                     self.host = str(site).split(',')[0].strip().rstrip('/')
                 self.web_sign = ext.get('web-sign') or ext.get('web_sign') or self.web_sign
-                self.x_client = ext.get('x-client') or ext.get('x_client') or self.x_client
         except Exception:
             pass
         return None
@@ -87,7 +84,6 @@ class Spider(Spider):
             'Accept': 'application/json, text/plain, */*',
             'Accept-Language': 'zh-CN,zh;q=0.9',
             'Referer': referer or (self.host + '/'),
-            'x-client': self.x_client,
             'x-platform': 'web',
             'x-requested-with': 'XMLHttpRequest',
         }
@@ -109,8 +105,7 @@ class Spider(Spider):
             if not text:
                 return {}
             return json.loads(text)
-        except Exception as e:
-            print('大马猴接口请求失败:', path, params, e)
+        except Exception:
             return {}
 
     def _clean_text(self, s):
@@ -211,8 +206,7 @@ class Spider(Spider):
         return [x for x in arr if self._category_match(x, real_tid)]
 
     def homeContent(self, filter):
-        # 绿豆兼容：home 不联网，避免一直加载。
-        return {'class': self.classes}
+        return {'class': self.classes, 'filters': {}}
 
     def homeVideoContent(self):
         # 用电影热门做首页推荐。
@@ -288,12 +282,9 @@ class Spider(Spider):
         if not wd:
             return {'list': [], 'page': int(page)}
 
-        # 先尝试网页搜索常见接口
+        # 真实网页搜索接口（其余候选接口均 404/无效）
         paths = [
-            ('/api.php/web/search/vod', {'wd': wd, 'page': page}),
-            ('/api.php/web/vod/search', {'wd': wd, 'page': page}),
-            ('/api.php/web/search', {'wd': wd, 'page': page}),
-            ('/api.php/web/filter/vod', {'keyword': wd, 'page': page, 'sort': 'hits'}),
+            ('/api.php/web/search/index', {'wd': wd, 'page': page}),
         ]
         for path, params in paths:
             j = self._api_get(path, params, self.host + '/search?keyword=' + quote(wd))
