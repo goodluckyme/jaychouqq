@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 """
 韩小圈 / 韩剧TV
-列表接口: /api/series/index （offset 分页，无需加密）
-详情接口: /api/series/detail
+列表: /api/series/index （offset 分页）
+详情: /api/series/detail
+播放: /api/play/playurl（多清晰度/多主机）；失败回退 srcUrl 解析
 """
 import base64
 import hashlib
@@ -53,7 +54,6 @@ class Spider(BaseSpider):
         self.response_secret = '34F9Q53w/HJW8E6Q'
         self.uid = ''
         self.page_size = 16
-        # type/category 与客户端一致
         self.channels = {
             '1': {'name': '韩剧'},
             '2': {'name': '综艺'},
@@ -100,7 +100,6 @@ class Spider(BaseSpider):
                 return unpad(pt, 16).decode('utf-8', 'ignore')
             except Exception:
                 return pt.rstrip(b'\x00').decode('utf-8', 'ignore')
-        # openssl 回退
         try:
             if encrypt:
                 raw = data if isinstance(data, bytes) else str(data).encode('utf-8')
@@ -133,7 +132,6 @@ class Spider(BaseSpider):
             'vn': self.vn,
             'vc': self.vc,
             'Accept': 'application/json, text/plain, */*',
-            'Accept-Encoding': 'gzip',
             'Connection': 'Keep-Alive',
         }
         try:
@@ -195,9 +193,11 @@ class Spider(BaseSpider):
             class R:
                 def __init__(self, raw):
                     self.content = raw
-                    self.text = raw.decode('utf-8', 'ignore')
+                    self.text = raw.decode('utf-8', 'ignore') if raw else ''
 
                 def json(self):
+                    if not self.text:
+                        return {}
                     return json.loads(self.text)
 
             return R(raw)
@@ -213,19 +213,21 @@ class Spider(BaseSpider):
                 return self.api_get(path, params, self.appHost2)
             return {}
         try:
-            return self._decode_body(resp.json())
-        except Exception:
             text = getattr(resp, 'text', '') or ''
             if not text.strip():
                 if host != self.appHost2:
                     return self.api_get(path, params, self.appHost2)
                 return {}
-            return self._decode_body(text)
+            try:
+                return self._decode_body(resp.json())
+            except Exception:
+                return self._decode_body(text)
+        except Exception:
+            return {}
 
     def _pick_list(self, payload):
         if not isinstance(payload, dict):
             return payload if isinstance(payload, list) else []
-        # 优先 seriesList（官方列表字段）
         for k in ('seriesList', 'list', 'items', 'series', 'result', 'records', 'searchList', 'playItems', 'data'):
             v = payload.get(k)
             if isinstance(v, list):
@@ -295,14 +297,6 @@ class Spider(BaseSpider):
                 v = self._map(item)
                 if v:
                     videos.append(v)
-            if not videos:
-                js = self.api_get('/api/search/s5', {
-                    'k': '', 'srefer': 'home', 'type': '1', 'page': '1',
-                })
-                for item in self._pick_list(js)[:24]:
-                    v = self._map(item)
-                    if v:
-                        videos.append(v)
         except Exception as e:
             print('获取首页视频失败: %s' % e)
         return {'list': videos}
@@ -314,7 +308,6 @@ class Spider(BaseSpider):
         videos = []
         more = False
         try:
-            # 主列表：offset 分页（page 参数服务端无效）
             js = self.api_get('/api/series/index', {
                 'type': cate,
                 'category': cate,
@@ -326,8 +319,6 @@ class Spider(BaseSpider):
                 if v:
                     videos.append(v)
             more = bool(js.get('more')) or len(videos) >= self.page_size - 2
-
-            # 搜索分类兜底
             if not videos:
                 js = self.api_get('/api/search/s5', {
                     'k': '', 'srefer': 'cate', 'type': cate, 'page': str(pg),
@@ -361,7 +352,6 @@ class Spider(BaseSpider):
                 v = self._map(item)
                 if v:
                     videos.append(v)
-            # 无结果时用列表接口关键词试一次
             if not videos and pg == 1:
                 js = self.api_get('/api/series/index', {
                     'keyword': key, 'offset': '0', 'size': str(self.page_size),
@@ -420,11 +410,13 @@ class Spider(BaseSpider):
                     continue
                 pid = ep.get('pid') or ep.get('playItemId') or ep.get('id') or ep.get('eid')
                 src = ep.get('srcUrl') or ''
+                site = ep.get('srcSite') or ''
                 if pid:
-                    # sid|pid 或带外链
                     token = '%s|%s' % (sid, pid)
                     if src and str(src).startswith('http'):
-                        token = token + '|' + urllib.parse.quote(src, safe='')
+                        token += '|' + urllib.parse.quote(src, safe='')
+                        if site:
+                            token += '|' + urllib.parse.quote(str(site), safe='')
                     parts.append('%s$%s' % (self._ep_name(ep, i), token))
                 elif src and str(src).startswith('http'):
                     parts.append('%s$%s' % (self._ep_name(ep, i), src))
@@ -436,7 +428,7 @@ class Spider(BaseSpider):
             crew = drama.get('crew') or ''
             actor = drama.get('actor') or drama.get('actors') or ''
             if not actor and '主演' in crew:
-                m = re.search(r'主演[:：]\s*([^\n]+)', crew)
+                m = re.search(r'主演[:：]\\s*([^\\n]+)', crew)
                 if m:
                     actor = m.group(1).strip()
             return {
@@ -467,29 +459,70 @@ class Spider(BaseSpider):
                 }]
             }
 
-    def _pick_url(self, obj):
-        if not obj:
+    def _pick_url(self, obj, depth=0):
+        if not obj or depth > 6:
             return ''
-        if isinstance(obj, str) and obj.startswith('http'):
-            return obj
+        if isinstance(obj, str):
+            s = obj.strip()
+            if s.startswith('http'):
+                return s
+            return ''
         if isinstance(obj, dict):
-            for k in ('playUrl', 'playurl', 'url', 'm3u8', 'src', 'path', 'srcUrl'):
+            for k in (
+                'playUrl', 'playurl', 'play_url', 'url', 'm3u8', 'mp4',
+                'src', 'path', 'srcUrl', 'videoUrl', 'mediaUrl', 'hls',
+                'highUrl', 'lowUrl', 'hdUrl', 'sdUrl', 'fhdUrl',
+            ):
                 v = obj.get(k)
                 if isinstance(v, str) and v.startswith('http'):
                     return v
                 if isinstance(v, dict):
-                    u = self._pick_url(v)
+                    u = self._pick_url(v, depth + 1)
                     if u:
                         return u
-            for nest in ('play', 'media', 'video', 'data', 'result'):
-                u = self._pick_url(obj.get(nest))
+            for nest in ('play', 'media', 'video', 'data', 'result', 'urls', 'list'):
+                u = self._pick_url(obj.get(nest), depth + 1)
                 if u:
                     return u
         if isinstance(obj, list):
             for it in obj:
-                u = self._pick_url(it)
+                u = self._pick_url(it, depth + 1)
                 if u:
                     return u
+        return ''
+
+    def _resolve_play(self, sid, pid):
+        qualities = ['11', '10', '2', '1', '0', '']
+        hosts = [self.appHost, self.appHost2]
+        paths = [
+            '/api/play/playurl',
+            '/api/play/get',
+            '/api/play/url',
+            '/api/series/play',
+            '/api/playItem/playurl',
+            '/api/playItem/url',
+        ]
+        for host in hosts:
+            for path in paths:
+                for q in qualities:
+                    params = {'pid': pid, 'sid': sid}
+                    if q != '':
+                        params['quality'] = q
+                        params['definition'] = q
+                    js = self.api_get(path, params, host=host)
+                    if not js:
+                        continue
+                    url = self._pick_url(js)
+                    if url:
+                        return url
+                    if isinstance(js, dict) and isinstance(js.get('data'), str) and len(js['data']) > 30:
+                        try:
+                            decoded = self._decode_body(js)
+                            url = self._pick_url(decoded)
+                            if url:
+                                return url
+                        except Exception:
+                            pass
         return ''
 
     def playerContent(self, flag, id, vipFlags):
@@ -516,23 +549,34 @@ class Spider(BaseSpider):
 
         try:
             if pid:
-                for path, params in (
-                    ('/api/play/playurl', {'pid': pid, 'sid': sid}),
-                    ('/api/play/get', {'pid': pid, 'sid': sid}),
-                    ('/api/series/play', {'pid': pid, 'sid': sid}),
-                    ('/api/play/playurl', {'pid': pid}),
-                ):
-                    js = self.api_get(path, params)
-                    url = self._pick_url(js)
-                    if url:
-                        return {
-                            'parse': 0 if self.isVideoFormat(url) else 1,
-                            'jx': '0' if self.isVideoFormat(url) else '1',
-                            'url': url,
-                            'header': header,
-                        }
+                url = self._resolve_play(sid, pid)
+                if url:
+                    return {
+                        'parse': 0 if self.isVideoFormat(url) else 1,
+                        'jx': '0' if self.isVideoFormat(url) else '1',
+                        'url': url,
+                        'header': header,
+                    }
             if src and src.startswith('http'):
                 return {'parse': 1, 'jx': '1', 'url': src, 'header': header}
+            if sid and not pid:
+                _, episodes = self._episodes(sid)
+                for ep in episodes:
+                    if not isinstance(ep, dict):
+                        continue
+                    ep_pid = ep.get('pid') or ''
+                    if ep_pid:
+                        url = self._resolve_play(sid, ep_pid)
+                        if url:
+                            return {
+                                'parse': 0 if self.isVideoFormat(url) else 1,
+                                'jx': '0' if self.isVideoFormat(url) else '1',
+                                'url': url,
+                                'header': header,
+                            }
+                    ep_src = ep.get('srcUrl') or ''
+                    if ep_src.startswith('http'):
+                        return {'parse': 1, 'jx': '1', 'url': ep_src, 'header': header}
         except Exception as e:
             print('获取播放内容失败: %s' % e)
 
@@ -561,5 +605,3 @@ class Spider(BaseSpider):
 if __name__ == '__main__':
     spider = Spider()
     print(json.dumps(spider.homeContent(True), ensure_ascii=False, indent=2))
-    print('--- category ---')
-    print(json.dumps(spider.categoryContent('1', 1, {}, {}), ensure_ascii=False)[:800])
