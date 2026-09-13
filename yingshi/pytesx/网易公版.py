@@ -4,7 +4,6 @@ import json
 import re
 import sys
 import urllib.parse
-
 try:
     import requests
 except ImportError:
@@ -21,22 +20,23 @@ except ImportError:
 
 class Spider(BaseSpider):
     """网易公版影像典藏 https://public.163.com"""
-
     def __init__(self):
         self.siteUrl = 'https://public.163.com'
         self.hallUrl = 'https://wp.m.163.com/163/html/newsapp/time-hall/index.html'
         self.openUrl = 'https://open.163.com'
+        # 分类与后端api映射
+        self.channels = {
+            'movie': {'name': '电影', 'api': '/api/list?type=movie'},
+            'doc': {'name': '纪录片', 'api': '/api/list?type=doc'},
+            'short': {'name': '短片', 'api': '/api/list?type=short'},
+            'archive': {'name': '影像资料馆', 'api': '/api/list?type=archive'},
+            'daily': {'name': '每日精读', 'api': '/api/list?type=daily'},
+        }
+
         self.userAgent = (
             'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) '
             'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1'
         )
-        self.channels = {
-            'movie': {'name': '电影'},
-            'doc': {'name': '纪录片'},
-            'short': {'name': '短片'},
-            'archive': {'name': '影像资料馆'},
-            'daily': {'name': '每日精读'},
-        }
 
     def getName(self):
         return '网易公版'
@@ -64,12 +64,11 @@ class Spider(BaseSpider):
             raw = urlopen(Request(full, headers=headers), timeout=12).read()
 
             class R:
-                def __init__(self, raw):
-                    self.text = raw.decode('utf-8', 'ignore')
+                def __init__(self, raw_data):
+                    self.text = raw_data.decode('utf-8', 'ignore')
 
                 def json(self):
                     return json.loads(self.text)
-
             return R(raw)
         except Exception as e:
             print('请求失败: %s, %s' % (url, e))
@@ -126,7 +125,14 @@ class Spider(BaseSpider):
         vid = str(it.get('id') or it.get('pid') or it.get('mid') or it.get('movieId') or it.get('docid') or '')
         name = it.get('title') or it.get('name') or it.get('movieName') or it.get('tname') or ''
         pic = it.get('cover') or it.get('img') or it.get('image') or it.get('poster') or it.get('pic') or ''
-        remarks = it.get('year') or it.get('duration') or it.get('director') or it.get('area') or ''
+        remarks_parts = []
+        if it.get('year'):
+            remarks_parts.append(str(it.get('year')))
+        if it.get('duration'):
+            remarks_parts.append(str(it.get('duration')))
+        if it.get('area'):
+            remarks_parts.append(str(it.get('area')))
+        remarks = " ".join(remarks_parts)
         href = it.get('url') or it.get('link') or it.get('playUrl') or ''
         if not vid and href:
             vid = href
@@ -190,39 +196,57 @@ class Spider(BaseSpider):
     def homeVideoContent(self):
         videos = []
         try:
-            html = self.fetch_text(self.siteUrl + '/')
-            videos = self._parse_html(html)
+            data = self.fetch_json(self.siteUrl + '/api/list')
+            item_list = self._walk(data)
+            for it in item_list:
+                v = self._map_item(it)
+                if v:
+                    videos.append(v)
             if not videos:
-                data = self.fetch_json(self.siteUrl + '/api/list')
-                for it in self._walk(data):
-                    v = self._map_item(it)
-                    if v:
-                        videos.append(v)
+                html = self.fetch_text(self.siteUrl + '/')
+                videos = self._parse_html(html)
         except Exception as e:
             print('获取首页视频失败: %s' % e)
         return {'list': videos[:24]}
 
     def categoryContent(self, tid, pg, filter, extend):
         pg = int(pg or 1)
+        limit = 24
         videos = []
         try:
             tid = str(tid or 'movie')
-            html = self.fetch_text(self.siteUrl + '/')
-            videos = self._parse_html(html)
-            if tid == 'daily':
-                videos = videos[:12]
-            elif tid == 'short':
-                videos = [v for v in videos if '短' in (v.get('vod_remarks') or v.get('vod_name') or '')] or videos
-            elif tid == 'doc':
-                videos = [v for v in videos if '纪录' in (v.get('vod_remarks') or v.get('vod_name') or '')] or videos
+            channel_info = self.channels.get(tid)
+            if channel_info:
+                api_url = self.siteUrl + channel_info['api']
+                json_data = self.fetch_json(api_url)
+                item_list = self._walk(json_data)
+                raw_videos = []
+                for it in item_list:
+                    v = self._map_item(it)
+                    if v:
+                        raw_videos.append(v)
+                # 简单内存分页
+                start = (pg - 1) * limit
+                end = start + limit
+                videos = raw_videos[start:end]
+                total = len(raw_videos)
+                pagecount = (total + limit - 1) // limit
+            else:
+                # 未知分类降级
+                html = self.fetch_text(self.siteUrl + '/')
+                videos = self._parse_html(html)
+                total = len(videos)
+                pagecount = 1
         except Exception as e:
             print('获取分类内容失败: %s' % e)
+            total = 0
+            pagecount = 0
         return {
             'list': videos,
             'page': pg,
-            'pagecount': pg,
-            'limit': 24,
-            'total': len(videos),
+            'pagecount': pagecount,
+            'limit': limit,
+            'total': total,
         }
 
     def searchContent(self, key, quick, pg=1):
@@ -230,34 +254,44 @@ class Spider(BaseSpider):
 
     def searchContentPage(self, key, quick, pg=1):
         pg = int(pg or 1)
+        limit = 24
         videos = []
         try:
-            html = self.fetch_text(self.siteUrl + '/')
-            videos = [v for v in self._parse_html(html) if key in v.get('vod_name', '')]
-            if not videos:
-                q = urllib.parse.quote(key)
-                html = self.fetch_text(self.openUrl + '/search.html?keyword=' + q)
-                videos = self._parse_html(html)
+            q = urllib.parse.quote(key)
+            # 优先尝试公版站内搜索，无搜索接口则降级解析
+            html = self.fetch_text(f"{self.openUrl}/search.html?keyword={q}")
+            all_items = self._parse_html(html)
+            # 内存分页
+            start = (pg -1)*limit
+            end = start+limit
+            videos = all_items[start:end]
+            total = len(all_items)
+            pagecount = (total + limit -1)//limit
         except Exception as e:
             print('搜索失败: %s' % e)
+            total = 0
+            pagecount = 0
         return {
             'list': videos,
             'page': pg,
-            'pagecount': pg,
-            'limit': 24,
-            'total': len(videos),
+            'pagecount': pagecount,
+            'limit': limit,
+            'total': total,
         }
 
     def detailContent(self, ids):
         vid = str((ids or [''])[0])
         name, pic, desc, remarks, director = vid, '', '', '公版影像', ''
+        play_url_raw = ''
         try:
-            page = vid if vid.startswith('http') else self.siteUrl + '/'
-            html = self.fetch_text(page) if vid.startswith('http') else self.fetch_text(self.siteUrl + '/')
-            if not vid.startswith('http'):
-                name = vid
+            if vid.startswith('http'):
+                page = vid
+            else:
+                page = f"{self.siteUrl}/detail?id={vid}"
+
+            html = self.fetch_text(page)
             tm = re.search(r'<title>([^<]+)</title>', html or '')
-            if tm and vid.startswith('http'):
+            if tm:
                 name = re.sub(r'\s*[-_|].*$', '', tm.group(1)).strip() or name
             hm = re.search(r'<h1[^>]*>([\s\S]{2,80})</h1>', html or '')
             if hm:
@@ -275,16 +309,16 @@ class Spider(BaseSpider):
             mp4 = re.search(r'https?://[^\s"\']+\.mp4[^\s"\']*', html or '')
             src = re.search(r'<video[^>]+src=["\']([^"\']+)["\']', html or '', re.I)
             src2 = re.search(r'(?:playUrl|videoUrl|mp4Url|flvUrl|src)\s*[:=]\s*["\'](https?://[^"\']+)["\']', html or '')
-            play = ''
             if m3:
-                play = m3.group(0).replace('\\/', '/')
+                play_url_raw = m3.group(0).replace('\\/', '/')
             elif mp4:
-                play = mp4.group(0).replace('\\/', '/')
+                play_url_raw = mp4.group(0).replace('\\/', '/')
             elif src:
-                play = self._abs(src.group(1))
+                play_url_raw = self._abs(src.group(1))
             elif src2:
-                play = src2.group(1)
-            play_url = '播放$%s' % (play or (page if page.startswith('http') else self.siteUrl + '/'))
+                play_url_raw = src2.group(1)
+            final_play = play_url_raw if play_url_raw else page
+            play_url = '播放$%s' % final_play
         except Exception as e:
             print('获取详情失败: %s' % e)
             play_url = '播放$%s' % self.siteUrl
@@ -295,7 +329,7 @@ class Spider(BaseSpider):
             'vod_remarks': remarks,
             'vod_actor': '',
             'vod_director': director,
-            'vod_content': (desc or '网易公版影像典藏，站点已停更，完整片可尝试时光放映厅。').strip(),
+            'vod_content': (desc or '网易公版影像典藏，站点部分源已停更。').strip(),
             'vod_play_from': '网易公版',
             'vod_play_url': play_url,
         }]}
@@ -335,3 +369,6 @@ class Spider(BaseSpider):
 if __name__ == '__main__':
     spider = Spider()
     print(json.dumps(spider.homeContent(True), ensure_ascii=False, indent=2))
+    print("\n=====测试分类 movie=====")
+    print(json.dumps(spider.categoryContent("movie",1,None,None), ensure_ascii=False, indent=2))
+#（注：内容由AI生成）
