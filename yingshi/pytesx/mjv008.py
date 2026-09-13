@@ -134,46 +134,59 @@ class Spider(BaseSpider):
             'total': 999999,
         }
 
-    def _extract_play_from_html(self, html, page_url=''):
-        """核心：从封面图推导真实 mp4 地址"""
-        # 1. 先找页面里已有的直链
-        m = re.search(r'https?://gifb\.imgstream3\.com/hc/9smv_[^"\'\s<>]+\.mp4', html)
-        if m:
-            return m.group(0)
+    def _extract_play_list(self, html, page_url=''):
+        """
+        提取播放地址列表，返回 [(清晰度/线路名, url), ...]
+        优先用封面图推导真实 mp4（已验证可直接播放）
+        """
+        plays = []
+        seen = set()
 
-        # 2. 从封面图推导（最可靠）
-        # 封面常见格式：
-        # https://fchost1.imgstream3.com/b/censored/410193_REAL-953.jpg
-        # https://fbhost1.imgstream3.com/s/censored/410193_REAL-953.jpg
-        # https://fchost1.imgstream3.com/s/amateur/218753_733CLT-060.jpg
+        def add(name, url):
+            url = (url or '').replace('\\/', '/').strip()
+            if not url.startswith('http') or url in seen:
+                return
+            seen.add(url)
+            plays.append((name, url))
+
+        # 1. 页面内已有的 gifb 直链
+        for m in re.finditer(r'https?://gifb\.imgstream3\.com/hc/9smv_[^"\'\s<>]+\.mp4', html, re.I):
+            add('正片', m.group(0))
+
+        # 2. 从封面图推导（核心可靠方式）
+        # 例: https://fbhost1.imgstream3.com/b/censored/410193_REAL-953.jpg
+        #  -> https://gifb.imgstream3.com/hc/9smv_censored_410193_REAL-953.mp4
         cover_m = re.search(
-            r'https?://[^/]*imgstream3\.com/(?:b|s)/([a-z]+)/(\d+)_([A-Z0-9\-]+)\.(?:jpg|jpeg|png|webp)',
+            r'https?://[^/"\']*imgstream3\.com/(?:b|s)/([a-zA-Z0-9\-]+)/(\d+)_([A-Za-z0-9\-]+)\.(?:jpg|jpeg|png|webp)',
             html, re.I
         )
         if cover_m:
-            kind = cover_m.group(1).lower()   # censored / amateur / uncensored ...
+            kind = cover_m.group(1).lower()
             num = cover_m.group(2)
             code = cover_m.group(3)
-            # 真实播放地址固定前缀
-            play = f'https://gifb.imgstream3.com/hc/9smv_{kind}_{num}_{code}.mp4'
-            return play
+            # 主线路
+            main = f'https://gifb.imgstream3.com/hc/9smv_{kind}_{num}_{code}.mp4'
+            add('正片', main)
+            # 备用 host 变体作为多线路
+            for host, label in [
+                ('gifb.imgstream3.com', '线路1'),
+                ('fchost1.imgstream3.com', '线路2'),
+                ('fbhost1.imgstream3.com', '线路3'),
+            ]:
+                u = f'https://{host}/hc/9smv_{kind}_{num}_{code}.mp4'
+                add(label, u)
 
-        # 3. 从页面 URL 里的番号 + 任意数字 ID 尝试
-        code_m = re.search(r'/([A-Z0-9]+-[0-9]+)\.html', page_url, re.I)
-        id_m = re.search(r'_content/(\d+)/', page_url)
-        if code_m and id_m:
-            code = code_m.group(1)
-            # 尝试常见 kind
-            for kind in ('censored', 'amateur', 'uncensored', 'reducing-mosaic'):
-                # 没有精确 num 时用 content id 碰一下（成功率较低）
-                pass
+        # 3. 任意其它 mp4（排除明显预览/广告）
+        for m in re.finditer(r'https?://[^"\'\s<>]+\.mp4', html, re.I):
+            u = m.group(0)
+            if '9smv_' in u or re.search(r'/hc/', u):
+                add('备用', u)
 
-        # 4. 任意 mp4
-        m2 = re.search(r'https?://[^"\'\s<>]+\.mp4', html)
-        if m2:
-            return m2.group(0)
+        # 4. m3u8
+        for m in re.finditer(r'https?://[^"\'\s<>]+\.m3u8[^"\'\s<>]*', html, re.I):
+            add('HLS', m.group(0))
 
-        return ''
+        return plays
 
     def detailContent(self, ids):
         if not ids:
@@ -208,12 +221,18 @@ class Spider(BaseSpider):
             if desc:
                 vod['vod_content'] = desc.get_text(strip=True)[:500]
 
-            # 提取真实播放地址
-            play_url = self._extract_play_from_html(html, url)
-
-            if play_url:
+            # 多线路 / 分辨率
+            play_list = self._extract_play_list(html, url)
+            if play_list:
+                # 去重后按名称组织
+                from_list = []
+                url_list = []
+                for name, purl in play_list:
+                    from_list.append(name)
+                    url_list.append(f'{name}${purl}')
+                # 同一播放源用 # 连接不同清晰度/线路
                 vod['vod_play_from'] = 'MJ'
-                vod['vod_play_url'] = f'正片${play_url}'
+                vod['vod_play_url'] = '#'.join(url_list)
             else:
                 vod['vod_play_from'] = 'MJ'
                 vod['vod_play_url'] = f'播放${url}'
@@ -233,7 +252,6 @@ class Spider(BaseSpider):
             resp.encoding = 'utf-8'
             videos = self._parse_list(resp.text)
             if not videos:
-                # 降级：中文字幕列表过滤
                 url2 = self.home_url + '/zh/chinese_random/all/index.html'
                 resp2 = self.session.get(url2, timeout=12)
                 resp2.encoding = 'utf-8'
@@ -253,20 +271,21 @@ class Spider(BaseSpider):
             'Referer': self.home_url + '/',
             'Origin': self.home_url,
         }
-        play = str(id or '')
+        play = str(id or '').strip()
 
-        # 已经是直链
+        # 已是直链
         if self.isVideoFormat(play) and play.startswith('http'):
             return {'parse': 0, 'jx': '0', 'url': play, 'header': header}
 
-        # 再次请求页面提取
+        # 再解析一次页面
         try:
             url = play if play.startswith('http') else urljoin(self.home_url, play)
             resp = self.session.get(url, timeout=12)
             resp.encoding = 'utf-8'
-            real = self._extract_play_from_html(resp.text, url)
-            if real:
-                return {'parse': 0, 'jx': '0', 'url': real, 'header': header}
+            play_list = self._extract_play_list(resp.text, url)
+            if play_list:
+                # 优先返回第一条（正片）
+                return {'parse': 0, 'jx': '0', 'url': play_list[0][1], 'header': header}
         except Exception:
             pass
 
