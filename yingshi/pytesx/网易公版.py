@@ -30,13 +30,28 @@ class Spider(BaseSpider):
             'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) '
             'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1'
         )
+        # 站点实际分类: movie(电影), doc(纪录片), ani(动画片), his(珍贵史料)
+        # 每日精读使用独立的read API
         self.channels = {
             'movie': {'name': '电影'},
             'doc': {'name': '纪录片'},
-            'short': {'name': '短片'},
-            'archive': {'name': '影像资料馆'},
+            'short': {'name': '动画片'},
+            'archive': {'name': '珍贵史料'},
             'daily': {'name': '每日精读'},
         }
+        # type_id -> API entry_kinds 映射
+        self.categoryMap = {
+            'movie': 'movie',
+            'doc': 'doc',
+            'short': 'ani',
+            'archive': 'his',
+            'daily': 'read',
+        }
+        # API端点
+        self.apiMedia = 'https://active.163.com/service/form/v1/9347/view/1618.jsonp'
+        self.apiSearch = 'https://active.163.com/service/form/v1/9347/view/1619.jsonp'
+        self.apiRead = 'https://active.163.com/service/form/v1/9344/view/1624.jsonp'
+        self.apiVideo = 'https://so.v.163.com/mobile/getBatchOnlineVideo.do'
 
     def getName(self):
         return '网易公版'
@@ -80,6 +95,7 @@ class Spider(BaseSpider):
         return getattr(resp, 'text', '') if resp else ''
 
     def fetch_json(self, url, params=None):
+        """获取纯JSON响应"""
         resp = self.fetch(url, params=params)
         if not resp:
             return {}
@@ -95,6 +111,34 @@ class Spider(BaseSpider):
                     return {}
             return {}
 
+    def fetch_jsonp(self, url, params=None):
+        """获取JSONP响应并解析"""
+        resp = self.fetch(url, params=params)
+        if not resp:
+            return {}
+        text = getattr(resp, 'text', '') or ''
+        if not text:
+            return {}
+        # 尝试解析JSONP: callback({...})
+        jsonp_match = re.search(r'(?:callback|JSON_CALLBACK)\((.*)\)', text, re.DOTALL)
+        if jsonp_match:
+            try:
+                return json.loads(jsonp_match.group(1))
+            except Exception:
+                pass
+        # 尝试直接解析JSON
+        try:
+            return json.loads(text)
+        except Exception:
+            # 尝试从文本中提取JSON
+            m = re.search(r'(\{[\s\S]+\}|\[[\s\S]+\])', text)
+            if m:
+                try:
+                    return json.loads(m.group(1))
+                except Exception:
+                    pass
+        return {}
+
     def _abs(self, u):
         if not u:
             return ''
@@ -107,95 +151,22 @@ class Spider(BaseSpider):
     def _clean(self, s):
         return re.sub(r'<[^>]+>', '', str(s or '')).replace('&nbsp;', ' ').strip()
 
-    def _walk(self, obj, acc=None):
-        if acc is None:
-            acc = []
-        if isinstance(obj, dict):
-            if obj.get('title') or obj.get('name') or obj.get('movieName'):
-                acc.append(obj)
-            for v in obj.values():
-                self._walk(v, acc)
-        elif isinstance(obj, list):
-            for v in obj:
-                self._walk(v, acc)
-        return acc
-
-    def _map_item(self, it):
-        if not isinstance(it, dict):
-            return None
-        vid = str(it.get('id') or it.get('pid') or it.get('mid') or it.get('movieId') or it.get('docid') or '')
-        name = it.get('title') or it.get('name') or it.get('movieName') or it.get('tname') or ''
-        pic = it.get('cover') or it.get('img') or it.get('image') or it.get('poster') or it.get('pic') or ''
-        remarks = it.get('year') or it.get('duration') or it.get('director') or it.get('area') or ''
-        href = it.get('url') or it.get('link') or it.get('playUrl') or ''
-        if not vid and href:
-            vid = href
-        if not vid and not name:
-            return None
-        return {
-            'vod_id': vid or name,
-            'vod_name': name or vid,
-            'vod_pic': self._abs(pic),
-            'vod_remarks': str(remarks),
-        }
-
-    def _parse_html(self, html):
-        videos, seen = [], set()
-        for m in re.finditer(
-            r'href="((?:https?://(?:public|open|wp\.m)\.163\.com)?/[^"]*(?:movie|video|film|play|detail)[^"]*)"[^>]{0,200}(?:title|alt)="([^"]*)"',
-            html or '',
-            re.I,
-        ):
-            href, name = m.group(1), self._clean(m.group(2))
-            if not name or href in seen:
-                continue
-            seen.add(href)
-            videos.append({
-                'vod_id': href,
-                'vod_name': name,
-                'vod_pic': '',
-                'vod_remarks': '公版',
-            })
-        if not videos:
-            for m in re.finditer(
-                r'<h[23][^>]*>([^<]{2,40})</h[23]>[\s\S]{0,120}?(\d{4})?[\s\S]{0,80}?([^\n<]{0,40})',
-                html or '',
-            ):
-                name = self._clean(m.group(1))
-                if not name or name in seen or name in ('电影', '纪录片', '影像资料馆', '每日精读'):
-                    continue
-                seen.add(name)
-                videos.append({
-                    'vod_id': name,
-                    'vod_name': name,
-                    'vod_pic': '',
-                    'vod_remarks': (m.group(2) or '') + ' ' + self._clean(m.group(3) or ''),
-                })
-        for m in re.finditer(
-            r'(?:src|data-src|data-original)="([^"]+\.(?:jpg|jpeg|png|webp)[^"]*)"',
-            html or '',
-            re.I,
-        ):
-            pic = self._abs(m.group(1))
-            for v in videos:
-                if not v['vod_pic']:
-                    v['vod_pic'] = pic
-                    break
-        return videos
-
     def homeContent(self, filter):
         classes = [{'type_id': k, 'type_name': v['name']} for k, v in self.channels.items()]
         return {'class': classes, 'filters': {}}
 
     def homeVideoContent(self):
+        """首页视频 - 从电影分类获取最新视频"""
         videos = []
         try:
-            html = self.fetch_text(self.siteUrl + '/')
-            videos = self._parse_html(html)
-            if not videos:
-                data = self.fetch_json(self.siteUrl + '/api/list')
-                for it in self._walk(data):
-                    v = self._map_item(it)
+            data = self.fetch_jsonp(self.apiMedia, {
+                'param_entry_kinds': 'movie',
+                'page': 1,
+                'pageSize': 24
+            })
+            if data and data.get('status') == 'success':
+                for it in data.get('list', []):
+                    v = self._map_media_item(it)
                     if v:
                         videos.append(v)
         except Exception as e:
@@ -203,44 +174,57 @@ class Spider(BaseSpider):
         return {'list': videos[:24]}
 
     def categoryContent(self, tid, pg, filter, extend):
+        """分类内容 - 调用真实API"""
         pg = int(pg or 1)
         videos = []
         try:
             tid = str(tid or 'movie')
+            api_key = self.categoryMap.get(tid, 'movie')
 
-            # 先确定要请求的分类页面
-            if tid == 'movie':
-                target_url = self.siteUrl + '/channel/movie'
-            elif tid == 'doc':
-                target_url = self.siteUrl + '/channel/doc'
-            elif tid == 'short':
-                target_url = self.siteUrl + '/channel/short'
-            elif tid == 'archive':
-                target_url = self.siteUrl + '/channel/archive'
-            elif tid == 'daily':
-                target_url = self.siteUrl + '/channel/daily'
+            if api_key == 'read':
+                # 每日精读使用独立的read API
+                data = self.fetch_jsonp(self.apiRead, {
+                    'page': pg,
+                    'pageSize': 24
+                })
+                if data and data.get('status') == 'success':
+                    for it in data.get('list', []):
+                        v = self._map_read_item(it)
+                        if v:
+                            videos.append(v)
             else:
-                target_url = self.siteUrl
-
-            html = self.fetch_text(target_url)
-            if html:
-                videos = self._parse_html(html)
-
-            # 如果页面解析为空，尝试从 JSON 接口兜底
-            if not videos:
-                data = self.fetch_json(f'{self.siteUrl}/api/list?channel={tid}')
-                for it in self._walk(data):
-                    v = self._map_item(it)
-                    if v:
-                        videos.append(v)
+                # 电影/纪录片/动画片/珍贵史料使用mediaData API
+                data = self.fetch_jsonp(self.apiMedia, {
+                    'param_entry_kinds': api_key,
+                    'page': pg,
+                    'pageSize': 24
+                })
+                if data and data.get('status') == 'success':
+                    for it in data.get('list', []):
+                        v = self._map_media_item(it)
+                        if v:
+                            videos.append(v)
 
         except Exception as e:
             print('获取分类内容失败: %s' % e)
 
+        # 尝试获取总页数
+        total_page = pg
+        try:
+            data_check = self.fetch_jsonp(self.apiMedia, {
+                'param_entry_kinds': self.categoryMap.get(tid, 'movie'),
+                'page': 1,
+                'pageSize': 1
+            })
+            if data_check and data_check.get('paging'):
+                total_page = data_check['paging'].get('totalPage', pg)
+        except Exception:
+            pass
+
         return {
             'list': videos,
             'page': pg,
-            'pagecount': pg,
+            'pagecount': total_page,
             'limit': 24,
             'total': len(videos),
         }
@@ -249,17 +233,41 @@ class Spider(BaseSpider):
         return self.searchContentPage(key, quick, pg)
 
     def searchContentPage(self, key, quick, pg=1):
+        """搜索 - 调用搜索API"""
         pg = int(pg or 1)
         videos = []
         try:
-            html = self.fetch_text(self.siteUrl + '/')
-            videos = [v for v in self._parse_html(html) if key in v.get('vod_name', '')]
+            # 使用搜索API
+            data = self.fetch_jsonp(self.apiSearch, {
+                'param_title': key,
+                'page': pg,
+                'pageSize': 24
+            })
+            if data and data.get('status') == 'success':
+                for it in data.get('list', []):
+                    v = self._map_media_item(it)
+                    if v:
+                        videos.append(v)
+
+            # 兜底: 如果搜索API没结果，尝试用mediaData带param_title搜索
             if not videos:
-                q = urllib.parse.quote(key)
-                html = self.fetch_text(self.openUrl + '/search.html?keyword=' + q)
-                videos = self._parse_html(html)
+                for kind in ['movie', 'doc', 'ani', 'his']:
+                    data2 = self.fetch_jsonp(self.apiMedia, {
+                        'param_entry_kinds': kind,
+                        'param_title': key,
+                        'page': 1,
+                        'pageSize': 24
+                    })
+                    if data2 and data2.get('status') == 'success':
+                        for it in data2.get('list', []):
+                            v = self._map_media_item(it)
+                            if v:
+                                videos.append(v)
+                    if videos:
+                        break
         except Exception as e:
             print('搜索失败: %s' % e)
+
         return {
             'list': videos,
             'page': pg,
@@ -269,45 +277,79 @@ class Spider(BaseSpider):
         }
 
     def detailContent(self, ids):
+        """详情 - 通过vid获取视频详情和播放地址"""
         vid = str((ids or [''])[0])
         name, pic, desc, remarks, director = vid, '', '', '公版影像', ''
+        play_url = self.siteUrl
+
         try:
-            page = vid if vid.startswith('http') else self.siteUrl + '/'
-            html = self.fetch_text(page) if vid.startswith('http') else self.fetch_text(self.siteUrl + '/')
-            if not vid.startswith('http'):
-                name = vid
-            tm = re.search(r'<title>([^<]+)</title>', html or '')
-            if tm and vid.startswith('http'):
-                name = re.sub(r'\s*[-_|].*$', '', tm.group(1)).strip() or name
-            hm = re.search(r'<h1[^>]*>([\s\S]{2,80})</h1>', html or '')
-            if hm:
-                name = self._clean(hm.group(1)) or name
-            pm = re.search(r'(?:og:image["\']\s+content=["\']|poster=["\'])([^"\']+)', html or '')
-            if pm:
-                pic = self._abs(pm.group(1))
-            dm = re.search(r'og:description["\']\s+content=["\']([^"\']+)', html or '')
-            if dm:
-                desc = dm.group(1)
-            dm2 = re.search(r'导演[:：]\s*([^<\n]+)', html or '')
-            if dm2:
-                director = self._clean(dm2.group(1))
-            m3 = re.search(r'https?://[^\s"\']+\.m3u8[^\s"\']*', html or '')
-            mp4 = re.search(r'https?://[^\s"\']+\.mp4[^\s"\']*', html or '')
-            src = re.search(r'<video[^>]+src=["\']([^"\']+)["\']', html or '', re.I)
-            src2 = re.search(r'(?:playUrl|videoUrl|mp4Url|flvUrl|src)\s*[:=]\s*["\'](https?://[^"\']+)["\']', html or '')
-            play = ''
-            if m3:
-                play = m3.group(0).replace('\\/', '/')
-            elif mp4:
-                play = mp4.group(0).replace('\\/', '/')
-            elif src:
-                play = self._abs(src.group(1))
-            elif src2:
-                play = src2.group(1)
-            play_url = '播放$%s' % (play or (page if page.startswith('http') else self.siteUrl + '/'))
+            # 如果是URL格式，提取vid
+            actual_vid = vid
+            if vid.startswith('http'):
+                # 从URL中提取vid参数或路径
+                m = re.search(r'[?&]vid=([A-Za-z0-9_]+)', vid)
+                if m:
+                    actual_vid = m.group(1)
+                else:
+                    # 尝试从页面获取vid
+                    html = self.fetch_text(vid)
+                    if html:
+                        tm = re.search(r'<title>([^<]+)</title>', html or '')
+                        if tm:
+                            name = re.sub(r'\s*[-_|].*$', '', tm.group(1)).strip() or name
+                        # 尝试从页面提取vid
+                        vid_matches = re.findall(r'"vid"\s*:\s*"([A-Za-z0-9_]+)"', html)
+                        if vid_matches:
+                            actual_vid = vid_matches[0]
+
+            # 通过视频API获取播放地址
+            if actual_vid and re.match(r'^[A-Za-z0-9_]+$', actual_vid):
+                video_data = self.fetch_json(self.apiVideo, {'vidstr': actual_vid})
+                if video_data and video_data.get('retCode') == 0:
+                    video_list = video_data.get('data', {}).get('video_list', [])
+                    if video_list:
+                        v = video_list[0]
+                        # 获取播放URL
+                        m3u8_url = v.get('m3u8SdUrl', '')
+                        mp4_url = v.get('sdUrl', '')
+                        imgpath = v.get('imgpath', '')
+
+                        if m3u8_url:
+                            play_url = '播放$%s' % m3u8_url
+                        elif mp4_url:
+                            play_url = '播放$%s' % mp4_url
+                        else:
+                            play_url = '播放$%s' % self.siteUrl
+
+                        # 更新封面
+                        if imgpath:
+                            pic = self._abs(imgpath)
+
+            # 如果是纯vid(非URL)，尝试从mediaData获取基本信息
+            if not name.startswith('http') and not pic:
+                # 尝试从任意分类搜索该vid
+                for kind in ['movie', 'doc', 'ani', 'his']:
+                    data = self.fetch_jsonp(self.apiMedia, {
+                        'param_entry_kinds': kind,
+                        'page': 1,
+                        'pageSize': 50
+                    })
+                    if data and data.get('status') == 'success':
+                        for item in data.get('list', []):
+                            if str(item.get('id')) == vid or item.get('vid') == vid:
+                                name = item.get('title', name)
+                                cover = item.get('cover_pic', '')
+                                if cover:
+                                    pic = self._abs(cover)
+                                director = item.get('director', '')
+                                desc = item.get('desc', '')
+                                release = item.get('release_date', '')
+                                length = item.get('film_length', '')
+                                remarks = '%s %s' % (release, length) if release or length else '公版影像'
+                                break
         except Exception as e:
             print('获取详情失败: %s' % e)
-            play_url = '播放$%s' % self.siteUrl
+
         return {'list': [{
             'vod_id': vid,
             'vod_name': name,
@@ -321,22 +363,37 @@ class Spider(BaseSpider):
         }]}
 
     def playerContent(self, flag, id, vipFlags):
+        """播放 - 直接返回m3u8/mp4 URL"""
         header = {
             'User-Agent': self.userAgent,
             'Referer': self.siteUrl + '/',
             'Origin': 'https://public.163.com',
         }
         play = str(id or '')
+        # 提取$后面的实际URL
+        if '$' in play:
+            play = play.split('$', 1)[1]
+
         if self.isVideoFormat(play) and play.startswith('http'):
             return {'parse': 0, 'jx': '0', 'url': play, 'header': header}
+
+        # 如果是vid，尝试通过视频API获取
+        if re.match(r'^[A-Za-z0-9_]+$', play):
+            video_data = self.fetch_json(self.apiVideo, {'vidstr': play})
+            if video_data and video_data.get('retCode') == 0:
+                video_list = video_data.get('data', {}).get('video_list', [])
+                if video_list:
+                    v = video_list[0]
+                    m3u8_url = v.get('m3u8SdUrl', '')
+                    mp4_url = v.get('sdUrl', '')
+                    if m3u8_url:
+                        return {'parse': 0, 'jx': '0', 'url': m3u8_url, 'header': header}
+                    elif mp4_url:
+                        return {'parse': 0, 'jx': '0', 'url': mp4_url, 'header': header}
+
+        # 兜底
         if play.startswith('/'):
             play = self.siteUrl + play
-        html = self.fetch_text(play) if play.startswith('http') else ''
-        m3 = re.search(r'https?://[^\s"\']+\.(?:m3u8|mp4|flv)[^\s"\']*', html or '')
-        if m3:
-            return {'parse': 0, 'jx': '0', 'url': m3.group(0).replace('\\/', '/'), 'header': header}
-        if not play.startswith('http'):
-            play = self.hallUrl
         return {'parse': 1, 'jx': '1', 'url': play, 'header': header}
 
     def isVideoFormat(self, url):
@@ -351,7 +408,75 @@ class Spider(BaseSpider):
     def localProxy(self, param):
         return None
 
+    # ========== 数据映射方法 ==========
+
+    def _map_media_item(self, it):
+        """映射mediaData API返回的视频项"""
+        if not isinstance(it, dict):
+            return None
+        vid = str(it.get('id') or it.get('vid') or '')
+        name = it.get('title') or it.get('media_name') or ''
+        pic = it.get('cover_pic') or it.get('cover') or ''
+        # 组合备注信息
+        release = it.get('release_date', '')
+        length = it.get('film_length', '')
+        director = it.get('director', '')
+        remarks_parts = [p for p in [release, length, director] if p]
+        remarks = ' / '.join(remarks_parts) if remarks_parts else ''
+
+        if not vid and not name:
+            return None
+
+        return {
+            'vod_id': vid or name,
+            'vod_name': self._clean(name),
+            'vod_pic': self._abs(pic),
+            'vod_remarks': self._clean(remarks),
+        }
+
+    def _map_read_item(self, it):
+        """映射read API(每日精读)返回的项"""
+        if not isinstance(it, dict):
+            return None
+        media_id = str(it.get('media_id') or it.get('id') or '')
+        text = it.get('text') or it.get('title') or ''
+        date = it.get('date') or ''
+        # 从text中提取标题(取第一行作为标题)
+        title = text.split('\n')[0].strip() if text else ''
+        # 移除HTML标签
+        title = re.sub(r'<[^>]+>', '', title)
+
+        if not media_id and not title:
+            return None
+
+        return {
+            'vod_id': media_id or title,
+            'vod_name': title or '每日精读',
+            'vod_pic': '',
+            'vod_remarks': date,
+        }
+
 
 if __name__ == '__main__':
     spider = Spider()
+    import json
+    print("=== homeContent ===")
     print(json.dumps(spider.homeContent(True), ensure_ascii=False, indent=2))
+    print("\n=== homeVideoContent ===")
+    home = spider.homeVideoContent()
+    print(json.dumps(home, ensure_ascii=False, indent=2))
+    print("\n=== categoryContent(movie) ===")
+    cat = spider.categoryContent('movie', 1, True, '')
+    print(json.dumps(cat, ensure_ascii=False, indent=2))
+    print("\n=== categoryContent(doc) ===")
+    cat2 = spider.categoryContent('doc', 1, True, '')
+    print(json.dumps(cat2, ensure_ascii=False, indent=2))
+    print("\n=== categoryContent(short) ===")
+    cat3 = spider.categoryContent('short', 1, True, '')
+    print(json.dumps(cat3, ensure_ascii=False, indent=2))
+    print("\n=== categoryContent(archive) ===")
+    cat4 = spider.categoryContent('archive', 1, True, '')
+    print(json.dumps(cat4, ensure_ascii=False, indent=2))
+    print("\n=== categoryContent(daily) ===")
+    cat5 = spider.categoryContent('daily', 1, True, '')
+    print(json.dumps(cat5, ensure_ascii=False, indent=2))
