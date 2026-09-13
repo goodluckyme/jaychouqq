@@ -53,7 +53,6 @@ class Spider(BaseSpider):
         {"type_id": "18H", "type_name": "18H长篇"},
     ]
 
-    # 分类对应的列表路径前缀
     cate_map = {
         "chinese": "/zh/chinese_random/all/",
         "censored": "/zh/censored_random/all/",
@@ -71,27 +70,27 @@ class Spider(BaseSpider):
     def _parse_list(self, html):
         videos = []
         soup = BeautifulSoup(html, 'html.parser')
-        # 匹配内容链接
         for a in soup.select('a[href*="_content/"]'):
             href = a.get('href', '')
             if not re.search(r'_content/\d+/', href):
                 continue
-            # 去重
             if any(v['vod_id'] == href for v in videos):
                 continue
             title = a.get('title') or a.get_text(strip=True) or ''
             if not title or len(title) < 2:
-                # 尝试从父级或兄弟节点取标题
-                parent = a.find_parent(['div', 'li', 'td'])
+                parent = a.find_parent(['div', 'li', 'td', 'figure'])
                 if parent:
-                    t = parent.select_one('.archive-title, .title, h3, h4')
+                    t = parent.select_one('.archive-title, .title, h3, h4, [itemprop="name"]')
                     if t:
                         title = t.get_text(strip=True)
             if not title:
                 continue
-            # 封面
             pic = ''
-            img = a.select_one('img') or (a.find_parent() and a.find_parent().select_one('img'))
+            img = a.select_one('img')
+            if not img:
+                parent = a.find_parent(['div', 'figure', 'li'])
+                if parent:
+                    img = parent.select_one('img')
             if img:
                 pic = img.get('src') or img.get('data-src') or img.get('data-original') or ''
             videos.append({
@@ -105,7 +104,6 @@ class Spider(BaseSpider):
     def homeVideoContent(self):
         videos = []
         try:
-            # 中文字幕首页
             url = self.home_url + '/zh/chinese_random/all/index.html'
             resp = self.session.get(url, timeout=12)
             resp.encoding = 'utf-8'
@@ -136,6 +134,47 @@ class Spider(BaseSpider):
             'total': 999999,
         }
 
+    def _extract_play_from_html(self, html, page_url=''):
+        """核心：从封面图推导真实 mp4 地址"""
+        # 1. 先找页面里已有的直链
+        m = re.search(r'https?://gifb\.imgstream3\.com/hc/9smv_[^"\'\s<>]+\.mp4', html)
+        if m:
+            return m.group(0)
+
+        # 2. 从封面图推导（最可靠）
+        # 封面常见格式：
+        # https://fchost1.imgstream3.com/b/censored/410193_REAL-953.jpg
+        # https://fbhost1.imgstream3.com/s/censored/410193_REAL-953.jpg
+        # https://fchost1.imgstream3.com/s/amateur/218753_733CLT-060.jpg
+        cover_m = re.search(
+            r'https?://[^/]*imgstream3\.com/(?:b|s)/([a-z]+)/(\d+)_([A-Z0-9\-]+)\.(?:jpg|jpeg|png|webp)',
+            html, re.I
+        )
+        if cover_m:
+            kind = cover_m.group(1).lower()   # censored / amateur / uncensored ...
+            num = cover_m.group(2)
+            code = cover_m.group(3)
+            # 真实播放地址固定前缀
+            play = f'https://gifb.imgstream3.com/hc/9smv_{kind}_{num}_{code}.mp4'
+            return play
+
+        # 3. 从页面 URL 里的番号 + 任意数字 ID 尝试
+        code_m = re.search(r'/([A-Z0-9]+-[0-9]+)\.html', page_url, re.I)
+        id_m = re.search(r'_content/(\d+)/', page_url)
+        if code_m and id_m:
+            code = code_m.group(1)
+            # 尝试常见 kind
+            for kind in ('censored', 'amateur', 'uncensored', 'reducing-mosaic'):
+                # 没有精确 num 时用 content id 碰一下（成功率较低）
+                pass
+
+        # 4. 任意 mp4
+        m2 = re.search(r'https?://[^"\'\s<>]+\.mp4', html)
+        if m2:
+            return m2.group(0)
+
+        return ''
+
     def detailContent(self, ids):
         if not ids:
             return {'list': []}
@@ -155,41 +194,27 @@ class Spider(BaseSpider):
                 "vod_remarks": "",
             }
 
-            # 标题
             h1 = soup.select_one('h1') or soup.select_one('.archive-title') or soup.select_one('title')
             if h1:
                 vod['vod_name'] = h1.get_text(strip=True).replace(' - MJ', '').strip()[:80]
 
-            # 封面
-            img = soup.select_one('#player-wrap img') or soup.select_one('.player-wrap img') or soup.select_one('img[src*="imgstream"]')
+            img = (soup.select_one('#player-wrap img') or
+                   soup.select_one('.player-wrap img') or
+                   soup.select_one('img[src*="imgstream"]'))
             if img:
                 vod['vod_pic'] = img.get('src') or img.get('data-src') or ''
 
-            # 简介
             desc = soup.select_one('.entry-content p') or soup.select_one('.content p')
             if desc:
                 vod['vod_content'] = desc.get_text(strip=True)[:500]
 
-            # 播放地址提取
-            play_url = ''
-            # 1. 直接匹配 mp4 / m3u8
-            m = re.search(r'https?://[^"\'\s<>]+\.(?:m3u8|mp4)[^"\'\s<>]*', html)
-            if m:
-                play_url = m.group(0)
-            # 2. 从相关推荐里找与当前番号匹配的
-            if not play_url:
-                code_m = re.search(r'/([A-Z0-9]+-[0-9]+)\.html', url, re.I)
-                if code_m:
-                    code = code_m.group(1)
-                    m2 = re.search(rf'https?://[^"\'\s<>]*{re.escape(code)}[^"\'\s<>]*\.(?:mp4|m3u8)', html, re.I)
-                    if m2:
-                        play_url = m2.group(0)
+            # 提取真实播放地址
+            play_url = self._extract_play_from_html(html, url)
 
             if play_url:
                 vod['vod_play_from'] = 'MJ'
                 vod['vod_play_url'] = f'正片${play_url}'
             else:
-                # 兜底返回页面，交给解析
                 vod['vod_play_from'] = 'MJ'
                 vod['vod_play_url'] = f'播放${url}'
 
@@ -201,16 +226,15 @@ class Spider(BaseSpider):
     def searchContent(self, key, quick, pg="1"):
         try:
             encoded = quote(key)
-            # 站点搜索形式
             url = f"{self.home_url}/zh/search/{encoded}/1.html"
             if str(pg) != "1":
                 url = f"{self.home_url}/zh/search/{encoded}/{pg}.html"
             resp = self.session.get(url, timeout=15)
             resp.encoding = 'utf-8'
             videos = self._parse_list(resp.text)
-            # 如果搜索页结构不同，再尝试另一种
             if not videos:
-                url2 = f"{self.home_url}/zh/chinese_random/all/index.html"
+                # 降级：中文字幕列表过滤
+                url2 = self.home_url + '/zh/chinese_random/all/index.html'
                 resp2 = self.session.get(url2, timeout=12)
                 resp2.encoding = 'utf-8'
                 all_v = self._parse_list(resp2.text)
@@ -227,25 +251,31 @@ class Spider(BaseSpider):
         header = {
             'User-Agent': self.session.headers.get('User-Agent', ''),
             'Referer': self.home_url + '/',
+            'Origin': self.home_url,
         }
         play = str(id or '')
+
         # 已经是直链
         if self.isVideoFormat(play) and play.startswith('http'):
             return {'parse': 0, 'jx': '0', 'url': play, 'header': header}
 
-        # 再请求一次页面提取
+        # 再次请求页面提取
         try:
             url = play if play.startswith('http') else urljoin(self.home_url, play)
             resp = self.session.get(url, timeout=12)
             resp.encoding = 'utf-8'
-            html = resp.text
-            m = re.search(r'https?://[^"\'\s<>]+\.(?:m3u8|mp4)[^"\'\s<>]*', html)
-            if m:
-                return {'parse': 0, 'jx': '0', 'url': m.group(0), 'header': header}
+            real = self._extract_play_from_html(resp.text, url)
+            if real:
+                return {'parse': 0, 'jx': '0', 'url': real, 'header': header}
         except Exception:
             pass
 
-        return {'parse': 1, 'jx': '1', 'url': play if play.startswith('http') else urljoin(self.home_url, play), 'header': header}
+        return {
+            'parse': 1,
+            'jx': '1',
+            'url': play if play.startswith('http') else urljoin(self.home_url, play),
+            'header': header
+        }
 
     def localProxy(self, params):
         return None
