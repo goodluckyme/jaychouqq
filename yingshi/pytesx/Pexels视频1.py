@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Pexels 视频 Spider  v2.0
+Pexels 视频 Spider  v2.1
+修复：无 API Key 时 locale 参数导致 401 → 搜索/分类无数据
 中文站：https://www.pexels.com/zh-cn/
-API：https://api.pexels.com/v1/videos/ （旧 /videos/ 兼容）
+API：https://api.pexels.com/v1/videos/ （无 Key 也可访问 popular/search）
 """
 import json
 import re
@@ -27,7 +28,6 @@ except ImportError:
 class Spider(BaseSpider):
     def __init__(self):
         self.siteUrl = 'https://www.pexels.com'
-        # 新路径优先，旧路径兼容
         self.apiBases = [
             'https://api.pexels.com/v1/videos',
             'https://api.pexels.com/videos',
@@ -38,7 +38,6 @@ class Spider(BaseSpider):
             'Chrome/122.0.0.0 Safari/537.36'
         )
         self.apiKey = ''
-        # 中文分类（query 走 API，path 走中文网页兜底）
         self.channels = {
             'videos': {'name': '精选', 'path': '/zh-cn/videos/', 'query': ''},
             'nature': {'name': '自然', 'path': '/zh-cn/search/videos/nature/', 'query': 'nature'},
@@ -80,23 +79,28 @@ class Spider(BaseSpider):
             headers = {
                 'User-Agent': self.userAgent,
                 'Referer': self.siteUrl + '/zh-cn/videos/',
-                'Accept': 'text/html,application/json,application/xhtml+xml;q=0.9,*/*;q=0.8',
+                'Accept': 'application/json, text/html, */*',
                 'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
             }
         try:
             if requests:
                 resp = requests.get(url, headers=headers, params=params, timeout=15)
-                resp.raise_for_status()
+                # 不 raise，401 时也返回 body 便于判断
                 return resp
             full = url
             if params:
                 full += ('&' if '?' in url else '?') + urllib.parse.urlencode(params)
             from urllib.request import Request, urlopen
-            raw = urlopen(Request(full, headers=headers), timeout=15).read()
+            from urllib.error import HTTPError
+            try:
+                raw = urlopen(Request(full, headers=headers), timeout=15).read()
+            except HTTPError as he:
+                raw = he.read() if he.fp else b''
 
             class R:
-                def __init__(self, raw):
-                    self.text = raw.decode('utf-8', 'ignore')
+                def __init__(self, raw, code=200):
+                    self.text = raw.decode('utf-8', 'ignore') if isinstance(raw, (bytes, bytearray)) else str(raw)
+                    self.status_code = code
 
                 def json(self):
                     return json.loads(self.text)
@@ -110,17 +114,24 @@ class Spider(BaseSpider):
         resp = self.fetch(url, params=params)
         return getattr(resp, 'text', '') if resp else ''
 
+    def _has_key(self):
+        k = self.apiKey or ''
+        return len(k) >= 16 and not re.search(r'test|xxx|your|example', k, re.I)
+
     def _api(self, path, params=None):
-        """请求 API，优先 v1，无 key 时仍尝试（可能失败）"""
+        """请求视频 API。注意：无 Key 时不要带 locale，否则 401。"""
         params = dict(params or {})
-        # 中文 locale，便于标题/相关性偏中文
-        if 'locale' not in params:
+        # 仅有有效 Key 时才加 locale
+        if self._has_key() and 'locale' not in params:
             params['locale'] = 'zh-CN'
+        elif 'locale' in params and not self._has_key():
+            params.pop('locale', None)
+
         headers = {
             'User-Agent': self.userAgent,
             'Accept': 'application/json',
         }
-        if self.apiKey and len(self.apiKey) >= 16 and not re.search(r'test|xxx|your|example', self.apiKey, re.I):
+        if self._has_key():
             headers['Authorization'] = self.apiKey
 
         for base in self.apiBases:
@@ -129,15 +140,17 @@ class Spider(BaseSpider):
             if not resp:
                 continue
             try:
-                data = resp.json()
-                if isinstance(data, dict) and (
-                    data.get('videos') is not None
-                    or data.get('video_files') is not None
-                    or data.get('id') is not None
-                ):
-                    return data
+                data = resp.json() if hasattr(resp, 'json') else json.loads(resp.text)
             except Exception:
                 continue
+            if not isinstance(data, dict):
+                continue
+            # 列表
+            if isinstance(data.get('videos'), list):
+                return data
+            # 单条详情
+            if data.get('id') is not None and (data.get('video_files') is not None or data.get('url')):
+                return data
         return {}
 
     def _walk_videos(self, obj, acc=None):
@@ -221,7 +234,6 @@ class Spider(BaseSpider):
 
     def _list(self, query, path, pg=1):
         pg = int(pg or 1)
-        # 1) 官方 API
         if query:
             data = self._api('/search', {'query': query, 'page': pg, 'per_page': 24})
         else:
@@ -229,11 +241,11 @@ class Spider(BaseSpider):
         items = (data or {}).get('videos') or []
         if items:
             videos = [self._parseVideoItem(x) for x in items]
-            total = int(data.get('total_results') or len(videos))
+            total = int(data.get('total_results') or len(videos) or 8000)
             pagecount = max(1, (total + 23) // 24)
             return videos, pagecount, total
 
-        # 2) 中文网页兜底
+        # 网页兜底（可能被 CF）
         page_path = path or '/zh-cn/videos/'
         if pg > 1:
             page_path = page_path.rstrip('/') + '/?page=' + str(pg)
@@ -280,10 +292,16 @@ class Spider(BaseSpider):
 
     def searchContentPage(self, key, quick, pg=1):
         pg = int(pg or 1)
+        key = (key or '').strip()
         videos, pagecount, total = [], pg, 0
+        if not key:
+            return {'list': [], 'page': pg, 'pagecount': 1, 'limit': 24, 'total': 0}
         try:
-            path = '/zh-cn/search/videos/' + urllib.parse.quote(key) + '/'
-            videos, pagecount, total = self._list(key, path, pg)
+            # API 搜索（无 Key 也可，只要不带 locale）
+            videos, pagecount, total = self._list(key, '', pg)
+            if not videos:
+                path = '/zh-cn/search/videos/' + urllib.parse.quote(key) + '/'
+                videos, pagecount, total = self._list(key, path, pg)
         except Exception as e:
             print('搜索失败: %s' % e)
         return {
@@ -310,9 +328,8 @@ class Spider(BaseSpider):
 
     def detailContent(self, ids):
         vid = str((ids or [''])[0])
+        vid = re.sub(r'\D', '', vid) or vid
         try:
-            item = {}
-            # API 详情：/videos/{id}
             item = self._api('/videos/' + vid) or {}
             if not item.get('id'):
                 item = self._api('/' + vid) or {}
@@ -348,14 +365,14 @@ class Spider(BaseSpider):
                 label = str(h) + 'p' if h else (q or 'MP4')
                 parts.append('%s$%s' % (label, link))
             if not parts:
-                parts.append('网页$%s/zh-cn/video/%s/' % (self.siteUrl, vid))
+                parts.append('播放$%s' % vid)
             return {'list': [{
                 'vod_id': vid,
                 'vod_name': parsed.get('vod_name') or vid,
                 'vod_pic': parsed.get('vod_pic') or '',
                 'vod_remarks': parsed.get('vod_remarks') or '',
                 'vod_actor': parsed.get('vod_actor') or '',
-                'vod_content': 'Pexels 免费可商用素材，使用时请保留作者署名。来源：pexels.com/zh-cn',
+                'vod_content': 'Pexels 免费可商用素材，使用时请保留作者署名。',
                 'vod_play_from': 'Pexels',
                 'vod_play_url': '#'.join(parts),
             }]}
@@ -382,9 +399,9 @@ class Spider(BaseSpider):
         if mp4:
             return {'parse': 0, 'url': mp4.group(0).replace('\\/', '/'), 'header': header}
         return {
-            'parse': 1,
+            'parse': 0,
             'jx': '0',
-            'url': self.siteUrl + '/zh-cn/video/' + vid + '/',
+            'url': '',
             'header': header,
         }
 
@@ -403,4 +420,8 @@ class Spider(BaseSpider):
 
 if __name__ == '__main__':
     spider = Spider()
-    print(json.dumps(spider.homeContent(True), ensure_ascii=False, indent=2))
+    print('home', json.dumps(spider.homeContent(False), ensure_ascii=False)[:200])
+    r = spider.categoryContent('nature', 1, False, {})
+    print('nature list', len(r.get('list') or []), (r.get('list') or [{}])[0].get('vod_name') if r.get('list') else None)
+    r2 = spider.searchContentPage('ocean', False, 1)
+    print('search ocean', len(r2.get('list') or []))
