@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+QinAV Spider  — 修复播放地址提取（优先 const url / 纯 m3u8，避免命中解析站包装链）
+"""
 import json
 import re
 import sys
@@ -114,12 +117,11 @@ class Spider(BaseSpider):
         return re.sub(r'<[^>]+>', '', str(s or '')).replace('&nbsp;', ' ').strip()
 
     def _parse_list(self, html):
-        """解析列表页，匹配 <a title="" href="/video/ID.html"> ... <li class="title">标题</li> 与 img img="封面" """
+        """解析列表页，匹配 <a href="/video/ID.html"> ... <li class="title">标题</li> 与 img img="封面" """
         videos, seen = [], set()
         if not html:
             return videos
 
-        # 主模式：ul > a[href=/video/xx.html] 内含 title 与 lazy img
         pattern = re.compile(
             r'<a[^>]*href="(/video/(\d+)\.html)"[^>]*>'
             r'[\s\S]*?'
@@ -142,7 +144,6 @@ class Spider(BaseSpider):
                 'vod_remarks': vid,
             })
 
-        # 兜底：仅匹配 video 链接
         if not videos:
             for m in re.finditer(r'href="(/video/(\d+)\.html)"', html or '', re.I):
                 path, vid = m.group(1), m.group(2)
@@ -155,7 +156,6 @@ class Spider(BaseSpider):
                     'vod_pic': '',
                     'vod_remarks': vid,
                 })
-            # 尝试补封面
             pics = re.findall(
                 r'(?:img|data-src|data-original)=["\']([^"\']+\.(?:jpg|jpeg|png|webp)[^"\']*)["\']',
                 html or '', re.I
@@ -188,9 +188,7 @@ class Spider(BaseSpider):
         try:
             info = self.channels.get(str(tid), {'path': '/'})
             path = info.get('path', '/')
-            # 分页规则
             if str(tid).isdigit() and path.startswith('/site/5/'):
-                # /site/5/{id}.html  -> /site/5/{id}-{pg}.html
                 base_id = str(tid)
                 if pg <= 1:
                     url = self.siteUrl + '/site/5/%s.html' % base_id
@@ -200,7 +198,6 @@ class Spider(BaseSpider):
                 if pg <= 1:
                     url = self.siteUrl + path
                 else:
-                    # 首页/最新等常见分页尝试
                     if path.endswith('.html'):
                         url = self.siteUrl + path.replace('.html', '-%s.html' % pg)
                     else:
@@ -232,14 +229,12 @@ class Spider(BaseSpider):
         pg = int(pg or 1)
         videos = []
         try:
-            # 站内搜索：POST 或 /tags/{keyword}.html
             q = urllib.parse.quote(key)
             url = '%s/tags/%s.html' % (self.siteUrl, q)
             if pg > 1:
                 url = '%s/tags/%s-%s.html' % (self.siteUrl, q, pg)
             html = self.fetch_text(url)
             videos = self._parse_list(html)
-            # 若 tags 无结果，尝试 POST
             if not videos:
                 resp = self.fetch(
                     self.siteUrl + '/?module=tags&action=keyword',
@@ -268,31 +263,78 @@ class Spider(BaseSpider):
             return self.siteUrl + '/video/%s.html' % s
         return self.siteUrl + '/' + s
 
+    def _is_real_media(self, url):
+        """判断是否为可直接播放的媒体地址（排除解析站包装）"""
+        if not url or not url.startswith('http'):
+            return False
+        u = url.lower()
+        if any(x in u for x in (
+            '155jx.com', 'jx.', 'parse.', '?url=', '&url=', 'redirect', 'jump'
+        )):
+            return False
+        return any(x in u for x in ('.m3u8', '.mp4', '.flv', '.mpd'))
+
     def _extract_play_url(self, html, vid=None):
-        """从详情页或 embed 页提取 m3u8/mp4"""
+        """
+        从详情页或 embed 页提取真实 m3u8/mp4。
+        优先级：
+          1. const/var/let url = '真实地址'
+          2. 纯 .m3u8 / .mp4 直链（不含解析站）
+          3. iframe/?url= 中的真实地址
+        """
         if not html:
             return ''
-        # 直接 m3u8 / mp4
-        m = re.search(r'https?://[^\s"\'<>\\]+\.m3u8[^\s"\'<>\\]*', html)
+
+        # 1. JS 变量（最可靠，embed 页里有 const url = '...'）
+        m = re.search(
+            r"""(?:const|var|let)\s+(?:url|src|playurl|playUrl|videoUrl|hls)\s*=\s*['"](https?://[^'"]+)['"]""",
+            html, re.I
+        )
         if m:
-            return m.group(0).replace('\\/', '/')
-        m = re.search(r'https?://[^\s"\'<>\\]+\.mp4[^\s"\'<>\\]*', html)
-        if m:
-            return m.group(0).replace('\\/', '/')
-        # const url = '...'
-        m = re.search(r"""(?:const|var|let)\s+url\s*=\s*['"](https?://[^'"]+)['"]""", html)
-        if m:
-            return m.group(1).replace('\\/', '/')
-        # iframe src 含 jx 或直链
+            u = m.group(1).replace('\\/', '/').strip()
+            um = re.search(r'[?&]url=(https?://[^&"\']+)', u)
+            if um:
+                return urllib.parse.unquote(um.group(1)).replace('\\/', '/')
+            return u
+
+        # 2. 纯 m3u8/mp4（排除带 ?url= 的包装）
+        for m in re.finditer(r'https?://[^\s"\'<>\\]+\.m3u8[^\s"\'<>\\]*', html):
+            u = m.group(0).replace('\\/', '/')
+            if '?url=' in u or '&url=' in u:
+                um = re.search(r'[?&]url=(https?://[^&"\']+)', u)
+                if um:
+                    return urllib.parse.unquote(um.group(1)).replace('\\/', '/')
+                continue
+            if self._is_real_media(u):
+                return u
+
+        for m in re.finditer(r'https?://[^\s"\'<>\\]+\.mp4[^\s"\'<>\\]*', html):
+            u = m.group(0).replace('\\/', '/')
+            if '?url=' in u or '&url=' in u:
+                um = re.search(r'[?&]url=(https?://[^&"\']+)', u)
+                if um:
+                    return urllib.parse.unquote(um.group(1)).replace('\\/', '/')
+                continue
+            if self._is_real_media(u):
+                return u
+
+        # 3. iframe src
         m = re.search(r'<iframe[^>]+src=["\']([^"\']+)["\']', html, re.I)
         if m:
-            src = m.group(1)
-            # 解析 ?url= 后的真实地址
-            um = re.search(r'[?&]url=([^&"\']+)', src)
+            src = m.group(1).replace('\\/', '/')
+            um = re.search(r'[?&]url=(https?://[^&"\']+)', src)
             if um:
-                return urllib.parse.unquote(um.group(1))
-            if self.isVideoFormat(src):
+                return urllib.parse.unquote(um.group(1)).replace('\\/', '/')
+            if self.isVideoFormat(src) and self._is_real_media(src):
                 return self._abs(src)
+
+        # 4. source 标签
+        m = re.search(r'<source[^>]+src=["\']([^"\']+)["\']', html, re.I)
+        if m:
+            u = self._abs(m.group(1).replace('\\/', '/'))
+            if self.isVideoFormat(u):
+                return u
+
         return ''
 
     def detailContent(self, ids):
@@ -327,19 +369,17 @@ class Spider(BaseSpider):
             # 优先从当前页取播放地址
             play = self._extract_play_url(html, vid)
 
-            # 无直链则访问 embed 页
-            if not play:
-                # 从页面拿 embed 路径或直接构造
+            # 无直链则访问 embed 页（关键路径）
+            if not play or not self._is_real_media(play):
                 em = re.search(r'(?:src|href)=["\'](/embed/\d+\.html)["\']', html or '')
                 embed_path = em.group(1) if em else None
                 if not embed_path:
-                    # 提取纯数字 id
-                    idm = re.search(r'/video/(\d+)\.html', page) or re.search(r'(\d+)', vid)
+                    idm = re.search(r'/video/(\d+)\.html', page) or re.search(r'(\d+)', str(vid))
                     if idm:
                         embed_path = '/embed/%s.html' % idm.group(1)
                 if embed_path:
                     ehtml = self.fetch_text(self.siteUrl + embed_path)
-                    play = self._extract_play_url(ehtml, vid)
+                    play = self._extract_play_url(ehtml, vid) or play
 
             play_url = '播放$%s' % (play or page)
         except Exception as e:
@@ -359,25 +399,38 @@ class Spider(BaseSpider):
         }]}
 
     def playerContent(self, flag, id, vipFlags):
+        # 播放时带上合适的 Header，避免 CDN 拒播
         header = {
             'User-Agent': self.userAgent,
             'Referer': self.siteUrl + '/',
+            'Origin': self.siteUrl,
+            'Accept': '*/*',
         }
-        play = str(id or '')
-        if self.isVideoFormat(play) and play.startswith('http'):
+        play = str(id or '').strip()
+
+        # 已经是纯媒体地址
+        if self._is_real_media(play):
             return {'parse': 0, 'jx': '0', 'url': play, 'header': header}
 
-        # 非直链：尝试详情/embed 再解析
+        # 若是包装链，先拆出真实地址
+        um = re.search(r'[?&]url=(https?://[^&"\']+)', play)
+        if um:
+            real = urllib.parse.unquote(um.group(1)).replace('\\/', '/')
+            if self.isVideoFormat(real):
+                return {'parse': 0, 'jx': '0', 'url': real, 'header': header}
+
+        # 非直链：详情页 / embed 再解析
         page = self._page_url(play)
         html = self.fetch_text(page)
         real = self._extract_play_url(html)
-        if not real:
+        if not real or not self._is_real_media(real):
             idm = re.search(r'(\d+)', play)
             if idm:
                 ehtml = self.fetch_text(self.siteUrl + '/embed/%s.html' % idm.group(1))
-                real = self._extract_play_url(ehtml)
-        if real:
+                real = self._extract_play_url(ehtml) or real
+        if real and (self._is_real_media(real) or self.isVideoFormat(real)):
             return {'parse': 0, 'jx': '0', 'url': real, 'header': header}
+
         return {'parse': 1, 'jx': '1', 'url': page, 'header': header}
 
     def isVideoFormat(self, url):
