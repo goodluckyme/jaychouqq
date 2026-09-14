@@ -102,6 +102,15 @@
       "type": 3
     },
     {
+      "key": "抖音精选.py",
+      "name": "💥抖音精选💥",
+      "api": "https://gh-proxy.org/https://raw.githubusercontent.com/wliqi495-create/jaychouqq/refs/heads/main/yingshi/pytesx/抖音精选.py",
+      "filterable": 1,
+      "quickSearch": 1,
+      "searchable": 1,
+      "type": 3
+    },
+    {
       "key": "mjv00877.py",
       "name": "💥mjv008777💥",
       "api": "https://gh-proxy.org/https://raw.githubusercontent.com/wliqi495-create/jaychouqq/refs/heads/main/yingshi/pytesx/mjv008.py",
