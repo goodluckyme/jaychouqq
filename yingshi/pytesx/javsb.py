@@ -1,11 +1,12 @@
 # coding: utf-8
 """
-JAV.SB Spider  v1.4.0
-修复：分类路径错误导致无数据
-真实结构：
+JAV.SB Spider  v1.5.0
+修复：分类无数据
+真实结构（已验证）：
   首页     /en/
-  分类     /en/javtype/{Name}.html  或  /en/vod/show/by/hits/id/{Name}.html
-  分页     ?page=N  或  /en/javtype/{Name}-{N}.html
+  最新     /en/label/new/by/time.html
+  分类     /en/javtype/{Name}.html
+  分页     /en/javtype/{Name}-{N}.html  或  ?page=N
   搜索     /en/vod/search/by/time/wd/{kw}.html
   详情     /en/jav/{id}.html
 """
@@ -25,77 +26,28 @@ except ImportError:
         def init(self, extend=""):
             pass
 
-VERSION = '1.4.0'
+VERSION = '1.5.0'
 SITE_URL = 'https://jav.sb'
 
-# type_id -> 站点真实路径名（优先 javtype，其次 vod/show）
+# type_id -> 站点真实路径（已用真实页面验证）
 CATEGORIES = [
-    {"type_id": "new", "type_name": "最近更新", "paths": ["/en/", "/en/vod/search.html"]},
-    {"type_id": "uncensored", "type_name": "无码", "paths": [
-        "/en/javtype/Uncensored.html",
-        "/en/vod/show/by/hits/id/Uncensored.html",
-        "/en/javtype/Uncensored",
-    ]},
-    {"type_id": "reduce", "type_name": "无码破解", "paths": [
-        "/en/javtype/Mosaic_Removal.html",
-        "/en/vod/show/by/hits/id/Mosaic_Removal.html",
-        "/en/javtype/Reduce.html",
-        "/en/vod/show/by/hits/id/Reduce.html",
-    ]},
-    {"type_id": "chinese", "type_name": "中文字幕", "paths": [
-        "/en/javtype/Chinese-Sub.html",
-        "/en/javtype/Chinese_Sub.html",
-        "/en/vod/show/by/hits/id/Chinese-Sub.html",
-        "/en/javtype/CHN.html",
-    ]},
-    {"type_id": "censored", "type_name": "有码", "paths": [
-        "/en/javtype/Censored.html",
-        "/en/vod/show/by/hits/id/Censored.html",
-    ]},
-    {"type_id": "amateur", "type_name": "素人", "paths": [
-        "/en/javtype/Asian_Amateur.html",
-        "/en/javtype/Amateur.html",
-        "/en/vod/show/by/hits/id/Amateur.html",
-    ]},
-    {"type_id": "vr", "type_name": "VR", "paths": [
-        "/en/javtype/VR.html",
-        "/en/vod/show/by/hits/id/VR.html",
-        "/en/genres/vr.html",
-    ]},
-    {"type_id": "idol", "type_name": "女优", "paths": [
-        "/en/javtype/Idol.html",
-        "/en/vod/show/by/hits/id/Idol.html",
-    ]},
-    {"type_id": "big-tits", "type_name": "巨乳", "paths": [
-        "/en/javtype/Big_Tits.html",
-        "/en/genres/big_tits.html",
-        "/en/vod/show/by/hits/id/Big_Tits.html",
-    ]},
-    {"type_id": "anal", "type_name": "肛交", "paths": [
-        "/en/javtype/Anal.html",
-        "/en/genres/anal.html",
-        "/en/vod/show/by/hits/id/Anal.html",
-    ]},
-    {"type_id": "creampie", "type_name": "中出", "paths": [
-        "/en/javtype/Creampie.html",
-        "/en/genres/creampie.html",
-        "/en/vod/show/by/hits/id/Creampie.html",
-    ]},
-    {"type_id": "lesbian", "type_name": "女同", "paths": [
-        "/en/javtype/Lesbian.html",
-        "/en/genres/lesbian.html",
-        "/en/vod/show/by/hits/id/Lesbian.html",
-    ]},
-    {"type_id": "mature", "type_name": "熟女", "paths": [
-        "/en/javtype/Mature.html",
-        "/en/genres/mature.html",
-        "/en/vod/show/by/hits/id/Mature.html",
-    ]},
-    {"type_id": "teen", "type_name": "少女", "paths": [
-        "/en/javtype/Teen.html",
-        "/en/genres/teen.html",
-        "/en/vod/show/by/hits/id/Teen.html",
-    ]},
+    {"type_id": "new", "type_name": "最近更新", "path": "/en/label/new/by/time.html"},
+    {"type_id": "rank", "type_name": "热门排行", "path": "/en/label/rank/by/time.html"},
+    {"type_id": "uncensored", "type_name": "无码", "path": "/en/javtype/Uncensored.html"},
+    {"type_id": "reduce", "type_name": "无码破解", "path": "/en/javtype/Mosaic_Removed.html"},
+    {"type_id": "chinese", "type_name": "中文字幕", "path": "/en/javtype/CHN_SUB.html"},
+    {"type_id": "censored", "type_name": "有码", "path": "/en/javtype/Censored.html"},
+    {"type_id": "fc2", "type_name": "FC2-PPV", "path": "/en/javtype/FC2-PPV.html"},
+    {"type_id": "amateur", "type_name": "素人", "path": "/en/javtype/Asian_Amateur.html"},
+    {"type_id": "vr", "type_name": "VR", "path": "/en/javtype/VR.html"},
+    {"type_id": "idol", "type_name": "女优", "path": "/en/javtype/Idol.html"},
+    {"type_id": "big-tits", "type_name": "巨乳", "path": "/en/javtype/Big_Tits.html"},
+    {"type_id": "anal", "type_name": "肛交", "path": "/en/javtype/Anal.html"},
+    {"type_id": "creampie", "type_name": "中出", "path": "/en/javtype/Creampie.html"},
+    {"type_id": "lesbian", "type_name": "女同", "path": "/en/javtype/Lesbian.html"},
+    {"type_id": "mature", "type_name": "熟女", "path": "/en/javtype/Mature.html"},
+    {"type_id": "teen", "type_name": "少女", "path": "/en/javtype/Teen.html"},
+    {"type_id": "mgs", "type_name": "MGS", "path": "/en/javtype/MGS.html"},
 ]
 
 
@@ -135,7 +87,6 @@ class Spider(BaseSpider):
         self._ssl_context = ssl.create_default_context()
         self._ssl_context.check_hostname = False
         self._ssl_context.verify_mode = ssl.CERT_NONE
-        # Cookie 持久化，利于过 CF / 会话
         self._cj = http.cookiejar.CookieJar()
         self._opener = urllib.request.build_opener(
             urllib.request.HTTPCookieProcessor(self._cj),
@@ -148,7 +99,7 @@ class Spider(BaseSpider):
                 qs = urllib.parse.urlencode(params)
                 url = url + ('&' if '?' in url else '?') + qs
             req = urllib.request.Request(url, headers=self.headers, method='GET')
-            resp = self._opener.open(req, timeout=18)
+            resp = self._opener.open(req, timeout=20)
             raw = resp.read()
             try:
                 return raw.decode('utf-8')
@@ -170,194 +121,290 @@ class Spider(BaseSpider):
             return urllib.parse.urljoin(self.host + '/', u)
         return u
 
+    def _cat_url(self, tid, pg=1):
+        """生成分类 URL（含分页）"""
+        pg = int(pg or 1)
+        path = None
+        for c in CATEGORIES:
+            if c['type_id'] == str(tid):
+                path = c.get('path')
+                break
+        if not path:
+            path = '/en/'
+
+        # 首页 / 标签页分页
+        if path.rstrip('/').endswith('.html'):
+            base = path[:-5]  # strip .html
+            if pg <= 1:
+                return self.host + path
+            # /en/javtype/Uncensored-2.html
+            return self.host + base + '-%d.html' % pg
+
+        # 兜底
+        if pg <= 1:
+            return self.host + path
+        return self.host + path + ('&' if '?' in path else '?') + 'page=%d' % pg
+
     def _parse_list(self, html):
-        if not html or len(html) < 400:
+        if not html or len(html) < 300:
             return []
-        # CF 挑战页直接跳过
         if 'Just a moment' in html or 'cf-browser-verification' in html or 'challenge-platform' in html:
+            return []
+        if '请验证' in html or 'Please verify' in html:
             return []
 
         videos = []
         seen = set()
 
-        # 模式1：卡片（href + title/alt + 封面）
-        pattern1 = re.compile(
-            r'href=["\']([^"\']*(?:/jav/|/v/|/video/|/watch/|[A-Za-z0-9]{2,15}-\d{2,6}|[a-f0-9]{16,})[^"\']*)["\']'
-            r'[^>]{0,500}'
-            r'(?:title|alt)=["\']([^"\']{2,200})["\']'
-            r'[\s\S]{0,1200}?'
-            r'(?:src|data-src|data-original|data-poster|data-lazy)=["\']([^"\']+\.(?:jpg|jpeg|png|webp)[^"\']*)["\']',
+        # 主模式：/en/jav/xxx.html + 标题
+        # 兼容 duration 链接与标题链接
+        pattern = re.compile(
+            r'href=["\'](/en/jav/[^"\']+\.html)["\'][^>]*>\s*([^<]{3,200}?)\s*<',
             re.I
         )
-        for m in pattern1.finditer(html):
+        for m in pattern.finditer(html):
             href = m.group(1).strip()
-            title = (m.group(2) or '').strip()
-            pic = (m.group(3) or '').strip()
-            if not href or href in seen:
+            title = re.sub(r'\s+', ' ', (m.group(2) or '').strip())
+            # 跳过纯时长如 1:01:30
+            if re.match(r'^\d{1,2}:\d{2}(:\d{2})?$', title):
                 continue
-            if any(x in href.lower() for x in (
-                'javascript:', 'mailto:', '#', '/tag/', '/category/', '/actor/',
-                '/genres/', '/maker/', '/actresses/', '/vod/search'
-            )):
+            if href in seen:
                 continue
             seen.add(href)
-            if not title or len(title) < 2:
-                code = re.search(r'([A-Za-z]{2,12}-\d{2,6})', href + ' ' + title)
-                title = code.group(1) if code else href.rstrip('/').split('/')[-1][:50]
-            vid = href if href.startswith('http') else urllib.parse.urljoin(self.host, href)
+            if len(title) < 3:
+                code = re.search(r'([A-Za-z0-9]{2,15}-\d{2,6})', href)
+                title = code.group(1).upper() if code else href.rstrip('/').split('/')[-1][:50]
             videos.append({
-                'vod_id': vid,
-                'vod_name': re.sub(r'\s+', ' ', title)[:120],
-                'vod_pic': self._abs(pic),
-                'vod_remarks': ''
+                'vod_id': self._abs(href),
+                'vod_name': title[:150],
+                'vod_pic': '',
+                'vod_remarks': '',
             })
 
-        # 模式2：标题在 a 内
-        if len(videos) < 6:
-            pattern2 = re.compile(
-                r'<a[^>]+href=["\']([^"\']+)["\'][^>]*>\s*(?:<[^>]+>)*\s*([^<]{5,150}?)\s*<',
-                re.I
-            )
-            for m in pattern2.finditer(html):
-                href, title = m.group(1).strip(), m.group(2).strip()
-                if not re.search(r'/jav/|/v/|/video/|/watch/|[A-Za-z]{2,12}-\d{2,6}|[a-f0-9]{16,}', href, re.I):
-                    continue
-                if href in seen or len(title) < 4:
-                    continue
-                if any(x in href.lower() for x in ('javascript:', 'mailto:', '#', '/vod/search')):
-                    continue
-                seen.add(href)
-                vid = href if href.startswith('http') else urllib.parse.urljoin(self.host, href)
-                videos.append({
-                    'vod_id': vid,
-                    'vod_name': re.sub(r'\s+', ' ', title)[:120],
-                    'vod_pic': '',
-                    'vod_remarks': ''
-                })
+        # 补封面：在同卡片附近找 img
+        if videos:
+            for v in videos:
+                slug = urllib.parse.urlparse(v['vod_id']).path
+                # 在 href 附近找图片
+                esc = re.escape(slug)
+                m = re.search(
+                    esc + r'[\s\S]{0,800}?(?:src|data-src|data-original|data-poster)=["\']([^"\']+\.(?:jpg|jpeg|png|webp)[^"\']*)["\']',
+                    html, re.I
+                )
+                if not m:
+                    m = re.search(
+                        r'(?:src|data-src|data-original)=["\']([^"\']+\.(?:jpg|jpeg|png|webp)[^"\']*)["\'][\s\S]{0,800}?' + esc,
+                        html, re.I
+                    )
+                if m:
+                    v['vod_pic'] = self._abs(m.group(1))
 
-        # 模式3：仅 /en/jav/xxx 链接
-        if len(videos) < 4:
-            for m in re.finditer(r'href=["\']((?:https?://[^"\']+)?/en/jav/[^"\']+)["\']', html, re.I):
-                href = m.group(1).strip()
-                if href in seen:
-                    continue
-                seen.add(href)
-                vid = href if href.startswith('http') else urllib.parse.urljoin(self.host, href)
-                name = href.rstrip('/').split('/')[-1].replace('.html', '')[:40]
-                videos.append({
-                    'vod_id': vid,
-                    'vod_name': name,
-                    'vod_pic': '',
-                    'vod_remarks': ''
-                })
+        # 时长备注
+        for v in videos:
+            slug = urllib.parse.urlparse(v['vod_id']).path
+            m = re.search(
+                r'>(\d{1,2}:\d{2}(?::\d{2})?)<[^>]{0,200}' + re.escape(slug),
+                html, re.I
+            )
+            if m:
+                v['vod_remarks'] = m.group(1)
 
         return videos
 
-    def _label_from_url(self, u):
-        ul = u.lower()
-        if '.m3u8' in ul:
-            if '1080' in ul or 'fhd' in ul or 'fullhd' in ul:
-                return '1080P'
-            if '720' in ul:
-                return '720P'
-            if '480' in ul:
-                return '480P'
-            if '360' in ul:
-                return '360P'
-            return 'HLS'
-        if '1080' in ul or 'fhd' in ul:
-            return '1080P'
-        if '720' in ul:
-            return '720P'
-        if '480' in ul:
-            return '480P'
-        if '360' in ul:
-            return '360P'
-        return '播放'
+    def _page_total(self, html):
+        """解析 CurrentPage 1/636 Page"""
+        m = re.search(r'Current\s*Page\s*\d+\s*/\s*(\d+)\s*Page', html, re.I)
+        if m:
+            return int(m.group(1))
+        m = re.search(r'/\s*(\d+)\s*$', html)
+        return int(m.group(1)) if m else 0
 
-    def _extract_play_urls(self, html, page_url=''):
+    def homeContent(self, filter):
+        classes = [{'type_id': c['type_id'], 'type_name': c['type_name']} for c in CATEGORIES]
+        videos = []
+        try:
+            for url in [self.host + '/en/', self.host + '/en/label/new/by/time.html']:
+                html = self._get(url)
+                videos = self._parse_list(html)
+                if len(videos) >= 6:
+                    break
+        except Exception as e:
+            print('homeContent list error:', e, file=sys.stderr)
+        return {'class': classes, 'list': videos[:24]}
+
+    def homeVideoContent(self):
+        return {'list': []}
+
+    def categoryContent(self, tid, pg, filter, extend):
+        pg = int(pg or 1)
+        tid = str(tid or 'new')
+        videos = []
+        pagecount = 9999
+        try:
+            url = self._cat_url(tid, pg)
+            html = self._get(url)
+            videos = self._parse_list(html)
+            # 分页备用：?page=
+            if len(videos) < 4 and pg > 1:
+                path = None
+                for c in CATEGORIES:
+                    if c['type_id'] == tid:
+                        path = c.get('path')
+                        break
+                if path:
+                    alt = self.host + path + ('&' if '?' in path else '?') + 'page=%d' % pg
+                    html2 = self._get(alt)
+                    v2 = self._parse_list(html2)
+                    if len(v2) > len(videos):
+                        videos = v2
+                        html = html2
+            total_pages = self._page_total(html)
+            if total_pages > 0:
+                pagecount = total_pages
+            elif len(videos) >= 8:
+                pagecount = pg + 1
+            else:
+                pagecount = pg
+        except Exception as e:
+            print('categoryContent error:', e, file=sys.stderr)
+
+        type_name = tid
+        for c in CATEGORIES:
+            if c['type_id'] == tid:
+                type_name = c['type_name']
+                break
+
+        return {
+            'page': pg,
+            'pagecount': pagecount,
+            'limit': 24,
+            'total': pagecount * 12 if videos else 0,
+            'type_name': type_name,
+            'list': videos,
+        }
+
+    def detailContent(self, array):
+        result = {'list': []}
+        if not array or not array[0]:
+            return result
+
+        page_url = str(array[0])
+        if not page_url.startswith('http'):
+            page_url = urllib.parse.urljoin(self.host, page_url)
+
+        html = self._get(page_url)
+        vod = {
+            'vod_id': page_url,
+            'vod_name': '视频详情',
+            'vod_pic': '',
+            'vod_remarks': '',
+            'vod_content': '',
+            'vod_play_from': 'JAV.SB',
+            'vod_play_url': '',
+        }
+
+        m = re.search(r'<h1[^>]*>([^<]+)</h1>', html, re.I)
+        if not m:
+            m = re.search(r'<title>([^<]+)</title>', html, re.I)
+        if m:
+            name = re.sub(r'\s*[-|].*JAVSB.*$', '', m.group(1), flags=re.I).strip()
+            name = re.sub(r'\s*[-|]\s*$', '', name).strip()
+            vod['vod_name'] = name[:150] if name else '视频详情'
+
+        m = re.search(r'(?:og:image|twitter:image)["\']?\s*(?:content|href)?=["\']([^"\']+)["\']', html, re.I)
+        if not m:
+            m = re.search(r'(?:poster|data-poster)=["\']([^"\']+)["\']', html, re.I)
+        if not m:
+            m = re.search(r'(?:data-src|src)=["\']([^"\']+\.(?:jpg|jpeg|png|webp)[^"\']*)["\']', html, re.I)
+        if m:
+            vod['vod_pic'] = self._abs(m.group(1))
+
+        m = re.search(r'Duration\s*:\s*([0-9:]+)', html, re.I)
+        if m:
+            vod['vod_remarks'] = m.group(1)
+
+        m = re.search(r'(?:og:description|description)["\']?\s*content=["\']([^"\']+)["\']', html, re.I)
+        if m:
+            vod['vod_content'] = m.group(1).strip()[:400]
+        else:
+            # 正文简介
+            m = re.search(r'<h1[^>]*>[\s\S]{0,200}?</h1>\s*<p[^>]*>([\s\S]{20,500}?)</p>', html, re.I)
+            if m:
+                vod['vod_content'] = re.sub(r'<[^>]+>', '', m.group(1)).strip()[:400]
+
+        plays = self._extract_plays(html, page_url)
+        if plays:
+            vod['vod_play_url'] = '#'.join(['%s$%s' % (lab, u) for lab, u in plays])
+        else:
+            vod['vod_play_url'] = '网页播放$%s' % page_url
+            vod['vod_play_from'] = 'JAV.SB'
+
+        result['list'] = [vod]
+        return result
+
+    def _extract_plays(self, html, page_url):
         play_list = []
         seen = set()
 
-        def add(u, label=None):
-            if not u:
+        def add(label, url):
+            url = (url or '').strip().replace('\\/', '/')
+            if not url or url in seen:
                 return
-            u = u.replace('\\/', '/').replace('&amp;', '&').replace('\\u0026', '&').strip()
-            u = re.sub(r'\\u([0-9a-fA-F]{4})', lambda m: chr(int(m.group(1), 16)), u)
-            if not u.startswith('http') or u in seen:
-                return
-            if any(x in u.lower() for x in ('.js', '.css', '.png', '.jpg', '.gif', 'google', 'facebook', 'analytics')):
-                return
-            seen.add(u)
-            if not label:
-                label = self._label_from_url(u)
-            play_list.append((label, u))
+            if not url.startswith('http'):
+                url = self._abs(url)
+            if not re.search(r'\.(m3u8|mp4)(\?|$)', url, re.I) and 'm3u8' not in url.lower():
+                # 仍可能是播放器接口
+                if not re.search(r'(play|video|stream|player|m3u)', url, re.I):
+                    return
+            seen.add(url)
+            play_list.append((label or '播放', url))
 
-        if not html:
-            return play_list
+        # 直接 m3u8/mp4
+        for m in re.finditer(r'(https?://[^"\'\s<>]+?\.(?:m3u8|mp4)[^"\'\s<>]*)', html, re.I):
+            u = m.group(1)
+            lab = '1080P' if '1080' in u else ('720P' if '720' in u else ('480P' if '480' in u else 'HLS'))
+            add(lab, u)
 
-        for m in re.finditer(r'https?://[^"\'\s<>\\]+\.m3u8[^"\'\s<>\\]*', html, re.I):
-            add(m.group(0), self._label_from_url(m.group(0)))
-        for m in re.finditer(r'https?://[^"\'\s<>\\]+\.mp4[^"\'\s<>\\]*', html, re.I):
-            add(m.group(0), self._label_from_url(m.group(0)))
-
+        # source/video tags
         for m in re.finditer(r'<(?:source|video)[^>]+(?:src|data-src)=["\']([^"\']+)["\']', html, re.I):
-            add(self._abs(m.group(1)))
+            add('播放', m.group(1))
 
-        js_keys = (
-            'url', 'src', 'file', 'video', 'playurl', 'playUrl', 'videoUrl', 'video_url',
-            'hls', 'm3u8', 'source', 'sources', 'stream', 'play_url', 'link', 'path',
-            'hlsUrl', 'mp4Url', 'mediaUrl', 'contentUrl'
-        )
-        for key in js_keys:
-            for m in re.finditer(
-                rf'["\']?{key}["\']?\s*[:=]\s*["\'](https?://[^"\']+\.(?:m3u8|mp4)[^"\']*)["\']',
-                html, re.I
-            ):
-                add(m.group(1))
-            for m in re.finditer(
-                rf'\b{key}\s*=\s*["\'](https?://[^"\']+\.(?:m3u8|mp4)[^"\']*)["\']',
-                html, re.I
-            ):
-                add(m.group(1))
+        # player config json
+        for m in re.finditer(r'(?:url|src|file|videoUrl|video_url|play_url)\s*[:=]\s*["\']([^"\']+)["\']', html, re.I):
+            add('播放', m.group(1))
 
-        for m in re.finditer(
-            r'["\']?(?:file|src|url)["\']?\s*:\s*["\'](https?://[^"\']+\.(?:m3u8|mp4)[^"\']*)["\']'
-            r'[^}]{0,80}["\']?(?:label|type|res|quality)["\']?\s*:\s*["\']([^"\']+)["\']',
-            html, re.I
-        ):
-            add(m.group(1), m.group(2).strip() or None)
-        for m in re.finditer(
-            r'["\']?(?:label|type|res|quality)["\']?\s*:\s*["\']([^"\']+)["\']'
-            r'[^}]{0,80}["\']?(?:file|src|url)["\']?\s*:\s*["\'](https?://[^"\']+\.(?:m3u8|mp4)[^"\']*)["\']',
-            html, re.I
-        ):
-            add(m.group(2), m.group(1).strip() or None)
-
-        for m in re.finditer(r'<(?:iframe|embed)[^>]+src=["\']([^"\']+)["\']', html, re.I):
+        # iframe player
+        for m in re.finditer(r'<iframe[^>]+src=["\']([^"\']+)["\']', html, re.I):
             src = m.group(1)
-            um = re.search(r'[?&](?:url|src|file|v)=([^&"\']+)', src)
-            if um:
-                real = urllib.parse.unquote(um.group(1))
-                if real.startswith('http'):
-                    add(real)
-            elif re.search(r'\.(m3u8|mp4)', src, re.I):
-                add(self._abs(src))
+            if any(x in src.lower() for x in ('player', 'embed', 'video', 'play')):
+                add('内嵌', src)
 
+        # 展开 master m3u8 多码率
+        expanded = []
+        for lab, u in play_list:
+            if '.m3u8' in u.lower() and 'master' not in lab.lower():
+                variants = self._fetch_m3u8_variants(u)
+                if variants:
+                    expanded.extend(variants)
+                else:
+                    expanded.append((lab, u))
+            else:
+                expanded.append((lab, u))
+        if expanded:
+            play_list = expanded
+
+        # 排序：高清优先
         def sort_key(item):
-            label, u = item
-            l = (label or '').upper()
-            if '1080' in l or 'FHD' in l:
+            l = (item[0] or '').upper()
+            if '1080' in l:
                 return 0
-            if '720' in l or 'HD' in l:
+            if '720' in l:
                 return 1
-            if 'HLS' in l or '.M3U8' in u.upper():
+            if 'HLS' in l or 'M3U8' in (item[1] or '').upper():
                 return 2
-            if '480' in l or 'SD' in l:
+            if '480' in l:
                 return 3
-            if '360' in l:
-                return 4
-            return 5
+            return 4
 
         uniq = []
         seen_u = set()
@@ -379,8 +426,7 @@ class Spider(BaseSpider):
                 line = lines[i].strip()
                 if line.startswith('#EXT-X-STREAM-INF:'):
                     res_m = re.search(r'RESOLUTION=(\d+)x(\d+)', line, re.I)
-                    bw_m = re.search(r'BANDWIDTH=(\d+)', line, re.I)
-                    label = None
+                    label = 'HLS'
                     if res_m:
                         h = int(res_m.group(2))
                         if h >= 1080:
@@ -391,221 +437,58 @@ class Spider(BaseSpider):
                             label = '480P'
                         else:
                             label = '%sP' % h
-                    elif bw_m:
-                        bw = int(bw_m.group(1))
-                        if bw >= 4000000:
-                            label = '1080P'
-                        elif bw >= 1500000:
-                            label = '720P'
-                        else:
-                            label = '480P'
                     if i + 1 < len(lines):
                         u = lines[i + 1].strip()
                         if u and not u.startswith('#'):
                             if not u.startswith('http'):
                                 u = urllib.parse.urljoin(master_url, u)
-                            variants.append((label or 'HLS', u))
+                            variants.append((label, u))
                 i += 1
         except Exception as e:
             print('_fetch_m3u8_variants error:', e, file=sys.stderr)
         return variants
 
-    def _cat_urls(self, tid, pg):
-        """按分类生成候选 URL（含分页）"""
+    def searchContent(self, key, quick, pg=1):
+        return self.searchContentPage(key, quick, pg)
+
+    def searchContentPage(self, key, quick, pg=1):
         pg = int(pg or 1)
-        urls = []
-        info = None
-        for c in CATEGORIES:
-            if c['type_id'] == tid:
-                info = c
-                break
-        paths = (info or {}).get('paths') or [f'/en/javtype/{tid}.html', f'/en/{tid}/']
-
-        for path in paths:
-            base = path if path.startswith('http') else (self.host + path)
-            if pg <= 1:
-                urls.append(base)
-                # 常见 page 参数
-                if base.endswith('.html'):
-                    urls.append(base + '?page=1')
-                else:
-                    urls.append(base.rstrip('/') + '/')
-            else:
-                # 分页形式
-                if base.endswith('.html'):
-                    # Name.html?page=N
-                    urls.append(base + ('&' if '?' in base else '?') + 'page=' + str(pg))
-                    # Name-N.html
-                    urls.append(re.sub(r'\.html$', '-%s.html' % pg, base))
-                    # Name.html/page/N
-                    urls.append(base.replace('.html', '/page/%s.html' % pg))
-                else:
-                    urls.append(base.rstrip('/') + '/page/%s/' % pg)
-                    urls.append(base.rstrip('/') + '/?page=' + str(pg))
-                    urls.append(base.rstrip('/') + '-%s/' % pg)
-
-        # 额外通用兜底
-        if tid not in ('new',):
-            name = tid.replace('-', '_').title().replace('_', '_')
-            for extra in [
-                f'/en/javtype/{tid}.html',
-                f'/en/javtype/{name}.html',
-                f'/en/vod/show/by/hits/id/{tid}.html',
-                f'/en/vod/show/by/time/id/{tid}.html',
-                f'/en/genres/{tid}.html',
-            ]:
-                u = self.host + extra
-                if pg > 1:
-                    if u.endswith('.html'):
-                        urls.append(u + '?page=' + str(pg))
-                        urls.append(re.sub(r'\.html$', '-%s.html' % pg, u))
-                    else:
-                        urls.append(u + '?page=' + str(pg))
-                else:
-                    urls.append(u)
-
-        # 去重保序
-        seen = set()
-        out = []
-        for u in urls:
-            if u not in seen:
-                seen.add(u)
-                out.append(u)
-        return out
-
-    def homeContent(self, filter):
-        classes = [{'type_id': c['type_id'], 'type_name': c['type_name']} for c in CATEGORIES]
+        key = (key or '').strip()
         videos = []
+        pagecount = 1
+        if not key:
+            return {'list': [], 'page': pg, 'pagecount': 1, 'limit': 24, 'total': 0}
         try:
-            for path in ('/en/', '/', '/en/vod/search.html'):
-                html = self._get(self.host + path)
-                videos = self._parse_list(html)
-                if len(videos) >= 6:
-                    break
+            kw = urllib.parse.quote(key, safe='')
+            if pg <= 1:
+                url = '%s/en/vod/search/by/time/wd/%s.html' % (self.host, kw)
+            else:
+                # 搜索分页：path-N.html 或 ?page=
+                url = '%s/en/vod/search/by/time/wd/%s-%d.html' % (self.host, kw, pg)
+            html = self._get(url)
+            videos = self._parse_list(html)
+            if len(videos) < 3 and pg > 1:
+                alt = '%s/en/vod/search/by/time/wd/%s.html?page=%d' % (self.host, kw, pg)
+                html2 = self._get(alt)
+                v2 = self._parse_list(html2)
+                if len(v2) > len(videos):
+                    videos = v2
+                    html = html2
+            total_pages = self._page_total(html)
+            if total_pages > 0:
+                pagecount = total_pages
+            elif len(videos) >= 8:
+                pagecount = pg + 1
+            else:
+                pagecount = pg
         except Exception as e:
-            print('homeContent list error:', e, file=sys.stderr)
-
+            print('search error:', e, file=sys.stderr)
         return {
-            'class': classes,
-            'list': videos[:24]
-        }
-
-    def homeVideoContent(self):
-        return {'list': []}
-
-    def categoryContent(self, tid, pg, filter, extend):
-        pg = int(pg or 1)
-        tid = str(tid or 'new')
-
-        videos = []
-        for url in self._cat_urls(tid, pg):
-            html = self._get(url)
-            videos = self._parse_list(html)
-            if len(videos) >= 6:
-                break
-
-        type_name = tid
-        for c in CATEGORIES:
-            if c['type_id'] == tid:
-                type_name = c['type_name']
-                break
-
-        return {
+            'list': videos,
             'page': pg,
-            'pagecount': 9999 if len(videos) >= 8 else pg,
+            'pagecount': pagecount,
             'limit': 24,
-            'total': 9999 if videos else 0,
-            'type_name': type_name,
-            'list': videos
-        }
-
-    def detailContent(self, array):
-        result = {'list': []}
-        if not array or not array[0]:
-            return result
-
-        page_url = str(array[0])
-        if not page_url.startswith('http'):
-            page_url = urllib.parse.urljoin(self.host, page_url)
-
-        html = self._get(page_url)
-        vod = {
-            'vod_id': page_url,
-            'vod_name': '视频详情',
-            'vod_pic': '',
-            'vod_remarks': '',
-            'vod_content': '',
-            'vod_play_from': 'JAV.SB',
-            'vod_play_url': ''
-        }
-
-        m = re.search(r'<h1[^>]*>([^<]+)</h1>', html, re.I)
-        if not m:
-            m = re.search(r'<title>([^<]+)</title>', html, re.I)
-        if m:
-            name = re.sub(r'\s*[-|].*$', '', m.group(1)).strip()
-            vod['vod_name'] = name[:120] if name else '视频详情'
-
-        m = re.search(r'(?:og:image|twitter:image)["\']?\s*(?:content|href)?=["\']([^"\']+)["\']', html, re.I)
-        if not m:
-            m = re.search(r'(?:poster|data-poster)=["\']([^"\']+)["\']', html, re.I)
-        if not m:
-            m = re.search(r'(?:data-src|src)=["\']([^"\']+\.(?:jpg|jpeg|png|webp)[^"\']*)["\']', html, re.I)
-        if m:
-            vod['vod_pic'] = self._abs(m.group(1))
-
-        m = re.search(r'(?:og:description|description)["\']?\s*content=["\']([^"\']+)["\']', html, re.I)
-        if m:
-            vod['vod_content'] = m.group(1).strip()[:300]
-
-        play_list = self._extract_play_urls(html, page_url)
-        if len(play_list) == 1 and '.m3u8' in play_list[0][1].lower():
-            variants = self._fetch_m3u8_variants(play_list[0][1])
-            if variants:
-                play_list = variants
-
-        if play_list:
-            parts = ['%s$%s' % (label, url) for label, url in play_list[:8]]
-            vod['vod_play_url'] = '#'.join(parts)
-        else:
-            vod['vod_play_url'] = '播放$%s' % page_url
-
-        result['list'] = [vod]
-        return result
-
-    def searchContent(self, key, quick, pg='1'):
-        pg = int(pg or 1)
-        q = urllib.parse.quote(key)
-        urls = [
-            f'{self.host}/en/vod/search/by/time/wd/{q}.html',
-            f'{self.host}/en/vod/search/by/hits/wd/{q}.html',
-            f'{self.host}/en/vod/search.html?wd={q}',
-            f'{self.host}/en/vod/search/wd/{q}.html',
-            f'{self.host}/search/{q}/',
-            f'{self.host}/en/search/{q}/',
-        ]
-        if pg > 1:
-            extra = []
-            for u in list(urls):
-                if u.endswith('.html'):
-                    extra.append(u + '?page=' + str(pg))
-                    extra.append(re.sub(r'\.html$', f'/page/{pg}.html', u))
-                else:
-                    extra.append(u.rstrip('/') + f'/page/{pg}/')
-            urls = extra + urls
-
-        videos = []
-        for url in urls:
-            html = self._get(url)
-            videos = self._parse_list(html)
-            if videos:
-                break
-        return {
-            'page': pg,
-            'pagecount': 9999 if len(videos) >= 10 else pg,
-            'limit': 24,
-            'total': 9999,
-            'list': videos
+            'total': pagecount * 12 if videos else len(videos),
         }
 
     def playerContent(self, flag, id, vipFlags):
@@ -615,44 +498,33 @@ class Spider(BaseSpider):
             'Origin': self.host,
         }
         play = str(id or '').strip()
-
-        if play.startswith('http') and re.search(r'\.(m3u8|mp4|flv|mpd)(\?|$)', play, re.I):
-            return {
-                'parse': 0,
-                'jx': '0',
-                'url': play,
-                'header': header
-            }
-
+        if play.startswith('http') and re.search(r'\.(m3u8|mp4)(\?|$)', play, re.I):
+            return {'parse': 0, 'url': play, 'header': header}
         if play.startswith('http'):
+            # 可能是详情页，再提取
             html = self._get(play)
-            play_list = self._extract_play_urls(html, play)
-            if len(play_list) == 1 and '.m3u8' in play_list[0][1].lower():
-                variants = self._fetch_m3u8_variants(play_list[0][1])
-                if variants:
-                    play_list = variants
-            if play_list:
-                return {
-                    'parse': 0,
-                    'jx': '0',
-                    'url': play_list[0][1],
-                    'header': header
-                }
-
-        return {
-            'parse': 1,
-            'jx': '1',
-            'url': play,
-            'header': header
-        }
+            plays = self._extract_plays(html, play)
+            if plays:
+                return {'parse': 0, 'url': plays[0][1], 'header': header}
+            return {'parse': 1, 'jx': '1', 'url': play, 'header': header}
+        return {'parse': 1, 'jx': '1', 'url': play, 'header': header}
 
     def isVideoFormat(self, url):
-        if not url:
-            return False
-        return bool(re.search(r'\.(m3u8|mp4|flv|mpd)', url, re.I))
+        return bool(url and re.search(r'\.(m3u8|mp4|webm)(\?|$)', url, re.I))
 
     def manualVideoCheck(self):
         return False
 
     def localProxy(self, param):
-        return {}
+        return None
+
+
+if __name__ == '__main__':
+    sp = Spider()
+    sp.init()
+    print('VERSION', VERSION)
+    print('home classes', [c['type_name'] for c in sp.homeContent(False)['class']])
+    for tid in ['new', 'uncensored', 'chinese', 'reduce']:
+        r = sp.categoryContent(tid, 1, False, {})
+        print(tid, 'n=', len(r.get('list') or []), 'pages', r.get('pagecount'),
+              [x.get('vod_name', '')[:30] for x in (r.get('list') or [])[:2]])
