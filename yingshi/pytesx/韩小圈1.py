@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-韩小圈 / 韩剧TV 源
-适配：TVBox / 影视仓
+韩小圈 / 韩剧TV
+修复：无播放地址；修复毫秒时间戳；强化降级；移除openssl回退；增强容错
+依赖: pip install pycryptodome
 """
 import base64
 import hashlib
@@ -10,6 +11,7 @@ import json
 import random
 import re
 import string
+import time
 import urllib.parse
 
 try:
@@ -20,19 +22,16 @@ except ImportError:
     pad = None
     unpad = None
 
-try:
-    import requests
-except ImportError:
-    requests = None
-
 from base.spider import Spider as BaseSpider
 
 
 class Spider(BaseSpider):
     def __init__(self):
         self.siteUrl = 'https://hanxiaoquan.com'
-        self.appHost = 'https://hxqapi.hiyun.tv'
-        self.appHost2 = 'https://hxqapi.zmdcq.com'
+        self.appHostList = [
+            'https://hxqapi.hiyun.tv',
+            'https://hxqapi.zmdcq.com'
+        ]
         self.userAgent = 'HanjuTV/6.8.2 (Redmi Note 12; Android 14; Scale/2.00)'
         self.vn = '6.8.2'
         self.vc = 'a_8280'
@@ -60,8 +59,6 @@ class Spider(BaseSpider):
         try:
             if extend:
                 ext = json.loads(extend) if isinstance(extend, str) else (extend or {})
-                if ext.get('host'):
-                    self.appHost = str(ext.get('host')).rstrip('/')
                 if ext.get('uid'):
                     self.uid = str(ext.get('uid'))
         except Exception:
@@ -77,18 +74,18 @@ class Spider(BaseSpider):
     def _aes_cbc(self, data, key, iv, encrypt=True):
         key = key[:16] if isinstance(key, (bytes, bytearray)) else str(key).encode('utf-8')[:16]
         iv = iv[:16] if isinstance(iv, (bytes, bytearray)) else str(iv).encode('utf-8')[:16]
-        if AES:
-            cipher = AES.new(key, AES.MODE_CBC, iv)
-            if encrypt:
-                raw = pad(data if isinstance(data, bytes) else str(data).encode('utf-8'), 16)
-                return cipher.encrypt(raw)
-            raw = data if isinstance(data, bytes) else base64.b64decode(data)
-            pt = cipher.decrypt(raw)
-            try:
-                return unpad(pt, 16).decode('utf-8', 'ignore')
-            except Exception:
-                return pt.rstrip(b'\x00').decode('utf-8', 'ignore')
-        return b'' if encrypt else ''
+        if not AES:
+            return b'' if encrypt else ''
+        cipher = AES.new(key, AES.MODE_CBC, iv)
+        if encrypt:
+            raw = pad(data if isinstance(data, bytes) else str(data).encode('utf-8'), 16)
+            return cipher.encrypt(raw)
+        raw = data if isinstance(data, bytes) else base64.b64decode(data)
+        pt = cipher.decrypt(raw)
+        try:
+            return unpad(pt, 16).decode('utf-8', 'ignore')
+        except Exception:
+            return pt.rstrip(b'\x00').decode('utf-8', 'ignore')
 
     def _headers(self):
         if not self.uid:
@@ -106,12 +103,13 @@ class Spider(BaseSpider):
         try:
             uk = base64.b64encode(self._aes_cbc(self.uid, self.uk_key, self.uk_iv, True)).decode('ascii')
             mix = self._md5(self.uid)
+            # 【修复】必须毫秒时间戳 int(time.time()*1000)
             payload = json.dumps({
                 'uid': self.uid,
                 'model': 'Redmi Note 12',
                 'maker': 'Xiaomi',
                 'osv': '14',
-                'ts': int(round(1000 * time.time())),
+                'ts': int(round(time.time() * 1000)),
             }, separators=(',', ':'), ensure_ascii=False)
             sign = base64.b64encode(
                 self._aes_cbc(payload, mix[:16].encode('utf-8'), mix[16:32].encode('utf-8'), True)
@@ -119,8 +117,8 @@ class Spider(BaseSpider):
             headers['uk'] = uk
             headers['sign'] = sign
             headers['said'] = self._md5(self.uid)[:16]
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"build header fail {e}")
         return headers
 
     def _decode_body(self, obj):
@@ -135,8 +133,8 @@ class Spider(BaseSpider):
                     text = self._aes_cbc(data, mix[:16].encode('utf-8'), mix[16:32].encode('utf-8'), False)
                     if text:
                         return json.loads(text)
-                except Exception:
-                    pass
+                except Exception as e:
+                    print(f"decode_body decrypt err {e}")
             return obj
         if isinstance(obj, str):
             try:
@@ -146,46 +144,34 @@ class Spider(BaseSpider):
         return {}
 
     def fetch(self, url, headers=None, params=None):
+        import requests
         if headers is None:
             headers = self._headers()
         try:
-            if requests:
-                resp = requests.get(url, headers=headers, params=params, timeout=15)
-                resp.raise_for_status()
-                return resp
-            full = url
-            if params:
-                full += ('&' if '?' in url else '?') + urllib.parse.urlencode(params)
-            import urllib.request
-            req = urllib.request.Request(full, headers=headers)
-            raw = urllib.request.urlopen(req, timeout=15).read()
-            class R:
-                def __init__(self, raw_data):
-                    self.content = raw_data
-                    self.text = raw_data.decode('utf-8', 'ignore')
-                def json(self):
-                    return json.loads(self.text)
-            return R(raw)
+            resp = requests.get(url, headers=headers, params=params, timeout=12)
+            resp.raise_for_status()
+            return resp
         except Exception as e:
-            print(f"fetch error {url} : {e}")
+            print(f"fetch err {url}:{e}")
             return None
 
-    def api_get(self, path, params=None, host=None):
-        host = host or self.appHost
-        resp = self.fetch(host + path, headers=self._headers(), params=params)
-        if not resp:
-            if host != self.appHost2:
-                return self.api_get(path, params, self.appHost2)
-            return {}
-        try:
-            return self._decode_body(resp.json())
-        except Exception:
-            text = getattr(resp, 'text', '') or ''
-            if not text.strip():
-                if host != self.appHost2:
-                    return self.api_get(path, params, self.appHost2)
-                return {}
-            return self._decode_body(text)
+    async def api_get(self, path, params=None):
+        """遍历全部host列表自动降级，任意一个成功直接返回"""
+        for host in self.appHostList:
+            resp = self.fetch(host + path, headers=self._headers(), params=params)
+            if not resp:
+                continue
+            try:
+                raw_json = resp.json()
+                dec = self._decode_body(raw_json)
+                if dec:
+                    return dec
+            except Exception:
+                text = getattr(resp, 'text', '') or ''
+                dec = self._decode_body(text)
+                if dec:
+                    return dec
+        return {}
 
     def _pick_list(self, payload):
         if not isinstance(payload, dict):
@@ -252,7 +238,7 @@ class Spider(BaseSpider):
     def homeVideoContent(self):
         videos = []
         try:
-            js = self.api_get('/api/series/index', {
+            js = await self.api_get('/api/series/index', {
                 'type': '1', 'offset': '0', 'size': str(self.page_size),
             })
             for item in self._pick_list(js)[:24]:
@@ -260,7 +246,7 @@ class Spider(BaseSpider):
                 if v:
                     videos.append(v)
             if not videos:
-                js = self.api_get('/api/search/s5', {
+                js = await self.api_get('/api/search/s5', {
                     'k': '', 'srefer': 'home', 'type': '1', 'page': '1',
                 })
                 for item in self._pick_list(js)[:24]:
@@ -278,7 +264,7 @@ class Spider(BaseSpider):
         videos = []
         more = False
         try:
-            js = self.api_get('/api/series/index', {
+            js = await self.api_get('/api/series/index', {
                 'type': cate,
                 'category': cate,
                 'offset': str(offset),
@@ -290,7 +276,7 @@ class Spider(BaseSpider):
                     videos.append(v)
             more = bool(js.get('more')) or len(videos) >= self.page_size - 2
             if not videos:
-                js = self.api_get('/api/search/s5', {
+                js = await self.api_get('/api/search/s5', {
                     'k': '', 'srefer': 'cate', 'type': cate, 'page': str(pg),
                 })
                 for item in self._pick_list(js):
@@ -312,7 +298,7 @@ class Spider(BaseSpider):
         pg = int(pg or 1)
         videos = []
         try:
-            js = self.api_get('/api/search/s5', {
+            js = await self.api_get('/api/search/s5', {
                 'k': key, 'srefer': 'search_input', 'type': '0', 'page': str(pg),
             })
             for item in self._pick_list(js):
@@ -320,7 +306,7 @@ class Spider(BaseSpider):
                 if v:
                     videos.append(v)
             if not videos and pg == 1:
-                js = self.api_get('/api/series/index', {
+                js = await self.api_get('/api/series/index', {
                     'keyword': key, 'offset': '0', 'size': str(self.page_size),
                 })
                 for item in self._pick_list(js):
@@ -348,7 +334,7 @@ class Spider(BaseSpider):
 
     def _episodes(self, sid):
         drama, episodes = {}, []
-        js = self.api_get('/api/series/detail', {'sid': sid})
+        js = await self.api_get('/api/series/detail', {'sid': sid})
         if isinstance(js, dict):
             drama = js.get('series') or js.get('data') or {}
             if not isinstance(drama, dict):
@@ -357,19 +343,19 @@ class Spider(BaseSpider):
             if not episodes:
                 episodes = self._pick_list(js)
         if not episodes:
-            js = self.api_get('/api/series2/episodes', {'sid': sid})
+            js = await self.api_get('/api/series2/episodes', {'sid': sid})
             episodes = self._pick_list(js)
         if not episodes:
-            js = self.api_get('/api/series/programs_v2', {'sid': sid})
+            js = await self.api_get('/api/series/programs_v2', {'sid': sid})
             episodes = self._pick_list(js) or js.get('qxkPrograms') or []
         return drama, episodes or []
 
     def detailContent(self, ids):
         sid = str((ids or [''])[0])
         try:
-            drama, episodes = self._episodes(sid)
+            drama, episodes = await self._episodes(sid)
             if not drama.get('name') and not drama.get('title'):
-                extra = self.api_get('/api/series/detail', {'sid': sid})
+                extra = await self.api_get('/api/series/detail', {'sid': sid})
                 drama = (extra.get('series') or extra.get('data') or drama) if isinstance(extra, dict) else drama
             parts = []
             for i, ep in enumerate(episodes, 1):
@@ -468,6 +454,7 @@ class Spider(BaseSpider):
                 src = urllib.parse.unquote(parts[2])
             except Exception:
                 src = parts[2]
+        finalUrl = ''
         try:
             if pid:
                 play_path_list = [
@@ -477,21 +464,22 @@ class Spider(BaseSpider):
                     ('/api/play/playurl', {'pid': pid}),
                 ]
                 for path, params in play_path_list:
-                    js = self.api_get(path, params)
+                    js = await self.api_get(path, params)
                     url = self._pick_url(js)
                     if url:
-                        return {
-                            'parse': 0 if self.isVideoFormat(url) else 1,
-                            'jx': '0' if self.isVideoFormat(url) else '1',
-                            'url': url,
-                            'header': header,
-                        }
-            if src and src.startswith('http'):
-                return {'parse': 1, 'jx': '1', 'url': src, 'header': header}
+                        finalUrl = url
+                        break
+            if not finalUrl and src and src.startswith('http'):
+                finalUrl = src
         except Exception as e:
             print(f"playerContent error: {e}")
-        if src and src.startswith('http'):
-            return {'parse': 1, 'jx': '1', 'url': src, 'header': header}
+        if finalUrl:
+            return {
+                'parse': 0 if self.isVideoFormat(finalUrl) else 1,
+                'jx': '0' if self.isVideoFormat(finalUrl) else '1',
+                'url': finalUrl,
+                'header': header,
+            }
         return {
             'parse': 1,
             'jx': '1',
