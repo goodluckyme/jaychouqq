@@ -276,7 +276,7 @@ class Spider(BaseSpider):
         params = {
             'keyword': key or '',
             'page': str(pg),
-            'per_page': '40',
+            'per_page': '60',
             'type': 'article',
             'result_profile': 'discover_card',
         }
@@ -332,33 +332,54 @@ class Spider(BaseSpider):
         return videos
 
     def _search_haosou(self, key, pg=1):
-        """外站搜索兜底：360/神马等拿文章 id，再回源详情"""
+        """外站搜索兜底：多页抓取文章 id，再回源详情"""
         try:
             q = urllib.parse.quote('%s site:www.xinpianchang.com' % key)
             pn = int(pg or 1)
-            candidates = [
-                ('https://m.so.com/s?q=%s&pn=%d' % (q, pn), True),
-                ('https://www.so.com/s?q=%s&pn=%d' % (q, pn), False),
-                ('https://m.baidu.com/s?word=%s' % q, True),
-            ]
             ids = []
-            for url, mobile in candidates:
-                resp = self.fetch(url, headers=self._headers(mobile=mobile))
-                if not resp:
-                    continue
-                html = resp.text or ''
-                if '访问异常' in html or 'qcaptcha' in html.lower():
-                    continue
-                found = re.findall(r'xinpianchang\.com/a(\d+)', html)
-                found += re.findall(r'xinpianchang\.com%2Fa(\d+)', html)
-                found += re.findall(r'xinpianchang\.com%252Fa(\d+)', html)
-                for i in found:
-                    if i not in ids:
-                        ids.append(i)
-                if ids:
+            # 一次多取几页，提高数量
+            pages = [pn, pn + 1, pn + 2] if pn == 1 else [pn]
+            candidates_tpl = [
+                ('https://m.so.com/s?q=%s&pn=%d', True),
+                ('https://www.so.com/s?q=%s&pn=%d', False),
+                ('https://m.baidu.com/s?word=%s&pn=%d', True),
+            ]
+            for page in pages:
+                for tpl, mobile in candidates_tpl:
+                    if 'baidu' in tpl:
+                        # 百度 pn 从 0 起，每页约 10
+                        url = tpl % (q, max(0, (page - 1) * 10))
+                    else:
+                        url = tpl % (q, page)
+                    resp = self.fetch(url, headers=self._headers(mobile=mobile))
+                    if not resp:
+                        continue
+                    html = resp.text or ''
+                    if '访问异常' in html or 'qcaptcha' in html.lower():
+                        continue
+                    found = re.findall(r'xinpianchang\.com/a(\d+)', html)
+                    found += re.findall(r'xinpianchang\.com%2Fa(\d+)', html)
+                    found += re.findall(r'xinpianchang\.com%252Fa(\d+)', html)
+                    for i in found:
+                        if i not in ids:
+                            ids.append(i)
+                if len(ids) >= 30:
                     break
             if not ids:
                 return [], 0
+            # 多取一些再回源
+            videos = self._hydrate_ids(ids[:40])
+            # 软过滤：标题含关键词优先，其余相关也保留
+            kl = key.lower()
+            primary = [v for v in videos if kl in (v.get('vod_name') or '').lower()]
+            if len(primary) >= 5:
+                videos = primary
+            # 若 primary 太少，保留全部回源结果
+            return videos, len(videos)
+        except Exception as e:
+            print('external search:', e)
+            return [], 0
+
             videos = self._hydrate_ids(ids[:20])
             kl = key.lower()
             filtered = [v for v in videos if kl in (v.get('vod_name') or '').lower()]
@@ -431,23 +452,49 @@ class Spider(BaseSpider):
     def searchContentPage(self, key, quick, pg=1):
         pg = int(pg or 1)
         key = (key or '').strip()
-        videos = []
-        total = 0
         if not key:
-            return {'list': [], 'page': pg, 'pagecount': 1, 'limit': 24, 'total': 0}
+            return {'list': [], 'page': pg, 'pagecount': 1, 'limit': 40, 'total': 0}
+        videos = []
+        seen = set()
+        total = 0
+        kl = key.lower()
         try:
-            videos, total = self._search_api(key, pg)
-            kl = key.lower()
-            if videos:
-                related = [v for v in videos if kl in (v.get('vod_name') or '').lower()]
-                if related:
-                    videos, total = related, len(related)
-                else:
-                    videos, total = [], 0
-            if not videos:
-                videos, total = self._search_haosou(key, pg)
-            if not videos:
-                videos, total = self._search_fallback_cate(key, pg)
+            # 1) 官方搜索
+            api_list, api_total = self._search_api(key, pg)
+            related = [v for v in api_list if kl in (v.get('vod_name') or '').lower()]
+            # 官方结果若多数相关则采用，否则仍合并进列表
+            use_api = related if related else ([] if api_list else [])
+            if not related and api_list:
+                # 可能官方未按关键词过滤，标题不含则丢弃热门脏数据
+                use_api = []
+            for v in use_api:
+                vid = str(v.get('vod_id') or '')
+                if vid and vid not in seen:
+                    seen.add(vid)
+                    videos.append(v)
+            total = max(total, api_total if related else 0)
+
+            # 2) 外站全库（补量）
+            if len(videos) < 20:
+                ext_list, ext_total = self._search_haosou(key, pg)
+                for v in ext_list:
+                    vid = str(v.get('vod_id') or '')
+                    if vid and vid not in seen:
+                        seen.add(vid)
+                        videos.append(v)
+                total = max(total, len(videos), ext_total)
+
+            # 3) 分类过滤再补
+            if len(videos) < 12:
+                fb_list, fb_total = self._search_fallback_cate(key, pg)
+                for v in fb_list:
+                    vid = str(v.get('vod_id') or '')
+                    if vid and vid not in seen:
+                        seen.add(vid)
+                        videos.append(v)
+                total = max(total, len(videos), fb_total)
+            if not total:
+                total = len(videos)
         except Exception as e:
             print('搜索失败:', e)
             try:
@@ -457,8 +504,8 @@ class Spider(BaseSpider):
         return {
             'list': videos,
             'page': pg,
-            'pagecount': max(1, (total + 23) // 24) if total else pg,
-            'limit': 24,
+            'pagecount': max(1, (total + 39) // 40) if total else pg,
+            'limit': 40,
             'total': total or len(videos),
         }
 
