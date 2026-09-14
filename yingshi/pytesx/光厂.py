@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-光厂 VJshi Spider v1.1
-修复：WAF acw_sc__v2 导致分类无数据
+光厂 VJshi Spider v1.2
+修复：纯 Python 过 WAF acw_sc__v2（不依赖 node），分类可加载
 """
 import json
 import re
 import sys
 import time
 import gzip
-import subprocess
 import urllib.parse
 import urllib.request
 
@@ -26,21 +25,35 @@ except ImportError:
         def init(self, extend=""):
             pass
 
-NODE_PRELUDE = r"""
-global.location = { host: 'www.vjshi.com', hostname: 'www.vjshi.com', reload: function(){} };
-global.window = global;
-global.document = { location: global.location };
-Object.defineProperty(global.document, 'cookie', {
-  set: function(v){ console.log(v); },
-  get: function(){ return ''; }
-});
-const _Function = Function;
-global.Function = function(...args){
-  const s = String(args[args.length-1]||'');
-  if (s.includes('return this')) return function(){ return global; };
-  return _Function.apply(this, args);
-};
-"""
+# 与站内挑战脚本一致（1-based 位置映射）
+_ACW_POS = [
+    0x0f, 0x23, 0x1d, 0x18, 0x21, 0x10, 0x01, 0x26, 0x0a, 0x09,
+    0x13, 0x1f, 0x28, 0x1b, 0x16, 0x17, 0x19, 0x0d, 0x06, 0x0b,
+    0x27, 0x12, 0x14, 0x08, 0x0e, 0x15, 0x20, 0x1a, 0x02, 0x1e,
+    0x07, 0x04, 0x11, 0x05, 0x03, 0x1c, 0x22, 0x25, 0x0c, 0x24,
+]
+_ACW_MASK = '3000176000856006061501533003690027800375'
+
+
+def solve_acw_sc_v2(arg1):
+    """纯 Python 计算 acw_sc__v2 Cookie"""
+    if not arg1 or len(arg1) < 40:
+        return ''
+    out = [''] * len(_ACW_POS)
+    for i, ch in enumerate(arg1):
+        for j, p in enumerate(_ACW_POS):
+            if p == i + 1:
+                out[j] = ch
+    arg2 = ''.join(out)
+    parts = []
+    for i in range(0, min(len(arg2), len(_ACW_MASK)), 2):
+        s = int(arg2[i:i + 2], 16)
+        m = int(_ACW_MASK[i:i + 2], 16)
+        x = format(s ^ m, 'x')
+        if len(x) == 1:
+            x = '0' + x
+        parts.append(x)
+    return ''.join(parts)
 
 
 class Spider(BaseSpider):
@@ -76,7 +89,7 @@ class Spider(BaseSpider):
 
     def init(self, extend=""):
         try:
-            self._ensure_cookie()
+            self._ensure_cookie(force=True)
         except Exception as e:
             print('init cookie:', e)
 
@@ -95,6 +108,8 @@ class Spider(BaseSpider):
     def _decode_body(self, raw):
         if not raw:
             return ''
+        if isinstance(raw, str):
+            return raw
         if raw[:2] == b'\x1f\x8b':
             try:
                 raw = gzip.decompress(raw)
@@ -104,6 +119,15 @@ class Spider(BaseSpider):
 
     def _raw_get(self, url, with_cookie=True):
         try:
+            if requests is not None:
+                r = requests.get(
+                    url,
+                    headers=self._headers(with_cookie),
+                    timeout=18,
+                    allow_redirects=True,
+                )
+                # requests 自动解压 gzip
+                return r.text or ''
             req = urllib.request.Request(url, headers=self._headers(with_cookie))
             resp = urllib.request.urlopen(req, timeout=18)
             return self._decode_body(resp.read())
@@ -111,40 +135,29 @@ class Spider(BaseSpider):
             print('raw_get error:', url, e)
             return ''
 
-    def _solve_cookie_node(self, challenge_html):
-        m = re.search(r'<script>([\s\S]+?)</script>', challenge_html)
-        if not m:
-            return ''
-        path = '/tmp/vjshi_chal_%d.js' % int(time.time() * 1000)
-        with open(path, 'w', encoding='utf-8') as f:
-            f.write(NODE_PRELUDE + '\n' + m.group(1))
-        try:
-            out = subprocess.check_output(['node', path], stderr=subprocess.STDOUT, timeout=12)
-            out = out.decode('utf-8', 'ignore')
-            cm = re.search(r'acw_sc__v2=([0-9a-fA-F]+)', out)
-            return cm.group(1) if cm else ''
-        except Exception as e:
-            print('node solve error:', e)
-            return ''
-
     def _ensure_cookie(self, force=False):
         if not force and self._cookie and (time.time() - self._cookie_ts) < 3000:
             return self._cookie
         html = self._raw_get(self.siteUrl + '/', with_cookie=False)
-        if 'var arg1=' not in html:
+        m = re.search(r"var arg1=['\"]([A-Fa-f0-9]+)['\"]", html or '')
+        if not m:
+            # 无挑战，可能已可访问
             self._cookie_ts = time.time()
             return self._cookie
-        val = self._solve_cookie_node(html)
+        val = solve_acw_sc_v2(m.group(1))
         if val:
             self._cookie = val
             self._cookie_ts = time.time()
-            print('acw_sc__v2 ok')
+            print('acw_sc__v2 ok', val[:16])
+        else:
+            print('acw_sc__v2 solve failed')
         return self._cookie
 
     def fetch_text(self, url):
         self._ensure_cookie()
         html = self._raw_get(url, with_cookie=True)
-        if 'var arg1=' in html and len(html) < 20000:
+        # 仍被拦则强制重算 Cookie 再试一次
+        if html and 'var arg1=' in html and len(html) < 20000:
             self._ensure_cookie(force=True)
             html = self._raw_get(url, with_cookie=True)
         return html or ''
@@ -161,13 +174,16 @@ class Spider(BaseSpider):
 
     def _parse_list(self, html):
         videos = []
-        if not html or ('var arg1=' in html and len(html) < 20000):
+        if not html:
+            return videos
+        if 'var arg1=' in html and len(html) < 20000:
+            print('parse_list: still challenge page, len=', len(html))
             return videos
         seen = set()
         re_card = re.compile(
             r'href="(/watch/(\d+)\.html)[^"]*"[\s\S]{0,1500}?'
             r'<img[^>]+src="([^"]+)"[^>]*alt="([^"]*)"',
-            re.I
+            re.I,
         )
         for m in re_card.finditer(html):
             vid = m.group(2)
@@ -209,7 +225,11 @@ class Spider(BaseSpider):
             if pg > 1:
                 params['page'] = pg
             return self.siteUrl + '/so?' + urllib.parse.urlencode(params)
-        return self.siteUrl + '/'
+        # 未知 tid 当关键词
+        params = {'wd': str(tid)}
+        if pg > 1:
+            params['page'] = pg
+        return self.siteUrl + '/so?' + urllib.parse.urlencode(params)
 
     def homeContent(self, filter):
         classes = [{'type_id': k, 'type_name': v['name']} for k, v in self.channels.items()]
@@ -232,14 +252,17 @@ class Spider(BaseSpider):
         videos = []
         try:
             url = self._list_url(tid, pg)
+            print('category url:', url)
             html = self.fetch_text(url)
+            print('category html len:', len(html or ''))
             videos = self._parse_list(html)
+            print('category items:', len(videos))
         except Exception as e:
             print('分类失败:', e)
         return {
             'list': videos,
             'page': pg,
-            'pagecount': pg + 1 if len(videos) >= 20 else pg,
+            'pagecount': pg + 1 if len(videos) >= 20 else max(pg, 1),
             'limit': 24,
             'total': 9999 if videos else 0,
         }
@@ -262,7 +285,7 @@ class Spider(BaseSpider):
         return {
             'list': videos,
             'page': pg,
-            'pagecount': pg + 1 if len(videos) >= 20 else pg,
+            'pagecount': pg + 1 if len(videos) >= 20 else max(pg, 1),
             'limit': 24,
             'total': 9999 if videos else 0,
         }
@@ -278,19 +301,30 @@ class Spider(BaseSpider):
             m = re.search(r'<title>([^<]+)</title>', html or '', re.I)
             if m:
                 name = re.sub(r'\s*[-|_].*$', '', m.group(1)).strip() or name
-            m = re.search(r'property=["\']og:title["\'][^>]*content=["\']([^"\']+)["\']', html or '', re.I)
+            m = re.search(
+                r'property=["\']og:title["\'][^>]*content=["\']([^"\']+)["\']',
+                html or '', re.I,
+            )
             if m:
                 name = m.group(1).strip()
-            m = re.search(r'property=["\']og:image["\'][^>]*content=["\']([^"\']+)["\']', html or '', re.I)
+            m = re.search(
+                r'property=["\']og:image["\'][^>]*content=["\']([^"\']+)["\']',
+                html or '', re.I,
+            )
             if m:
                 pic = self._abs(m.group(1))
-            m = re.search(r'property=["\']og:description["\'][^>]*content=["\']([^"\']+)["\']', html or '', re.I)
+            m = re.search(
+                r'property=["\']og:description["\'][^>]*content=["\']([^"\']+)["\']',
+                html or '', re.I,
+            )
             if m:
                 desc = m.group(1).strip()[:400]
 
             play_parts = []
             seen = set()
-            for m in re.finditer(r'https?://[^"\'\s<>\\]+\.mp4[^"\'\s<>\\]*', html or '', re.I):
+            for m in re.finditer(
+                r'https?://[^"\'\s<>\\]+\.mp4[^"\'\s<>\\]*', html or '', re.I
+            ):
                 u = m.group(0).replace('\\/', '/')
                 if u in seen:
                     continue
@@ -327,15 +361,29 @@ class Spider(BaseSpider):
             return {'parse': 0, 'url': play, 'header': header}
         if play.startswith('http'):
             html = self.fetch_text(play)
-            m = re.search(r'https?://[^"\'\s<>\\]+\.mp4[^"\'\s<>\\]*', html or '', re.I)
+            m = re.search(
+                r'https?://[^"\'\s<>\\]+\.mp4[^"\'\s<>\\]*', html or '', re.I
+            )
             if m:
-                return {'parse': 0, 'url': m.group(0).replace('\\/', '/'), 'header': header}
+                return {
+                    'parse': 0,
+                    'url': m.group(0).replace('\\/', '/'),
+                    'header': header,
+                }
             return {'parse': 1, 'jx': '1', 'url': play, 'header': header}
-        page = '%s/watch/%s.html' % (self.siteUrl, re.sub(r'\D', '', play) or play)
+        page = '%s/watch/%s.html' % (
+            self.siteUrl, re.sub(r'\D', '', play) or play
+        )
         html = self.fetch_text(page)
-        m = re.search(r'https?://[^"\'\s<>\\]+\.mp4[^"\'\s<>\\]*', html or '', re.I)
+        m = re.search(
+            r'https?://[^"\'\s<>\\]+\.mp4[^"\'\s<>\\]*', html or '', re.I
+        )
         if m:
-            return {'parse': 0, 'url': m.group(0).replace('\\/', '/'), 'header': header}
+            return {
+                'parse': 0,
+                'url': m.group(0).replace('\\/', '/'),
+                'header': header,
+            }
         return {'parse': 1, 'jx': '1', 'url': page, 'header': header}
 
     def isVideoFormat(self, url):
@@ -351,8 +399,12 @@ class Spider(BaseSpider):
 if __name__ == '__main__':
     spider = Spider()
     spider.init()
-    print(json.dumps(spider.homeContent(False), ensure_ascii=False)[:200])
+    print('home', json.dumps(spider.homeContent(False), ensure_ascii=False)[:180])
     r = spider.categoryContent('shipinsucai', 1, False, {})
     print('list', len(r.get('list') or []), (r.get('list') or [{}])[0].get('vod_name'))
     r2 = spider.searchContentPage('自然', False, 1)
-    print('search', len(r2.get('list') or []))
+    print('search', len(r2.get('list') or []), (r2.get('list') or [{}])[0].get('vod_name'))
+    if r.get('list'):
+        d = spider.detailContent([r['list'][0]['vod_id']])
+        print('detail', (d.get('list') or [{}])[0].get('vod_name'))
+        print('play', (d.get('list') or [{}])[0].get('vod_play_url', '')[:100])
