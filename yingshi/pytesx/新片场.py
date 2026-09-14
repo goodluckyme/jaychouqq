@@ -1,9 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+新片场 Spider  (xinpianchang.com)
+列表：/_next/data/{buildId}/discover/article-{cate}-0.json
+详情：/_next/data/{buildId}/a{id}.json
+播放：mod-api.xinpianchang.com/mod/api/v2/media/{vid}?appKey=
+支持多分辨率（1080p/720p/360p 等）
+风格对齐爱奇艺.py
+"""
 import json
 import re
 import sys
+import time
 import urllib.parse
+import urllib.request
 
 try:
     import requests
@@ -20,75 +30,116 @@ except ImportError:
 
 
 class Spider(BaseSpider):
+    APP_KEY = '61a2f329348b3bf77'
+    MOD_API = 'https://mod-api.xinpianchang.com/mod/api/v2/media'
+
     def __init__(self):
         self.siteUrl = 'https://www.xinpianchang.com'
-        self.mHost = 'https://m.xinpianchang.com'
-        self.mediaApi = 'https://mod-api.xinpianchang.com/mod/api/v2/media/'
-        self.appKey = '61a2f329348b3bf77'
-        self.buildId = ''
         self.userAgent = (
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
-            '(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+            'AppleWebKit/537.36 (KHTML, like Gecko) '
+            'Chrome/122.0.0.0 Safari/537.36'
         )
+        self._build_id = ''
+        self._build_ts = 0
+        # cate1Id from /recommend/editor navigation
         self.channels = {
-            '9999': {'name': '全球精选'},
-            '1': {'name': '广告片'},
-            '16': {'name': '宣传片'},
-            '332': {'name': '竖屏广告'},
-            '329': {'name': 'AIGC'},
-            '31': {'name': '剧情短片'},
-            '49': {'name': '纪录片'},
-            '61': {'name': '摄影'},
-            '142': {'name': '剪辑二创'},
-            '347': {'name': '三维CG'},
-            '69': {'name': '二维动画'},
-            '27': {'name': '音乐声音'},
-            '76': {'name': '视觉探索'},
-            '29': {'name': '短视频'},
-            '315': {'name': '校园作品'},
-            '144': {'name': '学习分享'},
+            '9999': {'name': '全球精选', 'cate': '9999'},
+            '1': {'name': '广告片', 'cate': '1'},
+            '16': {'name': '宣传片', 'cate': '16'},
+            '332': {'name': '竖屏广告', 'cate': '332'},
+            '329': {'name': 'AIGC', 'cate': '329'},
+            '61': {'name': '摄影', 'cate': '61'},
+            '142': {'name': '剪辑二创', 'cate': '142'},
+            '31': {'name': '剧情短片', 'cate': '31'},
+            '49': {'name': '纪录片', 'cate': '49'},
+            '347': {'name': '三维CG', 'cate': '347'},
+            '69': {'name': '二维动画', 'cate': '69'},
+            '27': {'name': '音乐声音', 'cate': '27'},
+            '76': {'name': '视觉探索', 'cate': '76'},
+            '144': {'name': '学习分享', 'cate': '144'},
+            '315': {'name': '校园作品', 'cate': '315'},
+            '29': {'name': '短视频', 'cate': '29'},
+            'editor': {'name': '编辑精选', 'cate': 'editor'},
         }
 
     def getName(self):
         return '新片场'
 
     def init(self, extend=""):
-        self._ensure_build()
-
-    def fetch(self, url, headers=None, params=None):
-        if headers is None:
-            headers = {
-                'User-Agent': self.userAgent,
-                'Referer': self.siteUrl + '/',
-                'Accept': 'application/json, text/plain, */*',
-                'Accept-Language': 'zh-CN,zh;q=0.9',
-            }
         try:
-            if requests:
-                resp = requests.get(url, headers=headers, params=params, timeout=15)
-                resp.raise_for_status()
-                return resp
-            full = url
-            if params:
-                full += ('&' if '?' in url else '?') + urllib.parse.urlencode(params)
-            from urllib.request import Request, urlopen
-            raw = urlopen(Request(full, headers=headers), timeout=15).read()
+            self._ensure_build_id()
+        except Exception as e:
+            print('init buildId:', e)
+
+    def _headers(self):
+        return {
+            'User-Agent': self.userAgent,
+            'Referer': self.siteUrl + '/',
+            'Accept': 'application/json, text/html, */*',
+            'Accept-Language': 'zh-CN,zh;q=0.9',
+        }
+
+    def fetch(self, url, headers=None):
+        headers = headers or self._headers()
+        try:
+            if requests is not None:
+                r = requests.get(url, headers=headers, timeout=15)
+                if r.status_code >= 400:
+                    print('请求失败:', url, r.status_code)
+                    return None
+                return r
+            req = urllib.request.Request(url, headers=headers)
+            raw = urllib.request.urlopen(req, timeout=15).read()
 
             class R:
-                def __init__(self, raw):
-                    self.content = raw
-                    self.text = raw.decode('utf-8', 'ignore')
+                def __init__(self, raw, url):
+                    self.url = url
+                    self.text = raw.decode('utf-8', 'ignore') if isinstance(raw, (bytes, bytearray)) else str(raw)
+                    self.status_code = 200
 
                 def json(self):
                     return json.loads(self.text)
 
-            return R(raw)
+            return R(raw, url)
         except Exception as e:
-            print('请求失败: %s, %s' % (url, e))
+            print('请求失败:', url, e)
             return None
 
-    def fetch_json(self, url, params=None):
-        resp = self.fetch(url, params=params)
+    def _ensure_build_id(self, force=False):
+        if not force and self._build_id and (time.time() - self._build_ts) < 3600:
+            return self._build_id
+        resp = self.fetch(self.siteUrl + '/recommend/editor')
+        if not resp:
+            return self._build_id
+        m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', resp.text)
+        if m:
+            try:
+                data = json.loads(m.group(1))
+                self._build_id = data.get('buildId') or self._build_id
+                self._build_ts = time.time()
+            except Exception as e:
+                print('parse buildId:', e)
+        return self._build_id
+
+    def _next_json(self, path):
+        """path like /discover/article-1-0.json or /a123.json"""
+        bid = self._ensure_build_id()
+        if not bid:
+            return {}
+        if not path.startswith('/'):
+            path = '/' + path
+        url = '%s/_next/data/%s%s' % (self.siteUrl, bid, path)
+        if '?' in path:
+            # already has query
+            pass
+        resp = self.fetch(url)
+        if not resp:
+            # refresh buildId once
+            self._ensure_build_id(force=True)
+            bid = self._build_id
+            url = '%s/_next/data/%s%s' % (self.siteUrl, bid, path)
+            resp = self.fetch(url)
         if not resp:
             return {}
         try:
@@ -96,264 +147,378 @@ class Spider(BaseSpider):
         except Exception:
             return {}
 
-    def _ensure_build(self):
-        if self.buildId:
-            return self.buildId
-        html = ''
-        resp = self.fetch(self.mHost + '/')
-        if resp:
-            html = getattr(resp, 'text', '') or ''
-        m = re.search(r'"buildId"\s*:\s*"([^"]+)"', html)
-        self.buildId = m.group(1) if m else 'gidgYqXpPYCSNYnalPEaP'
-        return self.buildId
-
-    def _next(self, path, params=None):
-        bid = self._ensure_build()
-        if not path.endswith('.json'):
-            path = path + '.json'
-        if not path.startswith('/'):
-            path = '/' + path
-        url = '%s/_next/data/%s%s' % (self.siteUrl, bid, path)
-        return self.fetch_json(url, params=params) or {}
-
-    def _fmt_dur(self, sec):
+    def _fmt_duration(self, sec):
         try:
-            n = int(sec or 0)
+            sec = int(sec or 0)
         except Exception:
             return ''
-        if n <= 0:
+        if sec <= 0:
             return ''
-        return '%d:%02d' % (n // 60, n % 60)
+        m, s = divmod(sec, 60)
+        h, m = divmod(m, 60)
+        if h:
+            return '%d:%02d:%02d' % (h, m, s)
+        return '%d:%02d' % (m, s)
 
-    def _map_article(self, item):
-        if not item:
+    def _cover(self, url):
+        if not url:
+            return ''
+        if url.startswith('//'):
+            url = 'https:' + url
+        # 新片场封面常无后缀，可原样使用
+        return url
+
+    def _parse_item(self, item):
+        if not item or not isinstance(item, dict):
             return None
-        aid = str(item.get('id') or item.get('article_id') or '')
-        mid = str(item.get('media_id') or item.get('video_library_id') or '')
-        if not aid and not mid:
+        vid = str(item.get('id') or '')
+        if not vid:
             return None
-        cover = item.get('cover') or item.get('cover_url') or ''
-        count = item.get('count') or {}
-        remarks = self._fmt_dur(item.get('duration'))
-        if not remarks and count.get('count_like'):
-            remarks = '%s赞' % count.get('count_like')
+        title = item.get('title') or ''
+        cover = self._cover(item.get('cover') or '')
+        remarks = self._fmt_duration(item.get('duration'))
+        badge = ''
+        try:
+            badge = (item.get('display_badge') or {}).get('badge_name') or ''
+        except Exception:
+            pass
+        if badge and remarks:
+            remarks = '%s · %s' % (badge, remarks)
+        elif badge:
+            remarks = badge
+        author = ''
+        try:
+            author = ((item.get('author') or {}).get('userinfo') or {}).get('username') or ''
+        except Exception:
+            pass
+        if author and not remarks:
+            remarks = author
         return {
-            'vod_id': aid + (('|' + mid) if mid else ''),
-            'vod_name': item.get('title') or aid or mid,
+            'vod_id': vid,
+            'vod_name': title,
             'vod_pic': cover,
             'vod_remarks': remarks,
         }
 
-    def _pick_list(self, js):
-        pp = (js or {}).get('pageProps') or js or {}
-        disc = (pp.get('discoverArticleData') or {}).get('list')
-        if disc:
-            return disc
-        search = (pp.get('searchData') or {}).get('list')
-        if search:
-            return search
-        rec = pp.get('editorRecommendData') or {}
-        sections = rec.get('section') or []
-        if sections:
-            return sections[0].get('articles') or []
-        return []
-
     def homeContent(self, filter):
         classes = [{'type_id': k, 'type_name': v['name']} for k, v in self.channels.items()]
-        return {'class': classes, 'filters': {}}
+        result = {'class': classes}
+        if filter:
+            result['filters'] = {}
+        return result
 
     def homeVideoContent(self):
         videos = []
         try:
-            js = self._next('/index.json')
-            for item in self._pick_list(js)[:24]:
-                v = self._map_article(item)
-                if v:
-                    videos.append(v)
+            data = self._next_json('/recommend/editor.json')
+            pp = data.get('pageProps') or {}
+            sections = ((pp.get('editorRecommendData') or {}).get('section')) or []
+            for sec in sections:
+                for item in (sec.get('articles') or []):
+                    v = self._parse_item(item)
+                    if v:
+                        videos.append(v)
+                    if len(videos) >= 24:
+                        break
+                if len(videos) >= 24:
+                    break
         except Exception as e:
-            print('获取首页视频失败: %s' % e)
-        return {'list': videos}
+            print('首页失败:', e)
+        return {'list': videos[:24]}
 
     def categoryContent(self, tid, pg, filter, extend):
         pg = int(pg or 1)
         videos = []
-        cate = str(tid or '1')
+        total = 0
         try:
-            js = self._next('/discover/article-%s-0.json' % cate)
-            for item in self._pick_list(js):
-                v = self._map_article(item)
-                if v:
-                    videos.append(v)
-            if pg > 1 and not videos:
-                raw = self.fetch_json(
-                    self.siteUrl + '/v2/search',
-                    {
-                        'allow_download': 0,
-                        'cate_id': cate,
-                        'duration': 'all',
-                        'page': pg,
-                        'per_page': 20,
-                        'resolution': 'all',
-                        'result_profile': 'discover_card',
-                        'screen_type': 0,
-                        'sort': 'score',
-                        'type': 'channel',
-                    }
-                )
-                data = raw.get('data') or raw
-                for item in data.get('list') or data.get('articles') or []:
-                    v = self._map_article(item)
+            info = self.channels.get(str(tid), {})
+            cate = info.get('cate') or str(tid)
+            if cate == 'editor':
+                data = self._next_json('/recommend/editor.json')
+                pp = data.get('pageProps') or {}
+                sections = ((pp.get('editorRecommendData') or {}).get('section')) or []
+                for sec in sections:
+                    for item in (sec.get('articles') or []):
+                        v = self._parse_item(item)
+                        if v:
+                            videos.append(v)
+                total = len(videos)
+            else:
+                # 首页列表；分页接口常被 WAF 拦截，pg>1 仍尝试 next 参数
+                path = '/discover/article-%s-0.json' % cate
+                if pg > 1:
+                    path += '?page=%d' % pg
+                data = self._next_json(path)
+                pp = data.get('pageProps') or {}
+                dad = pp.get('discoverArticleData') or {}
+                for item in (dad.get('list') or []):
+                    v = self._parse_item(item)
                     if v:
                         videos.append(v)
+                total = int(dad.get('total') or len(videos) or 0)
         except Exception as e:
-            print('获取分类内容失败: %s' % e)
+            print('分类失败:', e)
+        pagecount = max(1, (total + 59) // 60) if total else (pg + 1 if len(videos) >= 40 else pg)
         return {
             'list': videos,
             'page': pg,
-            'pagecount': pg + 1 if len(videos) >= 20 else pg,
-            'limit': 20,
-            'total': 9999,
+            'pagecount': pagecount,
+            'limit': 60,
+            'total': total or len(videos),
         }
 
-    def detailContent(self, ids):
-        raw = str((ids or [''])[0])
-        parts = raw.split('|')
-        aid = re.sub(r'^a', '', parts[0] or '', flags=re.I)
-        mid = parts[1] if len(parts) > 1 else ''
-        app_key = self.appKey
-        title = aid or mid
-        cover = ''
-        content = ''
-        actor = ''
-        try:
-            if re.match(r'^\d+$', aid):
-                js = self._next('/a%s.json' % aid)
-                det = ((js.get('pageProps') or {}).get('detail') or {})
-                title = det.get('title') or title
-                cover = det.get('cover') or ''
-                content = det.get('content') or det.get('desc') or det.get('description') or ''
-                if isinstance(content, str):
-                    content = re.sub(r'<[^>]+>', '', content)[:400]
-                author = det.get('author') or {}
-                userinfo = author.get('userinfo') if isinstance(author, dict) else {}
-                actor = (userinfo or {}).get('username') or ''
-                video = det.get('video') or {}
-                if video.get('vid'):
-                    mid = video.get('vid')
-                if video.get('appKey'):
-                    app_key = video.get('appKey')
-                if not mid:
-                    mid = det.get('video_library_id') or mid
-        except Exception as e:
-            print('获取详情失败: %s' % e)
-        play_id = mid or aid
-        if app_key and app_key != self.appKey:
-            play_id = '%s|%s' % (play_id, app_key)
-        return {
-            'list': [{
-                'vod_id': raw,
-                'vod_name': title,
-                'vod_pic': cover,
-                'vod_actor': actor,
-                'vod_content': content,
-                'vod_play_from': '新片场',
-                'vod_play_url': '正片$%s' % play_id,
-            }]
+    def _search_api(self, key, pg=1):
+        """真实搜索接口（部分网络可通，WAF 下可能 403）"""
+        params = {
+            'keyword': key or '',
+            'page': str(pg),
+            'per_page': '40',
+            'type': 'article',
+            'result_profile': 'discover_card',
+            'sort': '',
         }
+        url = self.siteUrl + '/v2/search?' + urllib.parse.urlencode(params)
+        resp = self.fetch(url)
+        if not resp:
+            return [], 0
+        try:
+            data = resp.json()
+        except Exception:
+            # 可能返回 HTML 403
+            text = getattr(resp, 'text', '') or ''
+            if not text.strip().startswith('{'):
+                return [], 0
+            try:
+                data = json.loads(text)
+            except Exception:
+                return [], 0
+        # 兼容多种结构
+        body = data.get('data') or data
+        records = body.get('list') or body.get('articles') or []
+        if not records and isinstance(body, list):
+            records = body
+        total = body.get('total') if isinstance(body, dict) else len(records)
+        if isinstance(total, dict):
+            total = total.get('article') or total.get('total') or len(records)
+        videos = []
+        for item in records:
+            v = self._parse_item(item)
+            if v:
+                videos.append(v)
+        return videos, int(total or len(videos) or 0)
+
+    def _search_fallback(self, key, pg=1):
+        """WAF 下兜底：多分类聚合后按标题/作者过滤"""
+        key = (key or '').strip().lower()
+        if not key:
+            return [], 0
+        # 覆盖主要分类第一页
+        # 仅请求较稳定的分类，避免无效 404 拖慢
+        cate_ids = ['1', '31', '49', '329', '27', '29', '16', '9999', 'editor']
+        matched = []
+        seen = set()
+        for cid in cate_ids:
+            try:
+                if cid == 'editor':
+                    data = self._next_json('/recommend/editor.json')
+                    sections = (((data.get('pageProps') or {}).get('editorRecommendData') or {}).get('section')) or []
+                    items = []
+                    for sec in sections:
+                        items.extend(sec.get('articles') or [])
+                else:
+                    data = self._next_json('/discover/article-%s-0.json' % cid)
+                    items = (((data.get('pageProps') or {}).get('discoverArticleData') or {}).get('list')) or []
+                for item in items:
+                    title = (item.get('title') or '').lower()
+                    content = (item.get('content') or '').lower()
+                    author = ''
+                    try:
+                        author = (((item.get('author') or {}).get('userinfo') or {}).get('username') or '').lower()
+                    except Exception:
+                        pass
+                    if key in title or key in content or key in author:
+                        vid = str(item.get('id') or '')
+                        if not vid or vid in seen:
+                            continue
+                        seen.add(vid)
+                        v = self._parse_item(item)
+                        if v:
+                            matched.append(v)
+            except Exception as e:
+                print('search fallback cate', cid, e)
+        # 本地分页
+        pg = int(pg or 1)
+        page_size = 24
+        start = (pg - 1) * page_size
+        return matched[start:start + page_size], len(matched)
 
     def searchContent(self, key, quick, pg=1):
         return self.searchContentPage(key, quick, pg)
 
     def searchContentPage(self, key, quick, pg=1):
         pg = int(pg or 1)
+        key = (key or '').strip()
         videos = []
+        total = 0
         try:
-            m = re.search(r'a?(\d{5,})', str(key or ''), re.I)
-            if m and pg == 1:
-                js = self._next('/a%s.json' % m.group(1))
-                det = ((js.get('pageProps') or {}).get('detail') or {})
-                if det.get('id') or det.get('title'):
-                    v = self._map_article({
-                        'id': det.get('id') or m.group(1),
-                        'title': det.get('title'),
-                        'cover': det.get('cover'),
-                        'duration': det.get('duration'),
-                        'media_id': ((det.get('video') or {}).get('vid')) or det.get('video_library_id'),
-                    })
-                    if v:
-                        return {'list': [v], 'page': 1, 'pagecount': 1, 'limit': 20, 'total': 1}
-            js = self._next('/search.json', {'keyword': key, 'kw': key})
-            for item in self._pick_list(js):
-                v = self._map_article(item)
-                if v:
-                    videos.append(v)
+            # 1) 优先官方搜索 API
+            videos, total = self._search_api(key, pg)
+            # 若 API 被拦或返回空，走分类过滤兜底
+            if not videos:
+                videos, total = self._search_fallback(key, pg)
+            # 2) 二次校验：丢弃与关键词完全无关的默认热门（防 search.json 脏数据）
+            if videos and key:
+                kl = key.lower()
+                filtered = []
+                for v in videos:
+                    name = (v.get('vod_name') or '').lower()
+                    if kl in name:
+                        filtered.append(v)
+                # 仅当 API 结果明显不相关时才替换为过滤结果
+                if filtered:
+                    videos = filtered
+                    total = len(filtered)
+                elif not filtered and total > 0:
+                    # API 结果标题都不含关键词 → 改用兜底
+                    fb, ft = self._search_fallback(key, pg)
+                    if fb:
+                        videos, total = fb, ft
         except Exception as e:
-            print('搜索失败: %s' % e)
+            print('搜索失败:', e)
+            try:
+                videos, total = self._search_fallback(key, pg)
+            except Exception as e2:
+                print('搜索兜底失败:', e2)
         return {
             'list': videos,
             'page': pg,
-            'pagecount': pg + 1 if len(videos) >= 20 else pg,
-            'limit': 20,
-            'total': len(videos),
+            'pagecount': max(1, (total + 23) // 24) if total else pg,
+            'limit': 24,
+            'total': total or len(videos),
         }
+
+    def _media_progressive(self, vid, app_key=None):
+        app_key = app_key or self.APP_KEY
+        url = '%s/%s?appKey=%s' % (self.MOD_API, urllib.parse.quote(str(vid)), app_key)
+        resp = self.fetch(url)
+        if not resp:
+            return []
+        try:
+            data = resp.json()
+        except Exception:
+            return []
+        if data.get('status') not in (0, '0', None) and data.get('message') not in ('OK', None):
+            # status 0 = OK
+            if data.get('status') != 0:
+                print('media api:', data.get('message'))
+        progressive = ((data.get('data') or {}).get('resource') or {}).get('progressive') or []
+        return progressive if isinstance(progressive, list) else []
+
+    def detailContent(self, ids):
+        result = {'list': []}
+        try:
+            aid = re.sub(r'\D', '', str((ids or [''])[0])) or str((ids or [''])[0])
+            data = self._next_json('/a%s.json' % aid)
+            detail = (data.get('pageProps') or {}).get('detail') or {}
+            if not detail:
+                return result
+            name = detail.get('title') or ('作品 %s' % aid)
+            pic = self._cover(detail.get('cover') or '')
+            desc = detail.get('content') or detail.get('description') or ''
+            duration = self._fmt_duration(detail.get('duration'))
+            cats = detail.get('categories') or []
+            if isinstance(cats, list):
+                area = ' / '.join([c if isinstance(c, str) else str(c.get('name') or '') for c in cats[:6]])
+            else:
+                area = ''
+            author = ''
+            try:
+                author = ((detail.get('author') or {}).get('userinfo') or {}).get('username') or ''
+            except Exception:
+                pass
+
+            video_meta = detail.get('video') or {}
+            media_id = video_meta.get('vid') or detail.get('media_id') or detail.get('video_library_id') or ''
+            app_key = video_meta.get('appKey') or self.APP_KEY
+
+            play_parts = []
+            if media_id:
+                progressive = self._media_progressive(media_id, app_key)
+                # 按分辨率从高到低
+                def sort_key(p):
+                    return int(p.get('height') or p.get('codedHeight') or 0)
+
+                progressive = sorted(progressive, key=sort_key, reverse=True)
+                for p in progressive:
+                    u = (p.get('url') or p.get('backupUrl') or '').strip()
+                    if not u:
+                        continue
+                    label = p.get('profile') or p.get('quality') or ('%sp' % (p.get('height') or ''))
+                    play_parts.append('%s$%s' % (label, u))
+                # 若全无 url（如 1080 需登录），仍列出可用的
+            if not play_parts:
+                # 回退网页
+                play_parts.append('网页$%s/a%s' % (self.siteUrl, aid))
+
+            # 多分辨率作为同一线路多个清晰度
+            result['list'] = [{
+                'vod_id': aid,
+                'vod_name': name,
+                'vod_pic': pic,
+                'vod_remarks': duration,
+                'vod_year': '',
+                'vod_area': area,
+                'vod_actor': author,
+                'vod_director': '',
+                'vod_content': (desc or '').replace('\n\n', '\n').strip()[:500],
+                'vod_play_from': '新片场',
+                'vod_play_url': '#'.join(play_parts),
+            }]
+        except Exception as e:
+            print('详情失败:', e)
+            result['list'] = []
+        return result
 
     def playerContent(self, flag, id, vipFlags):
         header = {
             'User-Agent': self.userAgent,
             'Referer': self.siteUrl + '/',
             'Origin': self.siteUrl,
-            'Range': 'bytes=0-',
         }
-        play_id = str(id or '')
-        if play_id.startswith('http') and self.isVideoFormat(play_id):
-            return {'parse': 0, 'url': play_id, 'header': header}
-        parts = play_id.split('|')
-        mid = parts[0]
-        app_key = parts[1] if len(parts) > 1 else self.appKey
+        play = str(id or '').strip()
+        if play.startswith('http') and re.search(r'\.(mp4|m3u8)(\?|$)', play, re.I):
+            return {'parse': 0, 'url': play, 'header': header}
+        if play.startswith('http'):
+            return {'parse': 1, 'jx': '1', 'url': play, 'header': header}
+        # 可能是 article id，重新取最高清
+        aid = re.sub(r'\D', '', play) or play
         try:
-            js = self.fetch_json(
-                self.mediaApi + urllib.parse.quote(mid),
-                {'appKey': app_key, 'extend': 'userInfo,userStatus'}
+            data = self._next_json('/a%s.json' % aid)
+            detail = (data.get('pageProps') or {}).get('detail') or {}
+            video_meta = detail.get('video') or {}
+            media_id = video_meta.get('vid') or detail.get('media_id') or ''
+            app_key = video_meta.get('appKey') or self.APP_KEY
+            progressive = self._media_progressive(media_id, app_key) if media_id else []
+            progressive = sorted(
+                progressive,
+                key=lambda p: int(p.get('height') or 0),
+                reverse=True,
             )
-            data = js.get('data') or js
-            url = self._pick_media(data)
-            if url:
-                return {'parse': 0 if self.isVideoFormat(url) else 1, 'url': url, 'header': header}
+            for p in progressive:
+                u = (p.get('url') or '').strip()
+                if u:
+                    return {'parse': 0, 'url': u, 'header': header}
         except Exception as e:
-            print('获取播放内容失败: %s' % e)
+            print('播放失败:', e)
         return {
             'parse': 1,
             'jx': '1',
-            'url': self.siteUrl + ('/a%s' % mid if str(mid).isdigit() else '/'),
+            'url': '%s/a%s' % (self.siteUrl, aid),
             'header': header,
         }
 
-    def _pick_media(self, data):
-        res = (data or {}).get('resource') or {}
-        hls = res.get('hls') or {}
-        if isinstance(hls, dict) and hls.get('url'):
-            return hls.get('url')
-        best = None
-        for it in res.get('progressive') or []:
-            if not it or not it.get('url'):
-                continue
-            if not best or int(it.get('height') or 0) > int(best.get('height') or 0):
-                best = it
-        if best:
-            return best.get('url') or best.get('backupUrl')
-        dash = res.get('dash') or {}
-        if isinstance(dash, dict):
-            return dash.get('url') or ''
-        return ''
-
     def isVideoFormat(self, url):
-        if not url:
-            return False
-        u = url.lower()
-        for fmt in ('.m3u8', '.mp4', '.mpd', '.webm'):
-            if fmt in u:
-                return True
-        return False
+        return bool(url and re.search(r'\.(mp4|m3u8|webm)(\?|$)', url, re.I))
 
     def manualVideoCheck(self):
         return False
@@ -364,4 +529,16 @@ class Spider(BaseSpider):
 
 if __name__ == '__main__':
     spider = Spider()
-    print(json.dumps(spider.homeContent(True), ensure_ascii=False, indent=2))
+    spider.init()
+    print(json.dumps(spider.homeContent(False), ensure_ascii=False)[:200])
+    hv = spider.homeVideoContent()
+    print('homeVod', len(hv.get('list') or []))
+    r = spider.categoryContent('1', 1, False, {})
+    print('cate', len(r.get('list') or []), (r.get('list') or [{}])[0].get('vod_name'))
+    if r.get('list'):
+        d = spider.detailContent([r['list'][0]['vod_id']])
+        vod = (d.get('list') or [{}])[0]
+        print('detail', vod.get('vod_name'))
+        print('play', vod.get('vod_play_url', '')[:180])
+    s = spider.searchContentPage('剧情', False, 1)
+    print('search', len(s.get('list') or []))
