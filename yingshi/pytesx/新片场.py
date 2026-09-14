@@ -40,6 +40,11 @@ class Spider(BaseSpider):
             'AppleWebKit/537.36 (KHTML, like Gecko) '
             'Chrome/122.0.0.0 Safari/537.36'
         )
+        self.mobileUA = (
+            'Mozilla/5.0 (Linux; Android 13; Mobile) '
+            'AppleWebKit/537.36 (KHTML, like Gecko) '
+            'Chrome/122.0.0.0 Mobile Safari/537.36'
+        )
         self._build_id = ''
         self._build_ts = 0
         # cate1Id from /recommend/editor navigation
@@ -72,9 +77,9 @@ class Spider(BaseSpider):
         except Exception as e:
             print('init buildId:', e)
 
-    def _headers(self):
+    def _headers(self, mobile=False):
         return {
-            'User-Agent': self.userAgent,
+            'User-Agent': self.mobileUA if mobile else self.userAgent,
             'Referer': self.siteUrl + '/',
             'Accept': 'application/json, text/html, */*',
             'Accept-Language': 'zh-CN,zh;q=0.9',
@@ -268,31 +273,24 @@ class Spider(BaseSpider):
         }
 
     def _search_api(self, key, pg=1):
-        """真实搜索接口（部分网络可通，WAF 下可能 403）"""
         params = {
             'keyword': key or '',
             'page': str(pg),
             'per_page': '40',
             'type': 'article',
             'result_profile': 'discover_card',
-            'sort': '',
         }
         url = self.siteUrl + '/v2/search?' + urllib.parse.urlencode(params)
         resp = self.fetch(url)
         if not resp:
             return [], 0
+        text = getattr(resp, 'text', '') or ''
+        if not text.strip().startswith('{'):
+            return [], 0
         try:
             data = resp.json()
         except Exception:
-            # 可能返回 HTML 403
-            text = getattr(resp, 'text', '') or ''
-            if not text.strip().startswith('{'):
-                return [], 0
-            try:
-                data = json.loads(text)
-            except Exception:
-                return [], 0
-        # 兼容多种结构
+            return [], 0
         body = data.get('data') or data
         records = body.get('list') or body.get('articles') or []
         if not records and isinstance(body, list):
@@ -307,13 +305,90 @@ class Spider(BaseSpider):
                 videos.append(v)
         return videos, int(total or len(videos) or 0)
 
-    def _search_fallback(self, key, pg=1):
-        """WAF 下兜底：多分类聚合后按标题/作者过滤"""
-        key = (key or '').strip().lower()
-        if not key:
+    def _hydrate_ids(self, ids):
+        videos = []
+        seen = set()
+        for aid in ids:
+            aid = str(aid)
+            if not aid or aid in seen:
+                continue
+            seen.add(aid)
+            try:
+                data = self._next_json('/a%s.json' % aid)
+                detail = (data.get('pageProps') or {}).get('detail') or {}
+                if not detail or not detail.get('title'):
+                    continue
+                item = {
+                    'id': aid,
+                    'title': detail.get('title'),
+                    'cover': detail.get('cover'),
+                    'duration': detail.get('duration'),
+                }
+                v = self._parse_item(item)
+                if v:
+                    videos.append(v)
+            except Exception as e:
+                print('hydrate', aid, e)
+        return videos
+
+    def _search_haosou(self, key, pg=1):
+        """外站搜索兜底：360/神马等拿文章 id，再回源详情"""
+        try:
+            q = urllib.parse.quote('%s site:www.xinpianchang.com' % key)
+            pn = int(pg or 1)
+            candidates = [
+                ('https://m.so.com/s?q=%s&pn=%d' % (q, pn), True),
+                ('https://www.so.com/s?q=%s&pn=%d' % (q, pn), False),
+                ('https://m.baidu.com/s?word=%s' % q, True),
+            ]
+            ids = []
+            for url, mobile in candidates:
+                resp = self.fetch(url, headers=self._headers(mobile=mobile))
+                if not resp:
+                    continue
+                html = resp.text or ''
+                if '访问异常' in html or 'qcaptcha' in html.lower():
+                    continue
+                found = re.findall(r'xinpianchang\.com/a(\d+)', html)
+                found += re.findall(r'xinpianchang\.com%2Fa(\d+)', html)
+                found += re.findall(r'xinpianchang\.com%252Fa(\d+)', html)
+                for i in found:
+                    if i not in ids:
+                        ids.append(i)
+                if ids:
+                    break
+            if not ids:
+                return [], 0
+            videos = self._hydrate_ids(ids[:20])
+            kl = key.lower()
+            filtered = [v for v in videos if kl in (v.get('vod_name') or '').lower()]
+            if filtered:
+                videos = filtered
+            return videos, len(videos)
+        except Exception as e:
+            print('external search:', e)
             return [], 0
-        # 覆盖主要分类第一页
-        # 仅请求较稳定的分类，避免无效 404 拖慢
+
+            html = resp.text or ''
+            ids = re.findall(r'xinpianchang\.com/a(\d+)', html)
+            ids += re.findall(r'xinpianchang\.com%2Fa(\d+)', html)
+            ids = list(dict.fromkeys(ids))
+            if not ids:
+                return [], 0
+            videos = self._hydrate_ids(ids)
+            kl = key.lower()
+            filtered = [v for v in videos if kl in (v.get('vod_name') or '').lower()]
+            if filtered:
+                videos = filtered
+            return videos, len(videos)
+        except Exception as e:
+            print('haosou search:', e)
+            return [], 0
+
+    def _search_fallback_cate(self, key, pg=1):
+        key_l = (key or '').strip().lower()
+        if not key_l:
+            return [], 0
         cate_ids = ['1', '31', '49', '329', '27', '29', '16', '9999', 'editor']
         matched = []
         seen = set()
@@ -336,7 +411,7 @@ class Spider(BaseSpider):
                         author = (((item.get('author') or {}).get('userinfo') or {}).get('username') or '').lower()
                     except Exception:
                         pass
-                    if key in title or key in content or key in author:
+                    if key_l in title or key_l in content or key_l in author:
                         vid = str(item.get('id') or '')
                         if not vid or vid in seen:
                             continue
@@ -346,10 +421,8 @@ class Spider(BaseSpider):
                             matched.append(v)
             except Exception as e:
                 print('search fallback cate', cid, e)
-        # 本地分页
-        pg = int(pg or 1)
         page_size = 24
-        start = (pg - 1) * page_size
+        start = (int(pg or 1) - 1) * page_size
         return matched[start:start + page_size], len(matched)
 
     def searchContent(self, key, quick, pg=1):
@@ -360,33 +433,25 @@ class Spider(BaseSpider):
         key = (key or '').strip()
         videos = []
         total = 0
+        if not key:
+            return {'list': [], 'page': pg, 'pagecount': 1, 'limit': 24, 'total': 0}
         try:
-            # 1) 优先官方搜索 API
             videos, total = self._search_api(key, pg)
-            # 若 API 被拦或返回空，走分类过滤兜底
+            kl = key.lower()
+            if videos:
+                related = [v for v in videos if kl in (v.get('vod_name') or '').lower()]
+                if related:
+                    videos, total = related, len(related)
+                else:
+                    videos, total = [], 0
             if not videos:
-                videos, total = self._search_fallback(key, pg)
-            # 2) 二次校验：丢弃与关键词完全无关的默认热门（防 search.json 脏数据）
-            if videos and key:
-                kl = key.lower()
-                filtered = []
-                for v in videos:
-                    name = (v.get('vod_name') or '').lower()
-                    if kl in name:
-                        filtered.append(v)
-                # 仅当 API 结果明显不相关时才替换为过滤结果
-                if filtered:
-                    videos = filtered
-                    total = len(filtered)
-                elif not filtered and total > 0:
-                    # API 结果标题都不含关键词 → 改用兜底
-                    fb, ft = self._search_fallback(key, pg)
-                    if fb:
-                        videos, total = fb, ft
+                videos, total = self._search_haosou(key, pg)
+            if not videos:
+                videos, total = self._search_fallback_cate(key, pg)
         except Exception as e:
             print('搜索失败:', e)
             try:
-                videos, total = self._search_fallback(key, pg)
+                videos, total = self._search_haosou(key, pg)
             except Exception as e2:
                 print('搜索兜底失败:', e2)
         return {
