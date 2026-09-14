@@ -366,17 +366,21 @@ class Spider(Spider):
         return self.searchContent(key, quick, pg)
 
     def playerContent(self, flag, id, vipFlags):
+        """与爱奇艺一致：非直链走解析站（parse=1 + jx=1）"""
         result = {}
         try:
             play_url = id
+            # 统一为 https 标准域名，提升解析站 / OK影视 兼容性
             if play_url and play_url.startswith('http'):
                 play_url = play_url.replace('http://', 'https://')
                 play_url = play_url.replace('https://www.v.qq.com/', 'https://v.qq.com/')
+                play_url = play_url.replace('https://m.v.qq.com/', 'https://v.qq.com/')
             
             if self.isVideoFormat(play_url):
                 result["parse"] = 0
                 result["url"] = play_url
             else:
+                # 与爱奇艺相同策略：交给解析站
                 result["parse"] = 1
                 result["url"] = play_url
                 result["jx"] = "1"
