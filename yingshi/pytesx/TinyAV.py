@@ -257,7 +257,8 @@ class Spider(BaseSpider):
         key = (key or '').strip()
         if not key:
             return {'list': [], 'page': 1, 'pagecount': 1, 'limit': 24, 'total': 0}
-        url = self.host + '/?s=' + quote(key)
+        # 正确搜索: /search?fulltext=关键词 （/?s= 无效，会返回首页相同内容）
+        url = self.host + '/search?fulltext=' + quote(key)
         if pg > 1:
             url += '&page=%d' % pg
         html = self._get(url)
