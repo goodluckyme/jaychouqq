@@ -38,7 +38,15 @@
       "searchable": 1,
       "type": 3
     },
-     
+     {
+      "key": "肉视频.py",
+      "name": "💥肉视频💥",
+      "api": "https://gh-proxy.org/https://raw.githubusercontent.com/wliqi495-create/jaychouqq/refs/heads/main/yingshi/pytesx/肉视频.py",
+      "filterable": 1,
+      "quickSearch": 1,
+      "searchable": 1,
+      "type": 3
+    },
      {
       "key": "美女视频收藏馆.py",
       "name": "💥美女视频收藏馆💥",
