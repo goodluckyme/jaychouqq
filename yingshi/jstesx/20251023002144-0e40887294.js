@@ -1,376 +1,292 @@
-import { Crypto } from 'assets://js/lib/cat.js';
-
-let siteKey = '';
-let siteType = 0;
-
-const HOST = "https://v.qq.com";
-const API_HOST = "https://pbaccess.video.qq.com";
-const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.5410.0 Safari/537.36";
-
-const DEFAULT_HEADERS = {
-    "User-Agent": UA,
-    "Origin": HOST,
-    "Referer": HOST + "/",
-    "Accept": "application/json, text/plain, */*"
-};
-
-// 分类映射，对应原规则class_name
-const CATE_MAP = {
-    "choice": { name: "精选", cid: "" },
-    "movie": { name: "电影", cid: "100173" },
-    "tv": { name: "电视剧", cid: "100113" },
-    "variety": { name: "综艺", cid: "100109" },
-    "cartoon": { name: "动漫", cid: "110755" },
-    "child": { name: "少儿", cid: "100150" },
-    "doco": { name: "纪录片", cid: "100105" }
-};
-
-async function request(url, opt = {}) {
-    try {
-        const headers = Object.assign({}, DEFAULT_HEADERS, opt.headers || {});
-        let postType = '';
-        const ctype = headers['Content-Type'] || '';
-        if (ctype.includes('json')) postType = 'json';
-        else if (ctype.includes('form')) postType = 'form';
-        const res = await req(url, {
-            method: opt.method || "GET",
-            headers: headers,
-            data: opt.data,
-            postType: postType,
-            timeout: opt.timeout || 15000
-        });
-        return res?.content ?? "";
-    } catch (e) {
-        console.error("request error:", url, e?.message);
-        return "";
-    }
-}
-
-function safeJson(str) {
-    try {
-        if (!str) return null;
-        if (typeof str === 'object') return str;
-        return JSON.parse(str);
-    } catch (e) {
-        console.error("safeJson parse error", e.message);
-        return null;
-    }
-}
-
-function fixPicUrl(url) {
-    if (!url) return '';
-    url = url.trim();
-    if (url.startsWith('http')) return url;
-    if (url.startsWith('//')) return `https:${url}`;
-    return HOST + url;
-}
-
-// 安全多层取值，防止数组越界崩溃
-function safeGet(obj, ...keys) {
-    let o = obj;
-    for (const k of keys) {
-        if (o === null || o === undefined) return undefined;
-        if (Array.isArray(o)) {
-            const idx = Number(k);
-            if (idx < 0 || idx >= o.length) return undefined;
-            o = o[idx];
-        } else if (typeof o === "object") {
-            o = o[k];
-        } else {
-            return undefined;
+//小心儿悠悠//
+var rule = {
+    title: '腾讯视频',
+    host: 'https://v.qq.com',
+    homeUrl: '/x/bu/pagesheet/list?_all=1&append=1&channel=cartoon&listpage=1&offset=0&pagesize=21&iarea=-1&sort=18',
+    detailUrl: 'https://node.video.qq.com/x/api/float_vinfo2?cid=fyid',
+    searchUrl: '**',
+    searchable: 2,
+    filterable: 1,
+    multi: 1,
+    url: '/x/bu/pagesheet/list?_all=1&append=1&channel=fyclass&listpage=1&offset=((fypage-1)*21)&pagesize=21&iarea=-1',
+    filter_url: 'sort={{fl.sort or 75}}&iyear={{fl.iyear}}&year={{fl.year}}&itype={{fl.type}}&ifeature={{fl.feature}}&iarea={{fl.area}}&itrailer={{fl.itrailer}}&gender={{fl.sex}}',
+    filter:{"choice":[{"key":"sort","name":"排序","value":[{"n":"最热","v":"75"},{"n":"最新","v":"83"},{"n":"好评","v":"81"}]},{"key":"iyear","name":"年代","value":[{"n":"全部","v":"-1"},{"n":"2025","v":"2025"},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"}]}],"tv":[{"key":"sort","name":"排序","value":[{"n":"最热","v":"75"},{"n":"最新","v":"79"},{"n":"好评","v":"16"}]},{"key":"feature","name":"类型","value":[{"n":"全部","v":"-1"},{"n":"爱情","v":"1"},{"n":"古装","v":"2"},{"n":"悬疑","v":"3"},{"n":"都市","v":"4"},{"n":"家庭","v":"5"},{"n":"喜剧","v":"6"},{"n":"传奇","v":"7"},{"n":"武侠","v":"8"},{"n":"军旅","v":"9"},{"n":"权谋","v":"10"},{"n":"革命","v":"11"},{"n":"现实","v":"13"},{"n":"青春","v":"14"},{"n":"猎奇","v":"15"},{"n":"科幻","v":"16"},{"n":"竞技","v":"17"},{"n":"玄幻","v":"18"}]},{"key":"iyear","name":"年代","value":[{"n":"全部","v":"-1"},{"n":"2025","v":"2025"},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"}]}],"movie":[{"key":"sort","name":"排序","value":[{"n":"最热","v":"75"},{"n":"最新","v":"83"},{"n":"好评","v":"81"}]},{"key":"type","name":"类型","value":[{"n":"全部","v":"-1"},{"n":"犯罪","v":"4"},{"n":"励志","v":"2"},{"n":"喜剧","v":"100004"},{"n":"热血","v":"100061"},{"n":"悬疑","v":"100009"},{"n":"爱情","v":"100005"},{"n":"科幻","v":"100012"},{"n":"恐怖","v":"100010"},{"n":"动画","v":"100015"},{"n":"战争","v":"100006"},{"n":"家庭","v":"100017"},{"n":"剧情","v":"100022"},{"n":"奇幻","v":"100016"},{"n":"武侠","v":"100011"},{"n":"历史","v":"100021"},{"n":"老片","v":"100013"},{"n":"西部","v":"3"},{"n":"记录片","v":"100020"}]},{"key":"year","name":"年代","value":[{"n":"全部","v":"-1"},{"n":"2025","v":"2025"},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"}]}],"variety":[{"key":"sort","name":"排序","value":[{"n":"最热","v":"75"},{"n":"最新","v":"23"}]},{"key":"iyear","name":"年代","value":[{"n":"全部","v":"-1"},{"n":"2025","v":"2025"},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"}]}],"cartoon":[{"key":"sort","name":"排序","value":[{"n":"最热","v":"75"},{"n":"最新","v":"83"},{"n":"好评","v":"81"}]},{"key":"area","name":"地区","value":[{"n":"全部","v":"-1"},{"n":"内地","v":"1"},{"n":"日本","v":"2"},{"n":"欧美","v":"3"},{"n":"其他","v":"4"}]},{"key":"type","name":"类型","value":[{"n":"全部","v":"-1"},{"n":"玄幻","v":"9"},{"n":"科幻","v":"4"},{"n":"武侠","v":"13"},{"n":"冒险","v":"3"},{"n":"战斗","v":"5"},{"n":"搞笑","v":"1"},{"n":"恋爱","v":"7"},{"n":"魔幻","v":"6"},{"n":"竞技","v":"20"},{"n":"悬疑","v":"17"},{"n":"日常","v":"15"},{"n":"校园","v":"16"},{"n":"真人","v":"18"},{"n":"推理","v":"14"},{"n":"历史","v":"19"},{"n":"经典","v":"3"},{"n":"其他","v":"12"}]},{"key":"iyear","name":"年代","value":[{"n":"全部","v":"2025"},{"n":"2024","v":"2024"},{"n":"2023","v":"2023"},{"n":"2022","v":"2022"},{"n":"2021","v":"2021"},{"n":"2020","v":"2020"},{"n":"2019","v":"2019"},{"n":"2018","v":"2018"},{"n":"2017","v":"2017"},{"n":"2016","v":"2016"},{"n":"2015","v":"2015"}]}],"child":[{"key":"sort","name":"排序","value":[{"n":"最热","v":"75"},{"n":"最新","v":"76"},{"n":"好评","v":"20"}]},{"key":"sex","name":"性别","value":[{"n":"全部","v":"-1"},{"n":"女孩","v":"1"},{"n":"男孩","v":"2"}]},{"key":"area","name":"地区","value":[{"n":"全部","v":"-1"},{"n":"内地","v":"3"},{"n":"日本","v":"2"},{"n":"其他","v":"1"}]},{"key":"iyear","name":"年龄段","value":[{"n":"全部","v":"-1"},{"n":"0-3岁","v":"1"},{"n":"4-6岁","v":"2"},{"n":"7-9岁","v":"3"},{"n":"10岁以上","v":"4"},{"n":"全年龄段","v":"7"}]}],"doco":[{"key":"sort","name":"排序","value":[{"n":"最热","v":"75"},{"n":"最新","v":"74"}]},{"key":"itrailer","name":"出品方","value":[{"n":"全部","v":"-1"},{"n":"BBC","v":"1"},{"n":"国家地理","v":"4"},{"n":"HBO","v":"3175"},{"n":"NHK","v":"2"},{"n":"历史频道","v":"7"},{"n":"ITV","v":"3530"},{"n":"探索频道","v":"3174"},{"n":"ZDF","v":"3176"},{"n":"腾讯自制","v":"15"},{"n":"合作机构","v":"6"},{"n":"其他","v":"5"}]},{"key":"type","name":"类型","value":[{"n":"全部","v":"-1"},{"n":"自然","v":"4"},{"n":"美食","v":"10"},{"n":"社会","v":"3"},{"n":"人文","v":"6"},{"n":"历史","v":"1"},{"n":"军事","v":"2"},{"n":"科技","v":"8"},{"n":"财经","v":"14"},{"n":"探险","v":"15"},{"n":"罪案","v":"7"},{"n":"竞技","v":"12"},{"n":"旅游","v":"11"}]}]},
+    headers: {
+        'User-Agent': 'PC_UA'
+    },
+    timeout: 5000,
+    cate_exclude: '会员|游戏|全部',
+    class_name: '精选&电影&电视剧&综艺&动漫&少儿&纪录片',
+    class_url: 'choice&movie&tv&variety&cartoon&child&doco',
+    limit: 20,
+    play_parse: true,
+    lazy: $js.toString(() => {
+        try {
+            let api = "http://127.0.0.1:9978/proxy?do=seachdanmu&go=getuserjx&url=" + input.split("?")[0];
+            let response = fetch(api, {
+                method: 'get',
+                headers: {
+                    'User-Agent': 'okhttp/3.14.9',
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            });
+            let bata = JSON.parse(response);
+            if (bata.url.includes("http")) {
+                input = {
+                    header: {
+                        'User-Agent': ""
+                    },
+                    parse: 0,
+                    url: bata.url,
+                    jx: 0,
+                    danmaku: 'http://127.0.0.1:9978/proxy?do=danmu&site=js&url=http://dm.qxq6.com/zy/api.php?url=' + input.split("?")[0]
+                };
+            } else {
+                input = {
+                    header: {
+                        'User-Agent': ""
+                    },
+                    parse: 0,
+                    url: input.split("?")[0],
+                    jx: 1,
+                    danmaku: 'http://127.0.0.1:9978/proxy?do=danmu&site=js&url=http://dm.qxq6.com/zy/api.php?url=' + input.split("?")[0]
+                };
+            }
+        } catch {
+            input = {
+                header: {
+                    'User-Agent': ""
+                },
+                parse: 0,
+                url: input.split("?")[0],
+                jx: 1,
+                danmaku: 'http://127.0.0.1:9978/proxy?do=danmu&site=js&url=http://dm.qxq6.com/zy/api.php?url=' + input.split("?")[0]
+            };
         }
-    }
-    return o;
-}
-
-function uuidv4() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
-
-async function init(cfg) {
-    try {
-        siteKey = cfg.skey;
-        siteType = cfg.stype;
-    } catch (e) {
-        console.error("init error", e.message);
-    }
-}
-
-// home同步函数，输出主分类，筛选器这里做静态（规避原py多线程卡死问题）
-function home(filter) {
-    try {
-        const classes = [];
-        for (const key in CATE_MAP) {
-            const item = CATE_MAP[key];
-            if (item.cid) {
-                classes.push({ type_id: item.cid, type_name: item.name });
+    }),
+    推荐: '.list_item;img&&alt;img&&src;a&&Text;a&&data-float',
+    一级: '.list_item;img&&alt;img&&src;a&&Text;a&&data-float',
+    二级: $js.toString(() => {
+        VOD = {};
+        let d = [];
+        let video_list = [];
+        let video_lists = [];
+        let QZOutputJson = null;
+        let html = fetch(input, fetch_params);
+        let sourceId = /get_playsource/.test(input) ? input.match(/id=(\d*?)&/)[1] : input.split("cid=")[1];
+        let cid = sourceId;
+        let detailUrl = "https://v.qq.com/detail/m/" + cid + ".html";
+        try {
+            //核心修复：正则提取 QZOutputJson= {....} 的json部分，绕开eval
+            const reg = /QZOutputJson\s*=\s*(\{[\s\S]*\})(?=;|$)/;
+            const match = html.match(reg);
+            if(match && match[1]){
+                QZOutputJson = JSON.parse(match[1]);
+            }
+            if(QZOutputJson && QZOutputJson.c){
+                VOD = {
+                    vod_url: input,
+                    vod_name: QZOutputJson.c.title||"",
+                    type_name: (QZOutputJson.typ||[]).join(","),
+                    vod_actor: (QZOutputJson.nam||[]).join(","),
+                    vod_year: QZOutputJson.c.year||"",
+                    vod_content: QZOutputJson.c.description||"",
+                    vod_remarks: QZOutputJson.rec||"",
+                    vod_pic: urljoin2(input, QZOutputJson.c.pic||"")
+                }
+            }
+        } catch (e) {
+            QZOutputJson = null;
+        }
+        if (/get_playsource/.test(input) && QZOutputJson && QZOutputJson.PlaylistItem) {
+            try {
+                let indexList = QZOutputJson.PlaylistItem.indexList || [];
+                indexList.forEach(function(it) {
+                    let dataUrl = "https://s.video.qq.com/get_playsource?id=" + sourceId + "&plat=2&type=4&data_type=3&range=" + it + "&video_type=10&plname=qq&otype=json";
+                    let subHtml = fetch(dataUrl, fetch_params);
+                    const subReg = /QZOutputJson\s*=\s*(\{[\s\S]*\})(?=;|$)/;
+                    const subMatch = subHtml.match(subReg);
+                    let subJson=null;
+                    if(subMatch&&subMatch[1]) subJson=JSON.parse(subMatch[1]);
+                    let vdata = (subJson?.PlaylistItem?.videoPlayList)||[];
+                    vdata.forEach(function(item) {
+                        d.push({
+                            title: item.title||"",
+                            pic_url: item.pic||"",
+                            desc: (item.episode_number||"") + "\t\t\t播放量：" + (item.thirdLine||""),
+                            url: item.playUrl||""
+                        })
+                    });
+                    video_lists = video_lists.concat(vdata)
+                })
+            }catch(err){}
+        } else if(QZOutputJson && QZOutputJson.c && QZOutputJson.c.video_ids){
+            video_lists = QZOutputJson.c.video_ids;
+            let url = "https://v.qq.com/x/cover/" + sourceId + ".html";
+            if (video_lists.length === 1) {
+                let vid = video_lists[0];
+                url = "https://v.qq.com/x/cover/" + cid + "/" + vid + ".html";
+                d.push({
+                    title: "在线播放",
+                    url: url
+                })
+            } else if (video_lists.length > 1) {
+                video_list = [];
+                for (let i = 0; i < video_lists.length; i += 30) {
+                    video_list.push(video_lists.slice(i, i + 30))
+                }
+                video_list.forEach(function(it, idex) {
+                    let o_url = "https://union.video.qq.com/fcgi-bin/data?otype=json&tid=1804&appid=20001238&appkey=6c03bbe9658448a4&union_platform=1&idlist=" + it.join(",");
+                    let o_html = fetch(o_url, fetch_params);
+                    try{
+                        const oReg = /QZOutputJson\s*=\s*(\{[\s\S]*\})(?=;|$)/;
+                        const oMatch = o_html.match(oReg);
+                        let oJson=null;
+                        if(oMatch&&oMatch[1]) oJson=JSON.parse(oMatch[1]);
+                        if(oJson?.results && Array.isArray(oJson.results)){
+                            oJson.results.forEach(function(it1) {
+                                it1 = it1.fields||{};
+                                let url = "https://v.qq.com/x/cover/" + cid + "/" + it1.vid + ".html";
+                                d.push({
+                                    title: it1.title||"",
+                                    pic_url: (it1.pic160x90||"").replace("/160", ""),
+                                    desc: it1.video_checkup_time||"",
+                                    url: url,
+                                    type: (it1.category_map && it1.category_map.length > 1) ? it1.category_map[1] : ""
+                                })
+                            })
+                        }
+                    }catch(err){}
+                })
             }
         }
-        return JSON.stringify({ class: classes, filters: {} });
-    } catch (e) {
-        console.error("home error", e.message);
-        return JSON.stringify({ class: [], filters: {} });
-    }
-}
-
-async function homeVod() {
-    try {
-        const body = {
-            "page_params": {
-                "channel_id": "100173",
-                "filter_params": "sort=75",
-                "page_type": "channel_operation",
-                "page_id": "channel_list_second_page"
-            }
-        };
-        const raw = await request(`${API_HOST}/trpc.universal_backend_service.page_server_rpc.PageServer/GetPageData?video_appid=1000005&vplatform=2&vversion_name=8.9.10&new_mark_label_enabled=1`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            data: JSON.stringify(body),
-            postType: "json"
+        //兜底，集数为空就填充一条，避免空白
+        if(!Array.isArray(d) || d.length===0){
+            d.push({title:"正片",url:"https://v.qq.com/x/cover/"+cid+".html"});
+        }
+        let yg = d.filter(function(it) {
+            return it.type && it.type !== "正片"
         });
-        const json = safeJson(raw);
-        const itemList = safeGet(json, "data", "module_list_datas", -1, "module_datas", -1, "item_data_lists", "item_datas") || [];
-        const list = [];
-        for (const it of itemList) {
-            const p = safeGet(it, "item_params") || {};
-            const cid = p.cid;
-            if (!cid) continue;
-            const tagRaw = p.uni_imgtag || p.imgtag || "{}";
-            const tag = safeJson(tagRaw) || {};
-            list.push({
-                vod_id: String(cid),
-                vod_name: p.mz_title || p.title || "",
-                vod_pic: fixPicUrl(p.new_pic_hz || p.new_pic_vt || ""),
-                vod_year: safeGet(tag, "tag_2", "text") || "",
-                vod_remarks: safeGet(tag, "tag_4", "text") || ""
+        let zp = d.filter(function(it) {
+            return !(it.type && it.type !== "正片")
+        });
+        if(yg.length>0 && zp.length>0){
+            VOD.vod_play_from = "QQ$$$预告及花絮";
+            VOD.vod_play_url = [zp, yg].map(function(it) {
+                return it.map(function(its) {
+                    return its.title + "$" + its.url
+                }).join("#")
+            }).join("$$$")
+        }else{
+            VOD.vod_play_from = "QQ";
+            VOD.vod_play_url = d.map(function(it) {
+                return its.title + "$" + its.url
+            }).join("#")
+        }
+    }),
+        搜索: $js.toString(() => {
+    let d = [], keyword = input.split("/")[3];
+    function vodSearch(keyword, page = 0) {
+        return request('https://pbaccess.video.qq.com/trpc.videosearch.mobile_search.MultiTerminalSearch/MbSearch?vplatform=2', {
+            body: JSON.stringify({
+                version: "25042201",
+                clientType: 1,
+                filterValue: "",
+                uuid: "B1E50847-D25F-4C4B-BBA0-36F0093487F6",
+                retry: 0,
+                query: keyword,
+                pagenum: page,
+                isPrefetch: true,
+                pagesize: 30,
+                queryFrom: 0,
+                searchDatakey: "",
+                transInfo: "",
+                isneedQc: true,
+                preQid: "",
+                adClientInfo: "",
+                extraInfo: {
+                    isNewMarkLabel: "1",
+                    multi_terminal_pc: "1",
+                    themeType: "1",
+                    sugRelatedIds: "{}",
+                    appVersion: ""
+                }
+            }),
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.139 Safari/537.36',
+                'Content-Type': 'application/json',
+                'Origin': 'https://v.qq.com',
+                'Referer': 'https://v.qq.com/'
+            },
+            method: 'POST'
+        });
+    }
+    const nonMainContentKeywords = [
+        '预告', '花絮', '特辑', '片段', '剪辑', '片花', '独家', '专访', '纯享',
+        '制作', '幕后', '宣传', 'MV', '主题曲', '插曲', '彩蛋', '抢先看',
+        '精彩', '集锦', '盘点', '回顾', '解说', '评测', '反应', 'reaction'
+    ];
+    function isMainContent(title) {
+        if (!title) return false;
+        if (title.includes('<em>') || title.includes('</em>')) return false;
+        return !nonMainContentKeywords.some(keyword => title.includes(keyword));
+    }
+    try {
+        let html = vodSearch(keyword, 0), json = JSON.parse(html);
+        if (json.data && json.data.normalList && json.data.normalList.itemList) {
+            json.data.normalList.itemList.forEach(it => {
+                if (it.doc && it.doc.id && it.videoInfo && isMainContent(it.videoInfo.title)) {
+                    d.push({
+                        title: it.videoInfo.title,
+                        img: it.videoInfo.imgUrl || "",
+                        url: it.doc.id,
+                        desc: it.videoInfo.secondLine || ""
+                    });
+                }
             });
         }
-        return JSON.stringify({ list: list.slice(0,18) });
-    } catch (e) {
-        console.error("homeVod error", e.message);
-        return JSON.stringify({ list: [] });
-    }
-}
-
-async function category(tid, pg, filter, ext) {
-    pg = Number(pg) || 1;
-    try {
-        const extend = safeJson(ext) || {};
-        const filterParamsObj = {
-            sort: extend.sort || "75",
-            attr: extend.attr || "-1",
-            itype: extend.itype || "-1",
-            ipay: extend.ipay || "-1",
-            iarea: extend.iarea || "-1",
-            iyear: extend.iyear || "-1",
-            theater: extend.theater || "-1",
-            award: extend.award || "-1",
-            recommend: extend.recommend || "-1"
-        };
-        const filterStr = Object.entries(filterParamsObj).filter(([_,v])=>v!==undefined).map(([k,v])=>`${k}=${v}`).join("&");
-        const body = {
-            "page_params": {
-                "channel_id": tid,
-                "filter_params": filterStr,
-                "page_type": "channel_operation",
-                "page_id": "channel_list_second_page"
-            }
-        };
-        if (pg > 1) {
-            body.page_params.page_context = extend.page_context || "";
-        }
-        const raw = await request(`${API_HOST}/trpc.universal_backend_service.page_server_rpc.PageServer/GetPageData?video_appid=1000005&vplatform=2&vversion_name=8.9.10&new_mark_label_enabled=1`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            data: JSON.stringify(body),
-            postType: "json"
-        });
-        const json = safeJson(raw);
-        const ndata = safeGet(json, "data") || {};
-        const hasNext = Boolean(ndata.has_next_page);
-        const itemList = safeGet(ndata, "module_list_datas", -1, "module_datas", -1, "item_data_lists", "item_datas") || [];
-        const list = [];
-        for (const it of itemList) {
-            const p = safeGet(it, "item_params") || {};
-            const cid = p.cid;
-            if (!cid) continue;
-            const tagRaw = p.uni_imgtag || p.imgtag || "{}";
-            const tag = safeJson(tagRaw) || {};
-            list.push({
-                vod_id: String(cid),
-                vod_name: p.mz_title || p.title || "",
-                vod_pic: fixPicUrl(p.new_pic_hz || p.new_pic_vt || ""),
-                vod_year: safeGet(tag, "tag_2", "text") || "",
-                vod_remarks: safeGet(tag, "tag_4", "text") || ""
+        if (json.data && json.data.areaBoxList) {
+            json.data.areaBoxList.forEach(box => {
+                if (box.itemList) {
+                    box.itemList.forEach(it => {
+                        if (it.doc && it.doc.id && it.videoInfo && isMainContent(it.videoInfo.title)) {
+                            d.push({
+                                title: it.videoInfo.title,
+                                img: it.videoInfo.imgUrl || "",
+                                url: it.doc.id,
+                                desc: it.videoInfo.secondLine || ""
+                            });
+                        }
+                    });
+                }
             });
         }
-        return JSON.stringify({
-            list,
-            page: pg,
-            pagecount: hasNext ? 9999 : pg,
-            limit: 90,
-            total: 999999
-        });
+        if (d.length === 0 && json.data && json.data.hasMore) {
+            for (let page = 1; page < 3; page++) {
+                try {
+                    let moreHtml = vodSearch(keyword, page), moreJson = JSON.parse(moreHtml);
+                    if (moreJson.data && moreJson.data.normalList && moreJson.data.normalList.itemList) {
+                        moreJson.data.normalList.itemList.forEach(it => {
+                            if (it.doc && it.doc.id && it.videoInfo && isMainContent(it.videoInfo.title)) {
+                                d.push({
+                                    title: it.videoInfo.title,
+                                    img: it.videoInfo.imgUrl || "",
+                                    url: it.doc.id,
+                                    desc: it.videoInfo.secondLine || ""
+                                });
+                            }
+                        });
+                    }
+                    if (!moreJson.data || !moreJson.data.hasMore) break;
+                } catch (e) {
+                    break;
+                }
+            }
+        }
     } catch (e) {
-        console.error("category error", e.message);
-        return JSON.stringify({ list: [], page: pg, pagecount: 0 });
+        log("搜索出错: " + e.message);
     }
-}
-
-async function detail(vodId) {
-    try {
-        const cid = String(vodId);
-        const detailBody = {
-            "page_params": {
-                "req_from": "web",
-                "cid": cid,
-                "vid": "",
-                "lid": "",
-                "page_type": "detail_operation",
-                "page_id": "detail_page_introduction"
-            },
-            "has_cache": 1
-        };
-        const epiBody = {
-            "page_params": {
-                "req_from": "web_vsite",
-                "page_id": "vsite_episode_list",
-                "page_type": "detail_operation",
-                "id_type": "1",
-                "cid": cid,
-                "vid": "",
-                "lid": "",
-                "page_num": "",
-                "page_context": "",
-                "detail_page_type": "1"
-            },
-            "has_cache": 1
-        };
-        const rawDetail = await request(`${API_HOST}/trpc.universal_backend_service.page_server_rpc.PageServer/GetPageData?video_appid=3000010&vplatform=2&vversion_name=8.2.96`, {
-            method:"POST", headers:{"Content-Type":"application/json"}, data:JSON.stringify(detailBody), postType:"json"
-        });
-        const rawEpi = await request(`${API_HOST}/trpc.universal_backend_service.page_server_rpc.PageServer/GetPageData?video_appid=3000010&vplatform=2&vversion_name=8.2.96`, {
-            method:"POST", headers:{"Content-Type":"application/json"}, data:JSON.stringify(epiBody), postType:"json"
-        });
-        const jsonDetail = safeJson(rawDetail);
-        const jsonEpi = safeJson(rawEpi);
-        const mainItem = safeGet(jsonDetail, "data", "module_list_datas", 0, "module_datas",0,"item_data_lists","item_datas",0,"item_params") || {};
-        const starList = safeGet(jsonDetail, "data", "module_list_datas",0,"module_datas",0,"item_data_lists","item_datas",0,"sub_items","star_list","item_datas") || [];
-        const actors = starList.map(x=>safeGet(x,"item_params","name")).filter(Boolean);
-        const epiItems = safeGet(jsonEpi, "data", "module_list_datas",-1,"module_datas",-1,"item_data_lists","item_datas") || [];
-        const playList = [];
-        for(const ep of epiItems){
-            const p = safeGet(ep,"item_params") || {};
-            const epTitle = p.union_title || "";
-            const vid = p.item_id;
-            if(!vid) continue;
-            playList.push(`${epTitle}$${cid}@${vid}`);
-        }
-        const vod = {
-            vod_id: cid,
-            vod_name: mainItem.title || "",
-            vod_pic: fixPicUrl(mainItem.new_pic_hz || ""),
-            vod_year: String(mainItem.year || ""),
-            vod_area: mainItem.area_name || "",
-            vod_actor: actors.join(","),
-            vod_director: "",
-            vod_remarks: mainItem.holly_online_time || mainItem.hotval || "",
-            vod_content: mainItem.cover_description || "",
-            vod_play_from: "腾讯视频",
-            vod_play_url: playList.join("#")
-        };
-        return JSON.stringify({ list:[vod] });
-    } catch(e) {
-        console.error("detail error",e.message);
-        return JSON.stringify({ list:[] });
-    }
-}
-
-async function search(wd, quick, pg) {
-    pg = Number(pg) || 1;
-    try {
-        const body = {
-            "version": "24072901",
-            "clientType":1,
-            "filterValue":"",
-            "uuid": uuidv4(),
-            "retry":0,
-            "query": wd,
-            "pagenum": pg-1,
-            "pagesize":30,
-            "queryFrom":0,
-            "searchDatakey":"",
-            "transInfo":"",
-            "isneedQc":true,
-            "preQid":"",
-            "adClientInfo":"",
-            "extraInfo":{"isNewMarkLabel":"1","multi_terminal_pc":"1"}
-        };
-        const raw = await request(`${API_HOST}/trpc.videosearch.mobile_search.MultiTerminalSearch/MbSearch?vplatform=2`,{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            data:JSON.stringify(body),
-            postType:"json"
-        });
-        const json = safeJson(raw);
-        const boxList = safeGet(json,"data","areaBoxList") || [];
-        const list = [];
-        for(const box of boxList){
-            const itemList = safeGet(box,"itemList") || [];
-            for(const it of itemList){
-                const doc = safeGet(it,"doc") || {};
-                const cid = doc.id;
-                if(!cid) continue;
-                const videoInfo = safeGet(it,"videoInfo") || {};
-                const tagRaw = videoInfo.imgTag || "{}";
-                const tag = safeJson(tagRaw) || {};
-                list.push({
-                    vod_id: String(cid),
-                    vod_name: videoInfo.title || "",
-                    vod_pic: fixPicUrl(videoInfo.imgUrl || ""),
-                    vod_year: safeGet(tag,"tag_2","text") || "",
-                    vod_remarks: safeGet(tag,"tag_4","text") || ""
-                });
-            }
-        }
-        return JSON.stringify({
-            list,
-            page:pg,
-            pagecount: pg+1
-        });
-    } catch(e) {
-        console.error("search error",e.message);
-        return JSON.stringify({ list:[], page:pg, pagecount:0 });
-    }
-}
-
-async function play(flag, id, flags) {
-    try {
-        const parts = id.split("@");
-        const cid = parts[0];
-        const vid = parts[1] || "";
-        const realPlayUrl = `${HOST}/x/cover/${cid}/${vid}.html`;
-        // 原简易js规则依赖本地代理解析，cat环境没有本地代理，这里返回嗅探模式
-        return JSON.stringify({
-            parse:1,
-            url: realPlayUrl,
-            header:{
-                "User-Agent":UA,
-                "Referer":HOST+"/"
-            }
-        });
-    } catch(e) {
-        console.error("play error",e.message);
-        return JSON.stringify({ parse:1, url:"", header:{"User-Agent":UA} });
-    }
-}
-
-export function __jsEvalReturn() {
-    return { init, home, homeVod, category, detail, search, play };
-}
+    setResult(d);
+})
+};
 //（注：内容由AI生成）
