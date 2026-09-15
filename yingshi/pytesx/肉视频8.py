@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 肉视频 (rou.video) 爬虫
-- 风格对齐爱看机器人：清晰接口 + Session 请求
-- 列表：__NEXT_DATA__.videos
-- 播放：/api/hls/{id} 302 → CDN .../index.png (站点专用 HLS 伪装)
+播放修复：
+- 部分片源 CDN 直接返回 #EXTM3U（index.jpg）
+- 部分片源返回 PNG，真实 m3u8/TS 藏在自定义 chunk「roUd」里
+  · roUd[0]==1 → zlib 解压得到 m3u8
+  · roUd[0]==0 → 后接 MPEG-TS
+通过 localProxy 解包，避免播放器把 .png/.jpg 当静态图
 """
 import sys
 import re
@@ -12,6 +15,7 @@ import base64
 import html as html_lib
 import gzip
 import zlib
+import struct
 import ssl
 import urllib.request
 import urllib.parse
@@ -26,6 +30,8 @@ except ImportError:
         def getCache(self, key): return None
         def setCache(self, key, value): return "fail"
         def delCache(self, key): return "fail"
+        def getProxyUrl(self, local=True):
+            return "http://127.0.0.1:9978/proxy?do=py"
 
 
 HOST_DEFAULT = "https://rou.video"
@@ -41,7 +47,6 @@ FALLBACK_HOSTS = [
 NAV_URLS = ["https://x99dh.cc", "https://x99dh.one"]
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
 
-# 分类
 CLASS_LIST = [
     {"type_id": "/v?order=createdAt", "type_name": "🔥 最新发布"},
     {"type_id": "/v?order=viewCount", "type_name": "👑 最多播放"},
@@ -82,7 +87,6 @@ class Spider(BaseSpider):
         self.siteUrl = HOST_DEFAULT
         self._ua = UA
         self.options = {}
-
         self.ctx = ssl.create_default_context()
         self.ctx.check_hostname = False
         self.ctx.verify_mode = ssl.CERT_NONE
@@ -116,9 +120,7 @@ class Spider(BaseSpider):
 
     def isVideoFormat(self, url):
         low = (url or "").lower()
-        return any(k in low for k in (
-            ".m3u8", ".mp4", ".flv", ".mkv", ".avi", ".ts", ".mpd", "index.m3u8", "index.jpg", "/hls/"
-        ))
+        return any(k in low for k in (".m3u8", ".mp4", ".ts", ".mpd", "/hls/", "index.m3u8", "do=rouhls", "do=routs"))
 
     def manualVideoCheck(self):
         return False
@@ -132,50 +134,59 @@ class Spider(BaseSpider):
             "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
             "Accept-Encoding": "gzip, deflate",
             "Connection": "keep-alive",
+            "Origin": self.siteUrl,
         }
 
     def _decode_body(self, raw, enc=""):
         if not raw:
-            return ""
+            return b"" if isinstance(raw, (bytes, bytearray)) else ""
+        if isinstance(raw, str):
+            return raw
         if raw[:2] == b"\x1f\x8b" or enc == "gzip":
             try:
                 raw = gzip.decompress(raw)
             except Exception:
                 pass
-        elif enc == "deflate":
-            try:
-                raw = zlib.decompress(raw)
-            except Exception:
-                try:
-                    raw = zlib.decompress(raw, -zlib.MAX_WBITS)
-                except Exception:
-                    pass
-        try:
-            return raw.decode("utf-8")
-        except Exception:
-            return raw.decode("latin1", errors="ignore")
+        return raw
+
+    def _fetch_bytes(self, url, referer=None, timeout=15):
+        if url.startswith("/"):
+            url = self.siteUrl + url
+        req = urllib.request.Request(url, headers=self._headers(referer, accept="*/*"))
+        with self.opener.open(req, timeout=timeout) as resp:
+            raw = resp.read()
+            enc = resp.headers.get("Content-Encoding", "")
+            raw = self._decode_body(raw, enc)
+            if isinstance(raw, str):
+                raw = raw.encode("utf-8", errors="ignore")
+            return resp.getcode(), resp.geturl(), raw
 
     def _fetch(self, url, referer=None, timeout=15, accept=None):
-        if not url:
-            return {"code": 0, "text": "", "url": ""}
-        if url.startswith("//"):
-            url = "https:" + url
-        elif url.startswith("/"):
-            url = self.siteUrl + url
         try:
+            if url.startswith("//"):
+                url = "https:" + url
+            elif url.startswith("/"):
+                url = self.siteUrl + url
             req = urllib.request.Request(url, headers=self._headers(referer, accept))
             with self.opener.open(req, timeout=timeout) as resp:
                 raw = resp.read()
                 enc = resp.headers.get("Content-Encoding", "")
-                text = self._decode_body(raw, enc)
+                raw = self._decode_body(raw, enc)
+                if isinstance(raw, bytes):
+                    try:
+                        text = raw.decode("utf-8")
+                    except Exception:
+                        text = raw.decode("latin1", errors="ignore")
+                else:
+                    text = raw
                 return {"code": resp.getcode(), "text": text, "url": resp.geturl()}
         except urllib.error.HTTPError as e:
-            err_text = ""
+            err = ""
             try:
-                err_text = self._decode_body(e.read(), "")
+                err = e.read().decode("utf-8", errors="ignore")
             except Exception:
                 pass
-            return {"code": e.code, "text": err_text, "url": url, "err": str(e)}
+            return {"code": e.code, "text": err, "url": url, "err": str(e)}
         except Exception as e:
             return {"code": -1, "text": "", "url": url, "err": str(e)}
 
@@ -188,7 +199,6 @@ class Spider(BaseSpider):
             return False
 
     def _refresh_host(self):
-        # 备用直连
         for base in FALLBACK_HOSTS:
             if self._is_alive(base):
                 self.siteUrl = base
@@ -197,14 +207,10 @@ class Spider(BaseSpider):
                 except Exception:
                     pass
                 return base
-
-        # 导航站
         for nav in NAV_URLS:
             r = self._fetch(nav)
             text = r.get("text") or ""
-            if not text:
-                continue
-            for h in re.findall(r'https?://(?:www\.)?rou[a-z0-9.-]+', text, re.I):
+            for h in re.findall(r"https?://(?:www\.)?rou[a-z0-9.-]+", text, re.I):
                 try:
                     p = urllib.parse.urlparse(h)
                     base = "%s://%s" % (p.scheme, p.netloc)
@@ -217,42 +223,6 @@ class Spider(BaseSpider):
                         return base
                 except Exception:
                     continue
-            for b in re.findall(r'["\']([A-Za-z0-9+/=]{80,})["\']', text):
-                try:
-                    decoded = base64.b64decode(b).decode("utf-8", errors="ignore")
-                    try:
-                        decoded = urllib.parse.unquote(decoded)
-                    except Exception:
-                        pass
-                    if "[" not in decoded:
-                        continue
-                    low = decoded.lower()
-                    if "rou" not in low and "肉" not in low:
-                        continue
-                    for item in json.loads(decoded):
-                        name = str(item.get("name") or "").lower()
-                        if name not in ("rouav", "rou", "肉视频", "rou.video") and "rou" not in name:
-                            continue
-                        cands = []
-                        if item.get("url"):
-                            cands.append(item["url"])
-                        for uo in item.get("urls") or []:
-                            u = uo.get("url") if isinstance(uo, dict) else uo
-                            if u:
-                                cands.append(u)
-                        for c in cands:
-                            p = urllib.parse.urlparse(c)
-                            base = "%s://%s" % (p.scheme, p.netloc)
-                            if self._is_alive(base):
-                                self.siteUrl = base
-                                try:
-                                    self.setCache("rouav_site", base)
-                                except Exception:
-                                    pass
-                                return base
-                except Exception:
-                    continue
-
         self.siteUrl = HOST_DEFAULT
         return self.siteUrl
 
@@ -269,6 +239,104 @@ class Spider(BaseSpider):
         elif url.startswith("/"):
             url = self.siteUrl + url
         return self._fetch(url, referer=referer)
+
+    # ---------- PNG / roUd 解包 ----------
+    @staticmethod
+    def _png_chunk_roud(body):
+        if not body or body[:4] != b"\x89PNG":
+            return None
+        pos = 8
+        while pos + 8 <= len(body):
+            length = struct.unpack(">I", body[pos:pos + 4])[0]
+            ctype = body[pos + 4:pos + 8]
+            data = body[pos + 8:pos + 8 + length]
+            if ctype == b"roUd":
+                return data
+            pos += 12 + length
+            if ctype == b"IEND":
+                break
+        return None
+
+    def _unwrap_payload(self, body):
+        """
+        返回 (kind, data)
+        kind: 'm3u8' | 'ts' | 'raw'
+        """
+        if not body:
+            return "raw", body
+        if body.startswith(b"#EXT"):
+            return "m3u8", body
+        # 直接 TS
+        if len(body) > 4 and body[0] == 0x47:
+            return "ts", body
+        roud = self._png_chunk_roud(body)
+        if not roud or len(roud) < 2:
+            return "raw", body
+        flag = roud[0]
+        payload = roud[1:]
+        if flag == 1:
+            try:
+                return "m3u8", zlib.decompress(payload)
+            except Exception:
+                try:
+                    return "m3u8", zlib.decompress(payload, -zlib.MAX_WBITS)
+                except Exception:
+                    return "raw", body
+        if flag == 0:
+            return "ts", payload
+        # 未知 flag，尝试 zlib 或当 TS
+        try:
+            return "m3u8", zlib.decompress(payload)
+        except Exception:
+            if payload and payload[0] == 0x47:
+                return "ts", payload
+            return "raw", body
+
+    def _resolve_hls_final(self, vid, html=None):
+        api = "%s/api/hls/%s" % (self.siteUrl, vid)
+        if html:
+            m = re.search(r'<script\s+id=["\']__NEXT_DATA__["\'][^>]*>([\s\S]*?)</script>', html, re.I)
+            if m:
+                try:
+                    data = json.loads(m.group(1).strip())
+                    ev = data.get("props", {}).get("pageProps", {}).get("ev") or {}
+                    d, k = ev.get("d"), ev.get("k")
+                    if d is not None and k is not None:
+                        raw = base64.b64decode(d)
+                        plain = bytes((b - int(k)) & 0xFF for b in raw).decode("utf-8", errors="ignore")
+                        info = json.loads(plain)
+                        vu = (info.get("videoUrl") or "").strip()
+                        if vu.startswith("/"):
+                            api = self.siteUrl + vu.split("?")[0]
+                        elif vu.startswith("http"):
+                            api = vu
+                except Exception:
+                    pass
+        try:
+            code, final, body = self._fetch_bytes(api, referer=self.siteUrl + "/v/" + vid)
+            return final or api, body
+        except Exception:
+            return api, b""
+
+    def _proxy_base(self):
+        try:
+            base = self.getProxyUrl(True)
+            if base:
+                return base
+        except Exception:
+            pass
+        try:
+            base = self.getProxyUrl()
+            if base:
+                return base
+        except Exception:
+            pass
+        return "http://127.0.0.1:9978/proxy?do=py"
+
+    def _make_proxy_url(self, do, target):
+        base = self._proxy_base()
+        sep = "&" if "?" in base else "?"
+        return "%s%sdo=%s&url=%s" % (base, sep, do, urllib.parse.quote(target, safe=""))
 
     # ---------- 列表 ----------
     def _fmt_dur(self, sec):
@@ -309,7 +377,6 @@ class Spider(BaseSpider):
         cards = []
         if not html:
             return cards
-
         m = re.search(r'<script\s+id=["\']__NEXT_DATA__["\'][^>]*>([\s\S]*?)</script>', html, re.I)
         if m:
             try:
@@ -332,34 +399,6 @@ class Spider(BaseSpider):
                     return cards
             except Exception:
                 pass
-
-        # HTML 兜底
-        seen = set()
-        for href, block in re.findall(r'<a[^>]+href=["\'](/v/([a-zA-Z0-9]+))["\'][^>]*>([\s\S]*?)</a>', html, re.I):
-            vid = href.replace("/v/", "").strip("/")
-            if not vid or vid in seen:
-                continue
-            seen.add(vid)
-            img = ""
-            for pat in (r'data-src=["\']([^"\']+)["\']', r'src=["\']([^"\']+)["\']'):
-                im = re.search(pat, block, re.I)
-                if im and "data:image" not in im.group(1) and not im.group(1).endswith(".svg"):
-                    img = im.group(1).strip()
-                    break
-            if img.startswith("//"):
-                img = "https:" + img
-            elif img.startswith("/"):
-                img = self.siteUrl + img
-            tm = re.search(r'(?:title|alt)=["\']([^"\']+)["\']', block, re.I)
-            title = html_lib.unescape(tm.group(1).strip() if tm else "肉视频")
-            dm = re.search(r'(\d{1,2}:\d{2}(?::\d{2})?)', block)
-            cards.append({
-                "vod_id": self._pack_id(vid, title),
-                "vod_name": title,
-                "vod_pic": img,
-                "vod_remarks": dm.group(1) if dm else "HD",
-                "style": {"type": "rect", "ratio": 1.78},
-            })
         return cards
 
     def _build_list_url(self, tid, page):
@@ -368,81 +407,7 @@ class Spider(BaseSpider):
             path = "/" + path
         sep = "&" if "?" in path else "?"
         raw = "%s%spage=%d" % (path, sep, page)
-        # 中文 tag 编码，保留 /?=
         return self.siteUrl + urllib.parse.quote(raw, safe="/?=&:%")
-
-    # ---------- 播放解析 ----------
-    def _decrypt_ev(self, d_b64, k):
-        """解密 pageProps.ev：Base64 → 每字节减 k → JSON"""
-        try:
-            raw = base64.b64decode(d_b64)
-            plain = bytes((b - int(k)) & 0xFF for b in raw).decode("utf-8", errors="ignore")
-            return json.loads(plain)
-        except Exception:
-            return {}
-
-    def _extract_video_url_from_html(self, html):
-        """从 __NEXT_DATA__.ev 解密得到 videoUrl（通常是 /api/hls/{id}）"""
-        m = re.search(r'<script\s+id=["\']__NEXT_DATA__["\'][^>]*>([\s\S]*?)</script>', html, re.I)
-        if not m:
-            return ""
-        try:
-            data = json.loads(m.group(1).strip())
-            ev = data.get("props", {}).get("pageProps", {}).get("ev") or {}
-            d = ev.get("d")
-            k = ev.get("k")
-            if d is None or k is None:
-                return ""
-            info = self._decrypt_ev(d, k)
-            return (info.get("videoUrl") or "").strip()
-        except Exception:
-            return ""
-
-    def _to_m3u8_url(self, url):
-        """站点把 HLS 伪装成 index.jpg/png，扩展名改成 m3u8 才能被播放器识别为视频"""
-        if not url:
-            return url
-        u = str(url)
-        for bad in ("index.jpg", "index.png", "index.jpeg"):
-            if bad in u:
-                u = u.replace(bad, "index.m3u8")
-        return u
-
-    def _resolve_hls(self, vid, html=None):
-        """
-        得到可交给播放器的最终地址：
-        1) 若有详情 HTML，先 ev 解密确认路径
-        2) 请求 /api/hls/{vid} 跟随 302，拿到带 auth 的 CDN
-        3) 将 index.jpg/png 改写为 index.m3u8（内容本就是 EXT M3U）
-        """
-        api = "%s/api/hls/%s" % (self.siteUrl, vid)
-        path = ""
-        if html:
-            path = self._extract_video_url_from_html(html)
-        if path and path.startswith("/"):
-            api = self.siteUrl + path.split("?")[0]
-        elif path and path.startswith("http"):
-            api = path
-
-        try:
-            headers = self._headers(referer=self.siteUrl + "/v/" + vid, accept="*/*")
-            req = urllib.request.Request(api, headers=headers)
-            with self.opener.open(req, timeout=12) as resp:
-                final = resp.geturl() or api
-                body = resp.read(32)
-                # 确认是 m3u8 内容
-                if body.startswith(b"#EXT") or b"#EXT" in body:
-                    return self._to_m3u8_url(final)
-                return self._to_m3u8_url(final or api)
-        except urllib.error.HTTPError as e:
-            loc = e.headers.get("Location") if e.headers else None
-            if loc:
-                if loc.startswith("/"):
-                    loc = self.siteUrl + loc
-                return self._to_m3u8_url(loc)
-        except Exception:
-            pass
-        return self._to_m3u8_url(api)
 
     # ---------- 接口 ----------
     def homeContent(self, filter=False):
@@ -480,15 +445,12 @@ class Spider(BaseSpider):
             vid, cached_title = self._unpack_id(raw)
             if not vid:
                 return {"list": []}
-
             r = self._fetch_heal("/v/%s" % vid)
             html = r.get("text") or ""
-
             vod_name = cached_title
             vod_pic = ""
             tag_str = ""
             desc = ""
-
             m = re.search(r'<script\s+id=["\']__NEXT_DATA__["\'][^>]*>([\s\S]*?)</script>', html, re.I)
             if m:
                 try:
@@ -503,32 +465,17 @@ class Spider(BaseSpider):
                         desc = video.get("description") or ""
                 except Exception:
                     pass
-
             if not vod_name:
                 vod_name = "肉视频"
-            if not vod_pic:
-                cm = re.search(r'property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']', html, re.I)
-                if not cm:
-                    cm = re.search(r'content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']', html, re.I)
-                if cm:
-                    vod_pic = cm.group(1).strip()
 
-            # ev 解密 + 302 跟随，拿到带签名的最终地址
-            stream = self._resolve_hls(vid, html=html)
+            # 解析最终 CDN（可能是 m3u8 或 PNG 壳）
+            final, body = self._resolve_hls_final(vid, html=html)
+            kind, _ = self._unwrap_payload(body) if body else ("raw", None)
+
+            # 一律走本地代理解包，保证所有条目可播
+            proxy_play = self._make_proxy_url("rouhls", final)
             api = "%s/api/hls/%s" % (self.siteUrl, vid)
-
-            play_from = []
-            play_url = []
-            # 专线：最终 CDN（index.png 为站点 HLS 入口，需带 Referer）
-            if stream:
-                play_from.append("肉视频专线")
-                play_url.append("正片$%s" % stream)
-            if api and api != stream:
-                play_from.append("API线路")
-                play_url.append("正片$%s" % api)
-            if not play_from:
-                play_from.append("肉视频专线")
-                play_url.append("正片$%s" % api)
+            proxy_api = self._make_proxy_url("rouhls", api)
 
             content_parts = []
             if tag_str:
@@ -536,6 +483,7 @@ class Spider(BaseSpider):
             if desc:
                 content_parts.append(desc)
             content_parts.append("节点: %s" % self.siteUrl)
+            content_parts.append("流类型: %s" % kind)
 
             return {
                 "list": [{
@@ -544,11 +492,12 @@ class Spider(BaseSpider):
                     "vod_pic": vod_pic,
                     "vod_remarks": "HD正片",
                     "vod_content": "\n".join(content_parts),
-                    "vod_play_from": "$$$".join(play_from),
-                    "vod_play_url": "$$$".join(play_url),
+                    "vod_play_from": "肉视频专线$$$API线路",
+                    "vod_play_url": "正片$%s$$$正片$%s" % (proxy_play, proxy_api),
                 }]
             }
-        except Exception:
+        except Exception as e:
+            print("detail error", e)
             return {"list": []}
 
     def searchContent(self, key, quick=False, pg="1"):
@@ -576,63 +525,65 @@ class Spider(BaseSpider):
             "Referer": self.siteUrl + "/",
             "Origin": self.siteUrl,
             "Accept": "*/*",
-            "Connection": "keep-alive",
         }
-
-        # API 地址再跟随一次 302，确保带 auth
-        if "/api/hls/" in play_url:
-            try:
-                m = re.search(r'/api/hls/([a-zA-Z0-9]+)', play_url)
-                if m:
-                    resolved = self._resolve_hls(m.group(1))
-                    if resolved:
-                        play_url = resolved
-            except Exception:
-                pass
-
-        # 相对路径补全
-        if play_url.startswith("/"):
-            play_url = self.siteUrl + play_url
-
-        # 关键扩展名，避免播放器当图片打开
-        if hasattr(self, "_to_m3u8_url"):
-            play_url = self._to_m3u8_url(play_url)
-        else:
-            play_url = play_url.replace("index.jpg", "index.m3u8").replace("index.png", "index.m3u8")
-
-        result = {
+        # 已是代理地址直接播
+        if "do=rouhls" in play_url or "do=routs" in play_url:
+            return {"parse": 0, "jx": 0, "url": play_url, "header": headers}
+        # 原始 API / CDN → 包一层代理
+        if "/api/hls/" in play_url or "/hls/" in play_url or play_url.startswith("http"):
+            play_url = self._make_proxy_url("rouhls", play_url)
+        return {
             "parse": 0,
             "jx": 0,
             "url": play_url,
             "header": headers,
+            "format": "application/x-mpegURL",
         }
-        if any(x in play_url for x in (".m3u8", "/hls/", "/api/hls/", "index.")):
-            result["format"] = "application/x-mpegURL"
-        return result
 
     def localProxy(self, param):
-        """可选：把分片 .jpg 改写为 .ts，进一步避免当图片"""
+        """
+        do=rouhls : 解包 index.png/jpg → m3u8，并把分片改写到 do=routs
+        do=routs  : 解包分片 PNG → video/mp2t
+        """
         try:
-            if not param:
-                return [404, "text/plain", b""]
-            url = param.get("url") or param.get("url") or ""
+            do = (param or {}).get("do") or (param or {}).get("type") or ""
+            url = (param or {}).get("url") or ""
             if not url:
-                return [404, "text/plain", b""]
-            import urllib.request as _ur
-            req = _ur.Request(url, headers=self._headers(accept="*/*"))
-            with self.opener.open(req, timeout=15) as resp:
-                body = resp.read()
-            # 若是 m3u8 文本，把分片扩展名 jpg->ts
-            if body[:7] == b"#EXTM3U" or b"#EXTINF" in body[:200]:
-                text = body.decode("utf-8", errors="ignore")
-                text = text.replace(".jpg?", ".ts?").replace(".png?", ".ts?")
-                return [200, "application/vnd.apple.mpegurl", text.encode("utf-8")]
-            # TS 分片
-            if body[:1] == b"G" or body[:1] == bytes([0x47]):
-                return [200, "video/mp2t", body]
-            return [200, "application/octet-stream", body]
+                return [404, "text/plain; charset=utf-8", b"missing url"]
+            url = urllib.parse.unquote(url)
+
+            code, final, body = self._fetch_bytes(url, referer=self.siteUrl + "/")
+            kind, data = self._unwrap_payload(body)
+
+            if do == "routs" or kind == "ts":
+                if kind != "ts":
+                    # 再尝试
+                    kind, data = self._unwrap_payload(body)
+                if kind == "ts" and data:
+                    return [200, "video/mp2t", data]
+                # 纯 TS 或回退原文
+                if body and body[0:1] == b"G":
+                    return [200, "video/mp2t", body]
+                return [200, "application/octet-stream", body]
+
+            # rouhls / 默认：输出 m3u8
+            if kind != "m3u8" or not data:
+                # 也许 final 需要再跟一次（极少）
+                return [502, "text/plain; charset=utf-8", b"unwrap m3u8 failed"]
+
+            text = data.decode("utf-8", errors="ignore") if isinstance(data, (bytes, bytearray)) else str(data)
+            # 分片 URL 改写走 routs 代理
+            lines = []
+            for line in text.splitlines():
+                s = line.strip()
+                if s and not s.startswith("#") and s.startswith("http"):
+                    lines.append(self._make_proxy_url("routs", s))
+                else:
+                    lines.append(line)
+            out = "\n".join(lines) + "\n"
+            return [200, "application/vnd.apple.mpegurl", out.encode("utf-8")]
         except Exception as e:
-            return [500, "text/plain", str(e).encode("utf-8")]
+            return [500, "text/plain; charset=utf-8", str(e).encode("utf-8")]
 
     def destroy(self):
         self.options = {}
