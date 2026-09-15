@@ -30,6 +30,15 @@
       "type": 3
     },
      {
+      "key": "九合一.py",
+      "name": "💥九合一💥",
+      "api": "https://gh-proxy.org/https://raw.githubusercontent.com/wliqi495-create/jaychouqq/refs/heads/main/yingshi/py9/九合一.py",
+      "filterable": 1,
+      "quickSearch": 1,
+      "searchable": 1,
+      "type": 3
+    },
+     {
       "key": "internetarchive.py",
       "name": "💥internetarchive💥",
       "api": "https://gh-proxy.org/https://raw.githubusercontent.com/wliqi495-create/jaychouqq/refs/heads/main/yingshi/pytesx/InternetArchive.py",
