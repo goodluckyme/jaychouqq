@@ -373,9 +373,13 @@ class Spider(BaseSpider):
                     uuid = "%s-%s-%s-%s-%s" % (s[5], s[4], s[3], s[2], s[1])
                     tld, domain = s[6], s[7]
                     base = "https://%s.%s/%s" % (domain, tld, uuid)
+                    # 主播放列表（含多码率）
                     push("自适应", base + "/playlist.m3u8")
-                    push("1280x720", base + "/1280x720/video.m3u8")
-                    push("720x480", base + "/720x480/video.m3u8")
+                    # 实际目录为 1080p/720p/480p/360p（非 1280x720）
+                    push("1080P", base + "/1080p/video.m3u8")
+                    push("720P", base + "/720p/video.m3u8")
+                    push("480P", base + "/480p/video.m3u8")
+                    push("360P", base + "/360p/video.m3u8")
             except Exception:
                 pass
 
@@ -400,8 +404,11 @@ class Spider(BaseSpider):
                 ctx = text[max(0, idx - 50):idx + 50].lower()
                 if any(b in ctx for b in blacklist):
                     continue
-                push("自适应", "https://surrit.mrstcdn.store/%s/playlist.m3u8" % u)
-                push("1280x720", "https://surrit.mrstcdn.store/%s/1280x720/video.m3u8" % u)
+                base = "https://surrit.mrstcdn.store/%s" % u
+                push("自适应", base + "/playlist.m3u8")
+                push("1080P", base + "/1080p/video.m3u8")
+                push("720P", base + "/720p/video.m3u8")
+                push("480P", base + "/480p/video.m3u8")
                 break
 
         return sources
@@ -485,10 +492,13 @@ class Spider(BaseSpider):
                 uuid_m = re.search(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', html, re.I)
                 if uuid_m:
                     u = uuid_m.group(0)
-                    from_list = ["自适应", "1280x720"]
+                    base = "https://surrit.mrstcdn.store/%s" % u
+                    from_list = ["自适应", "1080P", "720P", "480P"]
                     url_list = [
-                        "正片$https://surrit.mrstcdn.store/%s/playlist.m3u8" % u,
-                        "正片$https://surrit.mrstcdn.store/%s/1280x720/video.m3u8" % u,
+                        "正片$%s/playlist.m3u8" % base,
+                        "正片$%s/1080p/video.m3u8" % base,
+                        "正片$%s/720p/video.m3u8" % base,
+                        "正片$%s/480p/video.m3u8" % base,
                     ]
                 else:
                     from_list = ["页面嗅探"]
@@ -528,13 +538,20 @@ class Spider(BaseSpider):
 
     def playerContent(self, flag, id, vipFlags=None):
         play_url = str(id or "").strip()
+        # 播放 CDN 必须带 Referer/Origin，否则可能 403
         headers = {
             "User-Agent": self._ua,
             "Referer": self.baseHost + "/",
             "Origin": self.baseHost,
             "Accept": "*/*",
+            "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+            "Connection": "keep-alive",
         }
+        # 直链 m3u8/mp4 不走解析
         is_direct = bool(re.search(r'\.m3u8(\?|$)|\.mp4(\?|$)', play_url, re.I))
+        # 统一走 surrit.mrstcdn.store（surrit.com 会 403）
+        if "surrit.com/" in play_url and "mrstcdn" not in play_url:
+            play_url = play_url.replace("://surrit.com/", "://surrit.mrstcdn.store/")
         return {
             "parse": 0 if is_direct else 1,
             "jx": 0,
