@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-# 4K影视 https://www.4kvm.tv/  v1.2
-# 修复无播放地址：详情页直接解析 m3u8 写入 vod_play_url（Node+WASM 签名）
+# 4K影视 https://www.4kvm.tv/  v1.3
+# 适配 OK影视 / 影视仓：纯 Python WASM 签名（需 wasmtime），详情只打包参数，播放时解析 m3u8
+# 依赖：pip install wasmtime
+# 同目录 4kvm_wasm/nbmovie_wasm_bg.wasm + sign_pure.py
 import os
 import re
 import sys
 import json
 import ssl
-import time
-import subprocess
 import urllib.request
 import urllib.parse
 import http.cookiejar
@@ -20,17 +20,22 @@ except ImportError:
         def init(self, extend=''):
             pass
 
-VERSION = '1.2.0'
+VERSION = '1.3.0'
 HOST = 'https://www.4kvm.tv'
 UA = (
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
     'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36'
 )
-_WASM_DIRS = [
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), '4kvm_wasm'),
-    '/home/workdir/artifacts/4kvm_wasm',
-    '/tmp/4kvm_wasm',
-]
+
+
+def _wasm_dirs():
+    here = os.path.dirname(os.path.abspath(__file__))
+    return [
+        os.path.join(here, '4kvm_wasm'),
+        os.path.join(here, 'wasm'),
+        '/home/workdir/artifacts/4kvm_wasm',
+        '/tmp/4kvm_wasm',
+    ]
 
 
 class Spider(BaseSpider):
@@ -51,12 +56,7 @@ class Spider(BaseSpider):
             urllib.request.HTTPSHandler(context=self._ssl),
         )
         self._wasm_dir = None
-        for d in _WASM_DIRS:
-            if os.path.isfile(os.path.join(d, 'nbmovie_wasm.js')) and os.path.isfile(
-                os.path.join(d, 'nbmovie_wasm_bg.wasm')
-            ):
-                self._wasm_dir = d
-                break
+        self._sign_fn = None
 
     def getName(self):
         return '4K影视'
@@ -65,11 +65,109 @@ class Spider(BaseSpider):
         if extend and str(extend).startswith('http'):
             self.host = str(extend).rstrip('/')
             self.headers['Referer'] = self.host + '/'
-        # 预热 wasm 目录
+        self._prepare_sign()
+
+    def _prepare_sign(self):
+        for d in _wasm_dirs():
+            wasm = os.path.join(d, 'nbmovie_wasm_bg.wasm')
+            if os.path.isfile(wasm):
+                self._wasm_dir = d
+                break
+        if not self._wasm_dir:
+            # 尝试下载
+            d = os.path.join(os.path.dirname(os.path.abspath(__file__)), '4kvm_wasm')
+            try:
+                os.makedirs(d, exist_ok=True)
+                bg = self._download_bytes(self.host + '/static/wasm/nbmovie_wasm_bg.d5d51939.wasm')
+                if bg and len(bg) > 1000:
+                    open(os.path.join(d, 'nbmovie_wasm_bg.wasm'), 'wb').write(bg)
+                    self._wasm_dir = d
+            except Exception as e:
+                print('download wasm fail', e, file=sys.stderr)
+
+        # 优先纯 Python wasmtime
+        if self._wasm_dir:
+            sign_py = os.path.join(self._wasm_dir, 'sign_pure.py')
+            if not os.path.isfile(sign_py):
+                # 同级目录找
+                alt = os.path.join(os.path.dirname(os.path.abspath(__file__)), '4kvm_wasm', 'sign_pure.py')
+                if os.path.isfile(alt):
+                    sign_py = alt
+            try:
+                import importlib.util
+                # 确保 wasm 路径可被 sign_pure 找到：把目录加入 path
+                if self._wasm_dir not in sys.path:
+                    sys.path.insert(0, self._wasm_dir)
+                # 直接 import
+                try:
+                    import sign_pure
+                    self._sign_fn = sign_pure.build_play_url
+                    # 冒烟
+                    u = self._sign_fn('1', 'a', '1080', '0')
+                    if '/video/play' in str(u):
+                        print('sign: wasmtime ok', file=sys.stderr)
+                        return
+                except Exception as e:
+                    print('sign_pure fail:', e, file=sys.stderr)
+            except Exception as e:
+                print('sign import fail:', e, file=sys.stderr)
+
+        # 回退 node
+        if self._wasm_dir and self._find_node():
+            self._sign_fn = self._sign_node
+            print('sign: node fallback', file=sys.stderr)
+            return
+        print('sign: UNAVAILABLE (pip install wasmtime 或安装 node)', file=sys.stderr)
+
+    def _find_node(self):
+        for n in ('node', 'nodejs'):
+            for path in os.environ.get('PATH', '').split(os.pathsep):
+                p = os.path.join(path, n)
+                if os.path.isfile(p) and os.access(p, os.X_OK):
+                    return p
+        return None
+
+    def _sign_node(self, dataid, secret, quality='1080', play_key='0'):
+        import subprocess
+        d = self._wasm_dir
+        js = os.path.join(d, 'nbmovie_wasm.js')
+        bg = os.path.join(d, 'nbmovie_wasm_bg.wasm')
+        if not os.path.isfile(js):
+            # 下载 glue
+            try:
+                open(js, 'wb').write(
+                    self._download_bytes(self.host + '/static/wasm/nbmovie_wasm.426511b7.js')
+                )
+            except Exception:
+                return ''
+        open(os.path.join(d, 'package.json'), 'w').write('{"type":"module"}\n')
+        script = (
+            'import { readFileSync } from "fs";\n'
+            'import * as wasm from "file://%s";\n'
+            'await wasm.default({ module_or_path: readFileSync("%s") });\n'
+            'console.log(wasm.build_play_url(%s,%s,%s,%s));\n'
+        ) % (
+            js, bg,
+            json.dumps(str(dataid)), json.dumps(str(secret)),
+            json.dumps(str(quality)), json.dumps(str(play_key)),
+        )
         try:
-            self._ensure_wasm()
+            out = subprocess.check_output(
+                [self._find_node(), '--input-type=module', '-e', script],
+                stderr=subprocess.STDOUT, timeout=20, cwd=d,
+            )
+            for line in reversed(out.decode().strip().splitlines()):
+                if '/video/play' in line:
+                    return line.strip()
+            return out.decode().strip().splitlines()[-1]
         except Exception as e:
-            print('wasm init warn:', e, file=sys.stderr)
+            print('node sign err', e, file=sys.stderr)
+            return ''
+
+    def _download_bytes(self, url):
+        req = urllib.request.Request(url, headers=self.headers)
+        with self._opener.open(req, timeout=30) as r:
+            return r.read()
 
     def _get(self, url, headers=None, timeout=20):
         h = dict(self.headers)
@@ -89,103 +187,30 @@ class Spider(BaseSpider):
             with self._opener.open(req, timeout=timeout) as resp:
                 return resp.read().decode('utf-8', 'ignore')
         except Exception as e:
-            print('_get error', url, e, file=sys.stderr)
+            print('_get', url, e, file=sys.stderr)
             return ''
 
-    def _get_bytes(self, url, timeout=30):
-        req = urllib.request.Request(url, headers=self.headers, method='GET')
-        with self._opener.open(req, timeout=timeout) as resp:
-            return resp.read()
-
-    def _ensure_wasm(self):
-        if self._wasm_dir and os.path.isfile(os.path.join(self._wasm_dir, 'nbmovie_wasm.js')):
-            # ensure package.json for node ESM
-            pj = os.path.join(self._wasm_dir, 'package.json')
-            if not os.path.isfile(pj):
-                open(pj, 'w').write('{"type":"module"}\n')
-            return self._wasm_dir
-        d = '/tmp/4kvm_wasm'
-        os.makedirs(d, exist_ok=True)
-        js_p = os.path.join(d, 'nbmovie_wasm.js')
-        bg_p = os.path.join(d, 'nbmovie_wasm_bg.wasm')
-        if not os.path.isfile(js_p) or os.path.getsize(js_p) < 1000:
-            html = self._get(self.host + '/')
-            # try a play page for cfg
-            html2 = self._get(self.host + '/movie')
-            blob = (html or '') + (html2 or '')
-            m = re.search(
-                r'data-js="(/static/wasm/nbmovie_wasm[^"]+\.js)"[^>]*data-bg="(/static/wasm/[^"]+\.wasm)"',
-                blob,
-            ) or re.search(
-                r'data-bg="(/static/wasm/[^"]+\.wasm)"[^>]*data-js="(/static/wasm/nbmovie_wasm[^"]+\.js)"',
-                blob,
-            )
-            if m:
-                a, b = m.group(1), m.group(2)
-                js_url = a if a.endswith('.js') else b
-                bg_url = b if b.endswith('.wasm') else a
-            else:
-                js_url = '/static/wasm/nbmovie_wasm.426511b7.js'
-                bg_url = '/static/wasm/nbmovie_wasm_bg.d5d51939.wasm'
-            if not js_url.startswith('http'):
-                js_url = self.host + js_url
-            if not bg_url.startswith('http'):
-                bg_url = self.host + bg_url
-            open(js_p, 'wb').write(self._get_bytes(js_url))
-            open(bg_p, 'wb').write(self._get_bytes(bg_url))
-        open(os.path.join(d, 'package.json'), 'w').write('{"type":"module"}\n')
-        self._wasm_dir = d
-        return d
-
-    def _build_play_path(self, dataid, secret, quality, userlink):
-        d = self._ensure_wasm()
-        js_path = os.path.join(d, 'nbmovie_wasm.js')
-        bg_path = os.path.join(d, 'nbmovie_wasm_bg.wasm')
-        # 用绝对 file URL，避免 cwd 问题
-        script = (
-            'import { readFileSync } from "fs";\n'
-            'import * as wasm from "file://%s";\n'
-            'await wasm.default({ module_or_path: readFileSync("%s") });\n'
-            'console.log(wasm.build_play_url(%s, %s, %s, %s));\n'
-        ) % (
-            js_path,
-            bg_path,
-            json.dumps(str(dataid)),
-            json.dumps(str(secret)),
-            json.dumps(str(quality or '1080')),
-            json.dumps(str(userlink or '0')),
-        )
+    def _build_path(self, dataid, secret, userlink, quality='1080'):
+        if not self._sign_fn:
+            self._prepare_sign()
+        if not self._sign_fn:
+            return ''
         try:
-            out = subprocess.check_output(
-                ['node', '--input-type=module', '-e', script],
-                stderr=subprocess.STDOUT,
-                timeout=25,
-                cwd=d,
-            )
-            lines = out.decode('utf-8', 'ignore').strip().splitlines()
-            for line in reversed(lines):
-                if '/video/play' in line:
-                    return line.strip()
-            return lines[-1].strip() if lines else ''
+            return self._sign_fn(str(dataid), str(secret), str(quality), str(userlink or '0'))
         except Exception as e:
-            print('wasm sign error:', e, file=sys.stderr)
+            print('build_path', e, file=sys.stderr)
             return ''
 
-    def _resolve_urls(self, dataid, secret, userlink, quality='1080'):
-        """返回 [(title, m3u8_url), ...]"""
-        path = self._build_play_path(dataid, secret, quality, userlink)
+    def _resolve_m3u8(self, dataid, secret, userlink, quality='1080'):
+        path = self._build_path(dataid, secret, userlink, quality)
         if not path:
             return []
         url = path if path.startswith('http') else (self.host + path)
-        # 带 cookie 访问
         self._get(self.host + '/play/' + secret)
-        body = self._get(
-            url,
-            headers={
-                'Accept': 'application/json, text/plain, */*',
-                'Referer': self.host + '/play/' + secret,
-            },
-        )
+        body = self._get(url, headers={
+            'Accept': 'application/json,*/*',
+            'Referer': self.host + '/play/' + secret,
+        })
         if not body:
             return []
         try:
@@ -200,13 +225,11 @@ class Spider(BaseSpider):
             if not u or u == '1' or q.get('locked'):
                 continue
             if re.search(r'\.(m3u8|mp4)(\?|$)', u, re.I):
-                title = q.get('title') or q.get('description') or 'HLS'
-                out.append((title, u))
+                out.append(u)
         return out
 
     def _parse_list(self, html):
-        videos = []
-        seen = set()
+        videos, seen = [], set()
         if not html:
             return videos
         pat = (
@@ -219,15 +242,12 @@ class Spider(BaseSpider):
             if pid in seen:
                 continue
             seen.add(pid)
-            title = (name or alt or pid).strip()
             pic = (pic or '').replace('&amp;', '&')
             if pic.startswith('//'):
                 pic = 'https:' + pic
-            elif pic.startswith('/'):
-                pic = self.host + pic
             videos.append({
                 'vod_id': path,
-                'vod_name': title,
+                'vod_name': (name or alt or pid).strip(),
                 'vod_pic': pic,
                 'vod_remarks': '',
             })
@@ -253,23 +273,18 @@ class Spider(BaseSpider):
         }
 
     def homeVideoContent(self):
-        html = self._get(self.host + '/')
-        return {'list': self._parse_list(html)[:24]}
+        return {'list': self._parse_list(self._get(self.host + '/'))[:24]}
 
     def categoryContent(self, tid, pg, filter, extend):
         pg = int(pg or 1)
-        tid = str(tid or 'movie')
-        url = '%s/%s' % (self.host, tid)
+        url = '%s/%s' % (self.host, tid or 'movie')
         if pg > 1:
             url += '?page=%d' % pg
-        html = self._get(url)
-        videos = self._parse_list(html)
+        videos = self._parse_list(self._get(url))
         return {
-            'list': videos,
-            'page': pg,
+            'list': videos, 'page': pg,
             'pagecount': pg + 1 if len(videos) >= 20 else pg,
-            'limit': 24,
-            'total': 999999,
+            'limit': 24, 'total': 999999,
         }
 
     def searchContent(self, key, quick, pg='1'):
@@ -280,14 +295,11 @@ class Spider(BaseSpider):
         url = '%s/search?q=%s' % (self.host, urllib.parse.quote(key or ''))
         if pg > 1:
             url += '&page=%d' % pg
-        html = self._get(url)
-        videos = self._parse_list(html)
+        videos = self._parse_list(self._get(url))
         return {
-            'list': videos,
-            'page': pg,
+            'list': videos, 'page': pg,
             'pagecount': pg + 1 if len(videos) >= 20 else pg,
-            'limit': 24,
-            'total': 999999,
+            'limit': 24, 'total': 999999,
         }
 
     def detailContent(self, ids):
@@ -297,70 +309,40 @@ class Spider(BaseSpider):
             path = path.replace(self.host, '')
         if not path.startswith('/play/'):
             path = '/play/' + path.lstrip('/')
-        url = self.host + path
-        html = self._get(url)
-        secret = ''
-        m = re.search(r'/play/([a-z0-9]+)', path, re.I)
-        if m:
-            secret = m.group(1)
+        page = self.host + path
+        html = self._get(page)
+        secret = (re.search(r'/play/([a-z0-9]+)', path, re.I) or [None, ''])[1]
         userlink = self._extract_userlink(html)
 
         title = ''
-        tm = re.search(r'<h1[^>]*>([^<]+)</h1>', html) or re.search(
-            r'<title>([^<]+)</title>', html
-        )
+        tm = re.search(r'<h1[^>]*>([^<]+)</h1>', html) or re.search(r'<title>([^<]+)</title>', html)
         if tm:
-            title = tm.group(1).replace('-4k影视', '').strip()
-            title = re.sub(r'\s*-\s*第\d+集\s*$', '', title).strip()
+            title = re.sub(r'\s*-\s*第\d+集\s*$', '', tm.group(1).replace('-4k影视', '')).strip()
 
         pic = ''
         pm = re.search(r'data-poster="([^"]+)"', html) or re.search(
-            r'property="og:image"\s+content="([^"]+)"', html
-        )
+            r'property="og:image"\s+content="([^"]+)"', html)
         if pm:
             pic = pm.group(1).replace('&amp;', '&')
 
-        lines = re.findall(r"lineName:\s*'([^']+)'\s*,\s*episodeCount:\s*(\d+)", html)
-        if not lines:
-            lines = [('默认', '1')]
-
+        lines = re.findall(r"lineName:\s*'([^']+)'\s*,\s*episodeCount:\s*(\d+)", html) or [('默认', '1')]
         ep_map = {}
-        for m in re.finditer(
-            r'data-line="(\d+)"[^>]*data-episode="(\d+)"\s+dataid="(\d+)"', html
-        ):
+        for m in re.finditer(r'data-line="(\d+)"[^>]*data-episode="(\d+)"\s+dataid="(\d+)"', html):
             ep_map.setdefault(m.group(1), []).append((int(m.group(2)), m.group(3)))
 
-        play_from = []
-        play_urls = []
-
+        play_from, play_urls = [], []
         for idx, (line_name, ep_count) in enumerate(lines, start=1):
             play_from.append(line_name)
             eps = ep_map.get(str(idx), [])
             parts = []
-            if not eps:
-                # 无 dataid：回退页面
-                for i in range(1, max(int(ep_count), 1) + 1):
-                    parts.append('第%d集$%s' % (i, url + '?line=%d&ep=%d' % (idx, i)))
-            else:
+            if eps:
                 for ep_i, dataid in sorted(eps, key=lambda x: x[0]):
-                    # 详情阶段直接解析 m3u8
-                    resolved = self._resolve_urls(dataid, secret, userlink, '1080')
-                    if resolved:
-                        # 多清晰度展开为同一线路多条，或只取第一条
-                        # 为兼容播放器：每集取第一个可播地址
-                        parts.append('第%d集$%s' % (ep_i, resolved[0][1]))
-                        # 若有多清晰度，附加到线路名在 play 里处理较难，这里合并
-                        if len(resolved) > 1 and len(eps) == 1:
-                            # 电影单集：展开清晰度
-                            parts = []
-                            for title_q, uq in resolved:
-                                parts.append('%s$%s' % (title_q, uq))
-                    else:
-                        # 解析失败：打包参数留给 playerContent
-                        parts.append(
-                            '第%d集$%s@@@%s@@@%s' % (ep_i, dataid, secret, userlink)
-                        )
-            play_urls.append('#'.join(parts) if parts else ('播放$%s' % url))
+                    # 参数打包，播放时再解析（快、稳）
+                    parts.append('第%d集$%s@@@%s@@@%s' % (ep_i, dataid, secret, userlink))
+            else:
+                for i in range(1, max(int(ep_count), 1) + 1):
+                    parts.append('第%d集$%s?line=%d&ep=%d' % (i, page, idx, i))
+            play_urls.append('#'.join(parts) if parts else ('播放$%s' % page))
 
         return {
             'list': [{
@@ -374,22 +356,36 @@ class Spider(BaseSpider):
         }
 
     def playerContent(self, flag, id, vipFlags):
-        header = {'User-Agent': UA, 'Referer': self.host + '/'}
+        header = {
+            'User-Agent': UA,
+            'Referer': self.host + '/',
+            # CDN 可能校验
+            'Origin': self.host,
+        }
         play = str(id or '').strip()
 
-        # 已是直链
         if play.startswith('http') and re.search(r'\.(m3u8|mp4)(\?|$)', play, re.I):
             return {'parse': 0, 'jx': 0, 'url': play, 'header': header}
 
-        # dataid@@@secret@@@userlink
         if '@@@' in play:
             segs = play.split('@@@')
             dataid = segs[0]
             secret = segs[1] if len(segs) > 1 else ''
             userlink = segs[2] if len(segs) > 2 else '0'
-            urls = self._resolve_urls(dataid, secret, userlink, '1080')
+            urls = self._resolve_m3u8(dataid, secret, userlink, '1080')
             if urls:
-                return {'parse': 0, 'jx': 0, 'url': urls[0][1], 'header': header}
+                return {
+                    'parse': 0,
+                    'jx': 0,
+                    'url': urls[0],
+                    'header': {
+                        'User-Agent': UA,
+                        'Referer': self.host + '/',
+                        'Origin': self.host,
+                    },
+                }
+            # 失败提示
+            print('resolve failed dataid=', dataid, 'sign=', bool(self._sign_fn), file=sys.stderr)
             return {
                 'parse': 1,
                 'jx': '1',
@@ -400,12 +396,7 @@ class Spider(BaseSpider):
         if play.startswith('/'):
             play = self.host + play
         if play.startswith('http'):
-            return {
-                'parse': 1,
-                'jx': '1',
-                'url': play.split('?')[0],
-                'header': header,
-            }
+            return {'parse': 1, 'jx': '1', 'url': play.split('?')[0], 'header': header}
         return {'parse': 0, 'jx': 0, 'url': play, 'header': header}
 
     def isVideoFormat(self, url):
@@ -424,20 +415,14 @@ class Spider(BaseSpider):
 if __name__ == '__main__':
     sp = Spider()
     sp.init()
-    print('VERSION', VERSION, 'wasm', sp._wasm_dir)
+    print('VERSION', VERSION)
+    print('wasm_dir', sp._wasm_dir, 'sign', bool(sp._sign_fn))
     hv = sp.homeVideoContent()
     print('home', len(hv.get('list') or []))
-    if not hv.get('list'):
-        sys.exit(1)
-    vod_id = hv['list'][0]['vod_id']
-    print('id', vod_id)
-    d = sp.detailContent([vod_id])
-    vod = (d.get('list') or [{}])[0]
-    print('name', vod.get('vod_name'))
-    print('from', vod.get('vod_play_from'))
-    pu = vod.get('vod_play_url') or ''
-    print('play_url', pu[:200])
-    first = pu.split('$$$')[0].split('#')[0].split('$')[-1]
-    print('first', first[:100])
-    p = sp.playerContent('x', first, [])
-    print('player', p.get('parse'), str(p.get('url') or '')[:120])
+    if hv.get('list'):
+        d = sp.detailContent([hv['list'][0]['vod_id']])
+        vod = (d.get('list') or [{}])[0]
+        print('detail', vod.get('vod_name'), (vod.get('vod_play_url') or '')[:80])
+        first = (vod.get('vod_play_url') or '').split('#')[0].split('$')[-1]
+        p = sp.playerContent('x', first, [])
+        print('player', p.get('parse'), str(p.get('url') or '')[:100])
