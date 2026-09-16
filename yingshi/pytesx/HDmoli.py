@@ -370,20 +370,25 @@ class Spider(Spider):
                     'Origin': self.host,
                 }
 
-            # 部分壳要求字符串 parse
+            if not url or not str(url).startswith('http'):
+                url = page
+                parse = 1
+            # 同时给 int/str，兼容不同壳
             return {
                 'header': hdr,
                 'parse': parse,
                 'jx': 0,
                 'url': url,
+                'playUrl': url,
             }
         except Exception as e:
             print('play', e)
             return {
-                'header': self.headers,
+                'header': dict(self.headers),
                 'parse': 1,
                 'jx': 0,
                 'url': str(id or ''),
+                'playUrl': str(id or ''),
             }
 
     def _resolve(self, html, page):
