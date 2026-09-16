@@ -358,11 +358,11 @@ class Spider(Spider):
             return {'list': []}
 
     def playerContent(self, flag, id, vipFlags=None):
-        """返回可播放地址。兼容影视仓 / OK影视 / TVBox"""
+        """对齐可播放 JS：parse/jx/url/header；兼容影视仓与 OK影视"""
         try:
             pid = str(id or '').strip()
             if '$' in pid:
-                pid = pid.split('$')[-1]
+                pid = pid.split('$')[-1].strip()
             parts = pid.split('-')
             if len(parts) >= 3:
                 page = f'{self.host}/play/{parts[0]}-{parts[1]}-{parts[2]}.html'
@@ -372,39 +372,55 @@ class Spider(Spider):
                 page = f'{self.host}/play/{pid}.html' if pid else self.host
 
             html = self._get(page)
-            url = self._resolve(html, page) or page
-
-            # 网盘 / 直链：不嗅探
-            if self._is_pan(url) or self._is_media(url):
-                parse = 0
-            elif '/static/player/artplayer' in url:
-                # artplayer 页交给壳内置 WebView
-                parse = 1
-            elif '/play/' in url and 'hdmoli' in url:
-                parse = 1
-            else:
-                parse = 0 if str(url).startswith('http') else 1
-
+            player = self._parse_player(html)
+            url = page
+            parse = 1
             hdr = {
                 'User-Agent': 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 Chrome/128.0.0.0 Mobile Safari/537.36',
                 'Referer': self.host + '/',
                 'Origin': self.host,
             }
-            if self._is_pan(url):
-                hdr = dict(self.headers)
 
-            if not url or not str(url).startswith('http'):
-                url = page
-                parse = 1
+            if player:
+                enc = int(player.get('encrypt') or 0)
+                raw = str(player.get('url') or '').replace('\\/', '/')
+                try:
+                    raw = raw.encode('utf-8').decode('unicode_escape')
+                except Exception:
+                    pass
+                raw = self._decode(enc, raw)
+                if raw.startswith('//'):
+                    raw = 'https:' + raw
 
-            # OK影视 / 影视仓 常见字段
-            return {
+                if self._is_media(raw) or self._is_pan(raw):
+                    url, parse = raw, 0
+                    if self._is_pan(raw):
+                        hdr = dict(self.headers)
+                elif raw.startswith('http') and '/play/' not in raw and 'artplayer' not in raw:
+                    url, parse = raw, 0
+                elif enc == 3 or re.fullmatch(r'[0-9a-fA-F]{16,}', raw or ''):
+                    real = self._smartplay(raw)
+                    if real and real.startswith('http'):
+                        url, parse = real, 0
+                    else:
+                        # 与 JS 一致：回退 artplayer 嗅探
+                        url = f'{self.host}/static/player/artplayer/?url={quote(raw)}'
+                        parse = 1
+                elif raw.startswith('http'):
+                    url, parse = raw, 0 if self._is_media(raw) else 1
+
+            # OK影视 / 部分壳要求 parse 为字符串 "0"/"1"
+            result = {
                 'header': hdr,
-                'parse': int(parse),
+                'parse': parse,
                 'jx': 0,
                 'url': url,
                 'playUrl': '',
             }
+            # 额外兼容字段
+            if parse == 0 and url.startswith('http'):
+                result['parse'] = 0
+            return result
         except Exception as e:
             print('play', e)
             return {
@@ -477,36 +493,50 @@ class Spider(Spider):
                 return None
 
     def _smartplay(self, enc_url):
+        """与 JS smartPlay 对齐：artplayer 取 vkey/code/timestamp -> POST -> AES"""
         try:
             art_url = f'{self.host}/static/player/artplayer/?url={quote(enc_url)}'
             art = self._get(art_url)
             if not art:
                 return ''
-            # 1) 页面已内嵌 qualities 时，优先走 smartplay API
-            vkey = self._re1(r'playPageUrl\s*=\s*"([^"]+)"', art)
-            code = self._re1(r'secretKeySeed\s*=\s*"([^"]+)"', art)
-            timestamp = self._re1(r'timestamp\s*=\s*"([^"]+)"', art)
+            vkey = self._re1(r'playPageUrl\s*=\s*"([^"]*)"', art)
+            code = self._re1(r'secretKeySeed\s*=\s*"([^"]*)"', art)
+            timestamp = self._re1(r'timestamp\s*=\s*"([^"]*)"', art)
+            # 部分情况下变量在 JS 赋值后为空，再试 qualities
             if vkey and code:
-                t = int(time.time())
+                tnow = int(time.time())
                 data = self._post_json(SMART_API, {
                     'vkey': vkey,
                     'code': code,
-                    't': t,
-                    'signature': hashlib.md5(str(t).encode()).hexdigest(),
+                    't': tnow,
+                    'signature': hashlib.md5(str(tnow).encode()).hexdigest(),
                 })
-                out = str((data or {}).get('url') or '')
+                out = ''
+                if isinstance(data, dict):
+                    out = str(data.get('url') or data.get('data') or '')
+                    if isinstance(data.get('data'), dict):
+                        out = str(data['data'].get('url') or out)
                 if out.startswith('http'):
                     return out
                 if out and timestamp:
                     plain = aes_decrypt_smart(out, timestamp)
                     if plain.startswith('http'):
                         return plain
-            # 2) 从 qualities 取密文再解
+                # 再试：密文可能是 hex
+                if out and re.fullmatch(r'[0-9a-fA-F]+', out):
+                    try:
+                        import binascii
+                        b64 = binascii.unhexlify(out).decode('utf-8', 'ignore')
+                        plain = aes_decrypt_smart(b64, timestamp) if timestamp else ''
+                        if plain.startswith('http'):
+                            return plain
+                    except Exception:
+                        pass
+            # qualities 内嵌密文
             qm = re.search(r'qualities\s*=\s*(\[[^\]]+\])', art)
             if qm and timestamp:
                 try:
-                    quals = json.loads(qm.group(1))
-                    for q in quals:
+                    for q in json.loads(qm.group(1)):
                         cu = str(q.get('url') or '')
                         if not cu:
                             continue
@@ -517,7 +547,6 @@ class Spider(Spider):
                             return plain
                 except Exception as e:
                     print('qualities', e)
-            # 3) 失败返回空，由上层回退 artplayer 页
             return ''
         except Exception as e:
             print('smartplay', e)
