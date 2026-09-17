@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-YouTube 源 (Python / TVBox)
-风格对齐爱奇艺.py：分类 + 搜索 + 详情 + 播放
-使用 YouTube innertube WEB 公开接口；播放返回官方页面 parse=1
+YouTube 源 - 修复播放
+策略：ANDROID/WEB player 直链 → Invidious/Piped → parse=1 官方页
 """
 import json
 import re
 import sys
-import urllib.parse
 
 try:
     import requests
@@ -20,7 +18,7 @@ try:
     from base.spider import Spider as BaseSpider
 except ImportError:
     class BaseSpider(object):
-        def init(self, extend=""):
+        def init(self, extend=''):
             pass
 
 
@@ -29,10 +27,12 @@ class Spider(BaseSpider):
         self.host = 'https://www.youtube.com'
         self.innertube = 'https://www.youtube.com/youtubei/v1'
         self.api_key = 'AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8'
+        self.android_key = 'AIzaSyA8eiZmM1FaDVzG9thLM72nEVRaRToynfQ'
         self.ua = (
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
             'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
         )
+        self.android_ua = 'com.google.android.youtube/19.28.35 (Linux; U; Android 13) gzip'
         self.client = {
             'clientName': 'WEB',
             'clientVersion': '2.20240101.00.00',
@@ -51,6 +51,15 @@ class Spider(BaseSpider):
             'live': {'name': '直播', 'q': '直播 live'},
             'kids': {'name': '少儿', 'q': '少儿 动画'},
         }
+        self.proxy_apis = [
+            ('invidious', 'https://inv.nadeko.net'),
+            ('invidious', 'https://invidious.nerdvpn.de'),
+            ('invidious', 'https://yewtu.be'),
+            ('invidious', 'https://invidious.jing.rocks'),
+            ('piped', 'https://pipedapi.adminforge.de'),
+            ('piped', 'https://pipedapi.kavin.rocks'),
+            ('piped', 'https://api.piped.private.coffee'),
+        ]
 
     def getName(self):
         return 'YouTube'
@@ -71,7 +80,7 @@ class Spider(BaseSpider):
         except Exception:
             pass
 
-    def fetch(self, url, headers=None, method='GET', data=None, timeout=15):
+    def fetch(self, url, headers=None, method='GET', data=None, timeout=12):
         if requests is None:
             return None
         if headers is None:
@@ -83,12 +92,13 @@ class Spider(BaseSpider):
         try:
             if method.upper() == 'POST':
                 headers = dict(headers)
-                headers['Content-Type'] = 'application/json'
-                headers['Origin'] = self.host
+                headers.setdefault('Content-Type', 'application/json')
+                headers.setdefault('Origin', self.host)
                 r = requests.post(url, headers=headers, data=json.dumps(data or {}), timeout=timeout)
             else:
                 r = requests.get(url, headers=headers, timeout=timeout)
-            r.raise_for_status()
+            if r.status_code >= 400:
+                return None
             return r
         except Exception as e:
             print('fetch fail', url, e)
@@ -99,13 +109,11 @@ class Spider(BaseSpider):
         return {'class': classes, 'filters': {}}
 
     def homeVideoContent(self):
-        videos = self._search_list('trending', 1)[:24]
-        return {'list': videos}
+        return {'list': self._search_list('trending', 1)[:24]}
 
     def categoryContent(self, tid, pg, filter, extend):
         pg = int(pg or 1)
-        info = self.channels.get(str(tid), {'q': str(tid)})
-        q = info.get('q', str(tid))
+        q = self.channels.get(str(tid), {'q': str(tid)}).get('q', str(tid))
         videos = self._search_list(q, pg)
         return {
             'list': videos,
@@ -130,28 +138,24 @@ class Spider(BaseSpider):
         return self.searchContent(key, quick, pg)
 
     def detailContent(self, ids):
-        vid = str(ids[0] if isinstance(ids, (list, tuple)) else ids)
-        vid = re.sub(r'.*v=', '', vid)
-        vid = vid.split('&')[0]
+        vid = self._normalize_vid(ids[0] if isinstance(ids, (list, tuple)) else ids)
         name, pic, content, actor = vid, 'https://i.ytimg.com/vi/%s/hqdefault.jpg' % vid, '', ''
-        try:
-            r = self.fetch(
-                self.innertube + '/player?key=' + self.api_key,
-                method='POST',
-                data={'context': {'client': self.client}, 'videoId': vid},
-            )
-            if r is not None:
-                data = r.json()
-                vd = data.get('videoDetails') or {}
-                name = vd.get('title') or name
-                content = vd.get('shortDescription') or ''
-                actor = vd.get('author') or ''
-                thumbs = ((vd.get('thumbnail') or {}).get('thumbnails')) or []
-                if thumbs:
-                    pic = thumbs[-1].get('url') or pic
-        except Exception as e:
-            print('detail', e)
-        watch = self.host + '/watch?v=' + vid
+        stream_url, meta = self._stream_from_player(vid)
+        if meta:
+            name = meta.get('title') or name
+            content = meta.get('shortDescription') or ''
+            actor = meta.get('author') or ''
+            th = ((meta.get('thumbnail') or {}).get('thumbnails')) or []
+            if th:
+                pic = th[-1].get('url') or pic
+        play_from, play_url = [], []
+        if stream_url:
+            play_from.append('直链')
+            play_url.append('播放$' + stream_url)
+        play_from.append('YouTube')
+        play_url.append('播放$' + vid)
+        play_from.append('解析')
+        play_url.append('播放$' + self.host + '/watch?v=' + vid)
         return {
             'list': [{
                 'vod_id': vid,
@@ -160,36 +164,52 @@ class Spider(BaseSpider):
                 'vod_content': content,
                 'vod_actor': actor,
                 'vod_remarks': 'YouTube',
-                'vod_play_from': 'YouTube',
-                'vod_play_url': '播放$' + watch,
+                'vod_play_from': '$$$'.join(play_from),
+                'vod_play_url': '$$$'.join(play_url),
             }]
         }
 
     def playerContent(self, flag, id, vipFlags):
-        url = str(id or '')
-        if not url.startswith('http'):
-            if re.match(r'^[a-zA-Z0-9_-]{11}$', url):
-                url = self.host + '/watch?v=' + url
-        # 官方直链需签名，统一交给解析器
+        raw = str(id or '')
+        hdr = {
+            'User-Agent': self.ua,
+            'Referer': self.host + '/',
+            'Origin': self.host,
+        }
+        if raw.startswith('http') and any(x in raw.lower() for x in ('.m3u8', '.mp4', '.webm', 'googlevideo.com')):
+            return {
+                'parse': 0,
+                'url': raw,
+                'header': dict(hdr, **{'User-Agent': self.android_ua}),
+            }
+
+        vid = self._normalize_vid(raw)
+        url, _ = self._stream_from_player(vid)
+        if not url:
+            url = self._stream_from_proxy(vid)
+        if url:
+            return {
+                'parse': 0,
+                'jx': 0,
+                'url': url,
+                'header': dict(hdr, **{
+                    'User-Agent': self.android_ua,
+                    'Referer': self.host + '/watch?v=' + vid,
+                }),
+            }
+        watch = self.host + '/watch?v=' + vid
         return {
             'parse': 1,
             'jx': '1',
-            'url': url,
-            'header': {
-                'User-Agent': self.ua,
-                'Referer': self.host + '/',
-                'Origin': self.host,
-            },
+            'url': watch,
+            'header': hdr,
         }
 
     def isVideoFormat(self, url):
         if not url or not str(url).startswith('http'):
             return False
         low = str(url).lower()
-        for fmt in ('.mp4', '.m3u8', '.ts', '.mkv', '.webm'):
-            if fmt in low:
-                return True
-        return False
+        return any(x in low for x in ('.mp4', '.m3u8', '.webm', 'googlevideo.com'))
 
     def manualVideoCheck(self):
         return False
@@ -197,7 +217,16 @@ class Spider(BaseSpider):
     def localProxy(self, param):
         return None
 
-    # ---------- helpers ----------
+    # ---- helpers ----
+    def _normalize_vid(self, s):
+        s = str(s or '')
+        m = re.search(r'[?&]v=([a-zA-Z0-9_-]{11})', s) or re.search(r'youtu\.be/([a-zA-Z0-9_-]{11})', s) or re.search(r'embed/([a-zA-Z0-9_-]{11})', s)
+        if m:
+            return m.group(1)
+        if re.match(r'^[a-zA-Z0-9_-]{11}$', s):
+            return s
+        return re.sub(r'[?#].*', '', s.split('/')[-1])
+
     def _search_list(self, query, pg=1):
         q = str(query or '')
         if int(pg) > 1:
@@ -230,22 +259,18 @@ class Spider(BaseSpider):
         if node and node.get('videoId'):
             vid = node['videoId']
             name = self._title(node.get('title')) or self._title(node.get('headline')) or vid
-            pic = ''
             thumbs = ((node.get('thumbnail') or {}).get('thumbnails')) or []
-            if thumbs:
-                pic = thumbs[-1].get('url') or ''
-            if not pic:
-                pic = 'https://i.ytimg.com/vi/%s/hqdefault.jpg' % vid
-            remarks_parts = []
-            for key in ('publishedTimeText', 'lengthText', 'viewCountText'):
+            pic = thumbs[-1].get('url') if thumbs else ('https://i.ytimg.com/vi/%s/hqdefault.jpg' % vid)
+            remarks = []
+            for key in ('lengthText', 'viewCountText'):
                 t = self._title(node.get(key))
                 if t:
-                    remarks_parts.append(t)
+                    remarks.append(t)
             out.append({
                 'vod_id': vid,
                 'vod_name': name,
                 'vod_pic': pic,
-                'vod_remarks': ' · '.join(remarks_parts),
+                'vod_remarks': ' · '.join(remarks),
             })
             return
         for v in obj.values():
@@ -265,8 +290,7 @@ class Spider(BaseSpider):
         return ''
 
     def _dedupe(self, items):
-        seen = set()
-        res = []
+        seen, res = set(), []
         for it in items:
             vid = it.get('vod_id')
             if not vid or vid in seen:
@@ -275,9 +299,127 @@ class Spider(BaseSpider):
             res.append(it)
         return res
 
+    def _pick_stream(self, sd):
+        if not sd:
+            return ''
+        if sd.get('hlsManifestUrl'):
+            return sd['hlsManifestUrl']
+        formats = [f for f in (sd.get('formats') or []) if f.get('url')]
+        if formats:
+            formats.sort(key=lambda f: f.get('height') or f.get('bitrate') or 0, reverse=True)
+            return formats[0]['url']
+        adaptive = [
+            f for f in (sd.get('adaptiveFormats') or [])
+            if f.get('url') and 'video' in (f.get('mimeType') or '')
+        ]
+        if adaptive:
+            adaptive.sort(key=lambda f: f.get('height') or f.get('bitrate') or 0, reverse=True)
+            return adaptive[0]['url']
+        return ''
+
+    def _stream_from_player(self, vid):
+        # ANDROID
+        try:
+            r = self.fetch(
+                self.innertube + '/player?key=' + self.android_key,
+                method='POST',
+                data={
+                    'context': {
+                        'client': {
+                            'clientName': 'ANDROID',
+                            'clientVersion': '19.28.35',
+                            'androidSdkVersion': 33,
+                            'hl': 'zh-CN',
+                            'gl': 'US',
+                            'userAgent': self.android_ua,
+                        }
+                    },
+                    'videoId': vid,
+                    'contentCheckOk': True,
+                    'racyCheckOk': True,
+                },
+                headers={
+                    'User-Agent': self.android_ua,
+                    'Content-Type': 'application/json',
+                    'X-Goog-Api-Format-Version': '2',
+                },
+                timeout=12,
+            )
+            if r is not None:
+                data = r.json()
+                url = self._pick_stream(data.get('streamingData') or {})
+                meta = data.get('videoDetails') or {}
+                if url:
+                    return url, meta
+                if meta:
+                    # WEB 再试
+                    pass
+                else:
+                    meta = {}
+            else:
+                meta = {}
+        except Exception:
+            meta = {}
+
+        try:
+            r = self.fetch(
+                self.innertube + '/player?key=' + self.api_key,
+                method='POST',
+                data={
+                    'context': {'client': self.client},
+                    'videoId': vid,
+                    'contentCheckOk': True,
+                    'racyCheckOk': True,
+                },
+                timeout=12,
+            )
+            if r is not None:
+                data = r.json()
+                url = self._pick_stream(data.get('streamingData') or {})
+                meta = data.get('videoDetails') or meta
+                return url, meta
+        except Exception:
+            pass
+        return '', meta if isinstance(meta, dict) else {}
+
+    def _stream_from_proxy(self, vid):
+        for typ, base in self.proxy_apis:
+            try:
+                if typ == 'invidious':
+                    r = self.fetch(base + '/api/v1/videos/' + vid, timeout=10)
+                    if r is None:
+                        continue
+                    data = r.json()
+                    if data.get('hlsUrl'):
+                        return data['hlsUrl']
+                    fmts = data.get('formatStreams') or []
+                    if fmts:
+                        return fmts[-1].get('url') or ''
+                else:
+                    r = self.fetch(base + '/streams/' + vid, timeout=10)
+                    if r is None:
+                        continue
+                    data = r.json()
+                    if data.get('hls'):
+                        return data['hls']
+                    vs = data.get('videoStreams') or []
+                    with_audio = [v for v in vs if not v.get('videoOnly') and v.get('url')]
+                    pool = with_audio or [v for v in vs if v.get('url')]
+                    if pool:
+                        pool.sort(key=lambda x: x.get('height') or 0, reverse=True)
+                        return pool[0]['url']
+            except Exception:
+                continue
+        return ''
+
 
 if __name__ == '__main__':
     sp = Spider()
-    print(json.dumps(sp.homeContent(True), ensure_ascii=False, indent=2))
-    print('home videos', len(sp.homeVideoContent().get('list') or []))
-    print('cat', len(sp.categoryContent('movie', 1, {}, {}).get('list') or []))
+    print(json.dumps(sp.homeContent(True), ensure_ascii=False)[:200])
+    cat = sp.categoryContent('music', 1, {}, {})
+    print('music', len(cat.get('list') or []))
+    if cat.get('list'):
+        vid = cat['list'][0]['vod_id']
+        print('vid', vid, cat['list'][0]['vod_name'][:40])
+        p = sp.playerContent('YouTube', vid, [])
+        print('play parse', p.get('parse'), 'url', (p.get('url') or '')[:100])
