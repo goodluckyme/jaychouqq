@@ -429,7 +429,8 @@
     "header": {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
       "Referer": "https://madou8.pw/asian/zh-CN",
-      "Accept-Language": "zh-CN,zh;q=0.9"
+      "Accept-Language": "zh-CN,zh;q=0.9",
+      "Accept": "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8"
     },
     "categories": [
       {
@@ -466,33 +467,34 @@
         "name": "无码流出",
         "url": "/asian/zh-CN/videos/tag/%E6%97%A0%E7%A0%81%E6%B5%81%E5%87%BA/page/{{page}}",
         "url2": "/asian/zh-CN/videos/tag/%E6%97%A0%E7%A0%81%E6%B5%81%E5%87%BA"
-      },
-      {
-        "name": "亚洲首页",
-        "url": "/asian/zh-CN"
       }
     ],
     "list": {
-      "list": ".streamit-video-card:not([data-streamit-ad-card])",
-      "name": "img@alt||.streamit-video-card__title@text||.streamit-video-card__caption@text",
-      "tips": ".streamit-video-card__time@text",
-      "coverUrl": "img.streamit-video-card__thumb@src||img@src",
-      "detailUrl": "a.streamit-video-card__media-link@href||a@href"
+      "list": "body@js:function getMadouList(html){try{var out=[];var re=/data-video-uid=\\\"([0-9a-fA-F]+)\\\"[\\s\\S]{0,2500}?href=\\\"(\\/asian\\/zh-CN\\/video\\/cid\\/[^\\\"]+)\\\"[\\s\\S]{0,1200}?src=\\\"(https:\\/\\/[^\\\"]+)\\\"[^>]*alt=\\\"([^\\\"]*)\\\"/g;var m;var seen={};while((m=re.exec(html))!==null){var uid=m[1];if(seen[uid])continue;seen[uid]=1;var title=(m[4]||'').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/&quot;/g,'\"');if(title.length>80)title=title.slice(0,80);out.push({title:title,pic:m[3],url:'https://madou8.pw/asian/zh-CN/api/video/stream?videoUid='+uid,tips:m[2].split('/').pop()});}return out;}catch(e){return [];}} getMadouList(__result);",
+      "name": "$.title",
+      "tips": "$.tips",
+      "coverUrl": "$.pic",
+      "detailUrl": "$.url"
     },
     "search": {
       "url": "/asian/zh-CN/videos/search/{{key}}",
-      "list": ".streamit-video-card:not([data-streamit-ad-card])",
-      "name": "img@alt||.streamit-video-card__title@text",
-      "tips": ".streamit-video-card__time@text",
-      "coverUrl": "img.streamit-video-card__thumb@src||img@src",
-      "detailUrl": "a.streamit-video-card__media-link@href||a@href"
+      "list": "body@js:function getMadouList(html){try{var out=[];var re=/data-video-uid=\\\"([0-9a-fA-F]+)\\\"[\\s\\S]{0,2500}?href=\\\"(\\/asian\\/zh-CN\\/video\\/cid\\/[^\\\"]+)\\\"[\\s\\S]{0,1200}?src=\\\"(https:\\/\\/[^\\\"]+)\\\"[^>]*alt=\\\"([^\\\"]*)\\\"/g;var m;var seen={};while((m=re.exec(html))!==null){var uid=m[1];if(seen[uid])continue;seen[uid]=1;var title=(m[4]||'').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/&quot;/g,'\"');if(title.length>80)title=title.slice(0,80);out.push({title:title,pic:m[3],url:'https://madou8.pw/asian/zh-CN/api/video/stream?videoUid='+uid,tips:m[2].split('/').pop()});}return out;}catch(e){return [];}} getMadouList(__result);",
+      "name": "$.title",
+      "tips": "$.tips",
+      "coverUrl": "$.pic",
+      "detailUrl": "$.url"
     },
     "detail": {
-      "meta": "h1@text||title@text"
+      "meta": "$.videoUid"
     },
     "play": {
-      "list": "body@js:function getMadouPlay(html){try{var m=html.match(/\\\"videoUid\\\"\\s*:\\s*\\\"([0-9a-fA-F]+)\\\"/);if(!m)m=html.match(/videoUid\\\"?\\s*[:=]\\s*[\\\"']([0-9a-fA-F]+)[\\\"']/);if(!m)return [];var uid=m[1];var api='https://madou8.pw/asian/zh-CN/api/video/stream?videoUid='+uid;return [{name:'默认线路',url:api,uid:uid}];}catch(e){return [];}} getMadouPlay(__result);",
-      "name": "$.name",
+      "list": "$.playlist",
+      "name": "$.urlType||线路",
+      "url": "$.url"
+    },
+    "toc": {
+      "list": "$.playlist",
+      "name": "$.urlType||播放",
       "url": "$.url"
     }
   },
