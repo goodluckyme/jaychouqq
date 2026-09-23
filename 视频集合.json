@@ -134,6 +134,14 @@
     }
   },
   {
+    "name": "📺ZT采集",
+    "api": "https://api.ztcgi.com/api.php/provide/vod/",
+    "type": 1,
+    "searchable": true,
+    "quickSearch": 1,
+    "filterable": 1
+  },
+  {
     "name": "奇优",
     "type": 2,
     "api": "http://www.wdbay.com",
@@ -422,132 +430,79 @@
     }
   },
   {
-    "name": "📺麻豆4K",
-    "api": "https://madou8.pw",
+    "name": "📺永乐视频",
+    "api": "https://www.59v.net",
     "type": 2,
     "searchable": true,
     "header": {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
-      "Referer": "https://madou8.pw/asian/zh-CN/",
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      "Referer": "https://www.59v.net/",
       "Accept-Language": "zh-CN,zh;q=0.9"
     },
     "categories": [
       {
-        "name": "最新上架",
-        "url": "/asian/zh-CN/videos/new-releases/page/{{page}}"
+        "name": "电影",
+        "url": "/vodtype/1-{{page}}.html",
+        "url2": "/vodtype/1.html"
       },
       {
-        "name": "最近更新",
-        "url": "/asian/zh-CN/videos/recent/page/{{page}}"
+        "name": "连续剧",
+        "url": "/vodtype/2-{{page}}.html",
+        "url2": "/vodtype/2.html"
       },
       {
-        "name": "今日热门",
-        "url": "/asian/zh-CN/videos/hot/today/page/{{page}}"
+        "name": "综艺",
+        "url": "/vodtype/3-{{page}}.html",
+        "url2": "/vodtype/3.html"
       },
       {
-        "name": "本周热门",
-        "url": "/asian/zh-CN/videos/hot/week/page/{{page}}"
+        "name": "动漫",
+        "url": "/vodtype/4-{{page}}.html",
+        "url2": "/vodtype/4.html"
       },
       {
-        "name": "本月热门",
-        "url": "/asian/zh-CN/videos/hot/month/page/{{page}}"
+        "name": "国产剧",
+        "url": "/vodtype/13-{{page}}.html",
+        "url2": "/vodtype/13.html"
       },
       {
-        "name": "中文字幕",
-        "url": "/asian/zh-CN/videos/tag/%E4%B8%AD%E6%96%87%E5%AD%97%E5%B9%95/page/{{page}}"
+        "name": "港台剧",
+        "url": "/vodtype/14-{{page}}.html",
+        "url2": "/vodtype/14.html"
       },
       {
-        "name": "无码流出",
-        "url": "/asian/zh-CN/videos/tag/%E6%97%A0%E7%A0%81%E6%B5%81%E5%87%BA/page/{{page}}"
+        "name": "日韩剧",
+        "url": "/vodtype/15-{{page}}.html",
+        "url2": "/vodtype/15.html"
+      },
+      {
+        "name": "欧美剧",
+        "url": "/vodtype/16-{{page}}.html",
+        "url2": "/vodtype/16.html"
       }
     ],
     "list": {
-      "list": ".streamit-video-card",
-      "name": "img@alt||.streamit-video-card__title@text",
-      "tips": ".streamit-video-card__time@text",
-      "coverUrl": "img@src",
-      "detailUrl": "a.streamit-video-card__media-link@href||a@href"
+      "list": ".stui-vodlist__thumb, .myui-vodlist__thumb, .module-item-pic a, .module-poster-item",
+      "name": "title||alt||.module-poster-item-title@text",
+      "tips": ".pic-text@text||.module-item-note@text||.module-item-text@text",
+      "coverUrl": "data-original||data-src||src",
+      "detailUrl": "href"
     },
     "search": {
-      "url": "/asian/zh-CN/videos/search/{{key}}",
-      "list": ".streamit-video-card",
-      "name": "img@alt||.streamit-video-card__title@text",
-      "tips": ".streamit-video-card__time@text",
-      "coverUrl": "img@src",
-      "detailUrl": "a.streamit-video-card__media-link@href||a@href"
+      "url": "/vodsearch/-------------.html?wd={{key}}",
+      "list": ".stui-vodlist__thumb, .myui-vodlist__thumb, .module-item-pic a, .module-poster-item",
+      "name": "title||alt",
+      "tips": ".pic-text@text||.module-item-note@text",
+      "coverUrl": "data-original||data-src||src",
+      "detailUrl": "href"
     },
     "detail": {
-      "meta": "h1@text||title@text"
+      "meta": ".stui-content__detail@html||.myui-content__detail@html||.module-info-main@html||h1@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){try{var m=html.match(/videoUid\\\"?\\s*[:=]\\s*[\\\"']([0-9a-fA-F]{8,})[\\\"']/);if(!m)return [];var uid=m[1];return [{name:'线路1',url:'https://madou8.pw/asian/zh-CN/api/video/stream?videoUid='+uid+'#playlist.0.url'},{name:'线路2',url:'https://madou8.pw/asian/zh-CN/api/video/stream?videoUid='+uid}];}catch(e){return [];}} getPlay(__result);",
-      "name": "$.name||text",
-      "url": "$.url||href"
-    }
-  },
-  {
-    "name": "📺麻豆4K直链",
-    "api": "https://madou8.pw",
-    "type": 2,
-    "searchable": true,
-    "header": {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
-      "Referer": "https://madou8.pw/asian/zh-CN/",
-      "Accept": "application/json,text/html,*/*"
-    },
-    "categories": [
-      {
-        "name": "最新上架",
-        "url": "/asian/zh-CN/videos/new-releases/page/{{page}}"
-      },
-      {
-        "name": "最近更新",
-        "url": "/asian/zh-CN/videos/recent/page/{{page}}"
-      },
-      {
-        "name": "今日热门",
-        "url": "/asian/zh-CN/videos/hot/today/page/{{page}}"
-      },
-      {
-        "name": "本周热门",
-        "url": "/asian/zh-CN/videos/hot/week/page/{{page}}"
-      },
-      {
-        "name": "本月热门",
-        "url": "/asian/zh-CN/videos/hot/month/page/{{page}}"
-      },
-      {
-        "name": "中文字幕",
-        "url": "/asian/zh-CN/videos/tag/%E4%B8%AD%E6%96%87%E5%AD%97%E5%B9%95/page/{{page}}"
-      },
-      {
-        "name": "无码流出",
-        "url": "/asian/zh-CN/videos/tag/%E6%97%A0%E7%A0%81%E6%B5%81%E5%87%BA/page/{{page}}"
-      }
-    ],
-    "list": {
-      "list": ".streamit-video-card",
-      "name": "img@alt",
-      "tips": ".streamit-video-card__time@text",
-      "coverUrl": "img@src",
-      "detailUrl": "https://madou8.pw/asian/zh-CN/api/video/stream?videoUid={{@data-video-uid}}"
-    },
-    "search": {
-      "url": "/asian/zh-CN/videos/search/{{key}}",
-      "list": ".streamit-video-card",
-      "name": "img@alt",
-      "coverUrl": "img@src",
-      "detailUrl": "https://madou8.pw/asian/zh-CN/api/video/stream?videoUid={{@data-video-uid}}"
-    },
-    "play": {
-      "list": "$.playlist",
-      "name": "$.urlType||播放",
-      "url": "$.url"
-    },
-    "toc": {
-      "list": "$.playlist",
-      "name": "$.urlType||播放",
-      "url": "$.url"
+      "list": ".stui-content__playlist a, .myui-content__list a, .module-play-list a, .module-list a",
+      "name": "text",
+      "url": "href"
     }
   },
   {
