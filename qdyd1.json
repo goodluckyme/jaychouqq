@@ -84,6 +84,10 @@
         "url": "/x/web-interface/popular?ps=30&pn={{page}}"
       },
       {
+        "name": "首页推荐",
+        "url": "/x/web-interface/index/top/rcmd?ps=20&fresh_idx={{page}}&fresh_idx_1h={{page}}"
+      },
+      {
         "name": "番剧榜",
         "url": "/pgc/season/rank/web/list?day=3&season_type=1"
       },
@@ -106,23 +110,47 @@
       {
         "name": "综艺榜",
         "url": "/pgc/season/rank/web/list?day=3&season_type=7"
+      },
+      {
+        "name": "动画",
+        "url": "/x/web-interface/search/type?search_type=video&keyword=%E5%8A%A8%E7%94%BB&page={{page}}"
+      },
+      {
+        "name": "音乐",
+        "url": "/x/web-interface/search/type?search_type=video&keyword=%E9%9F%B3%E4%B9%90&page={{page}}"
+      },
+      {
+        "name": "游戏",
+        "url": "/x/web-interface/search/type?search_type=video&keyword=%E6%B8%B8%E6%88%8F&page={{page}}"
+      },
+      {
+        "name": "搞笑",
+        "url": "/x/web-interface/search/type?search_type=video&keyword=%E6%90%9E%E7%AC%91&page={{page}}"
+      },
+      {
+        "name": "影视",
+        "url": "/x/web-interface/search/type?search_type=video&keyword=%E5%BD%B1%E8%A7%86&page={{page}}"
+      },
+      {
+        "name": "娱乐",
+        "url": "/x/web-interface/search/type?search_type=video&keyword=%E5%A8%B1%E4%B9%90&page={{page}}"
       }
     ],
     "list": {
-      "list": "$.data.list",
+      "list": "$.data.list||$.data.item||$.data.result",
       "name": "$.title",
-      "tips": "$.new_ep.index_show||$.desc||$.tname",
+      "tips": "$.new_ep.index_show||$.desc||$.tname||$.duration",
       "rate": "$.rating",
       "coverUrl": "$.pic||$.cover",
-      "detailUrl": "$.url||https://www.bilibili.com/video/{{$.bvid}}"
+      "detailUrl": "$.url||https://www.bilibili.com/video/{{$.bvid}}||https://www.bilibili.com/bangumi/play/ss{{$.season_id}}"
     },
     "search": {
-      "url": "/x/web-interface/search/all/v2?keyword={{key}}",
-      "list": "body@js:function getBiliSearch(html){try{var j=JSON.parse(html);var out=[];var arr=(j.data&&j.data.result)||[];for(var i=0;i<arr.length;i++){var block=arr[i];var d=block.data||[];for(var k=0;k<d.length;k++){var it=d[k];if(!it)continue;var title=(it.title||'').replace(/<[^>]+>/g,'');var cover=it.pic||it.cover||'';if(cover.indexOf('//')===0)cover='https:'+cover;var link=it.url||it.goto_url||'';if(!link&&it.bvid)link='https://www.bilibili.com/video/'+it.bvid;if(!link&&it.season_id)link='https://www.bilibili.com/bangumi/play/ss'+it.season_id;if(!title)continue;out.push({title:title,cover:cover,url:link,tips:it.season_type_name||it.typename||it.author||''});}}return out;}catch(e){return [];}} getBiliSearch(__result);",
+      "url": "/x/web-interface/search/type?search_type=video&keyword={{key}}&page=1",
+      "list": "$.data.result",
       "name": "$.title",
-      "tips": "$.tips",
-      "coverUrl": "$.cover",
-      "detailUrl": "$.url"
+      "tips": "$.duration||$.typename",
+      "coverUrl": "$.pic",
+      "detailUrl": "https://www.bilibili.com/video/{{$.bvid}}"
     },
     "detail": {
       "meta": "title@text||h1@text"

@@ -558,122 +558,104 @@
     "header": {
       "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
       "Accept-Language": "zh-CN,zh;q=0.9",
-      "Referer": "https://a123tv.com/"
+      "Referer": "https://a123tv.com/",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
     },
     "categories": [
       {
         "name": "电影",
-        "url": "/t/10/p{{page}}.html",
-        "url2": "/t/10.html"
+        "url": "/t/10/p{{page}}.html"
       },
       {
         "name": "连续剧",
-        "url": "/t/11/p{{page}}.html",
-        "url2": "/t/11.html"
+        "url": "/t/11/p{{page}}.html"
       },
       {
         "name": "综艺",
-        "url": "/t/12/p{{page}}.html",
-        "url2": "/t/12.html"
+        "url": "/t/12/p{{page}}.html"
       },
       {
         "name": "动漫",
-        "url": "/t/13/p{{page}}.html",
-        "url2": "/t/13.html"
+        "url": "/t/13/p{{page}}.html"
       },
       {
         "name": "动作片",
-        "url": "/t/1001/p{{page}}.html",
-        "url2": "/t/1001.html"
+        "url": "/t/1001/p{{page}}.html"
       },
       {
         "name": "喜剧片",
-        "url": "/t/1002/p{{page}}.html",
-        "url2": "/t/1002.html"
+        "url": "/t/1002/p{{page}}.html"
       },
       {
         "name": "爱情片",
-        "url": "/t/1003/p{{page}}.html",
-        "url2": "/t/1003.html"
+        "url": "/t/1003/p{{page}}.html"
       },
       {
         "name": "科幻片",
-        "url": "/t/1004/p{{page}}.html",
-        "url2": "/t/1004.html"
+        "url": "/t/1004/p{{page}}.html"
       },
       {
         "name": "恐怖片",
-        "url": "/t/1005/p{{page}}.html",
-        "url2": "/t/1005.html"
+        "url": "/t/1005/p{{page}}.html"
       },
       {
         "name": "剧情片",
-        "url": "/t/1006/p{{page}}.html",
-        "url2": "/t/1006.html"
+        "url": "/t/1006/p{{page}}.html"
       },
       {
         "name": "战争片",
-        "url": "/t/1007/p{{page}}.html",
-        "url2": "/t/1007.html"
+        "url": "/t/1007/p{{page}}.html"
       },
       {
         "name": "4K电影",
-        "url": "/t/1027/p{{page}}.html",
-        "url2": "/t/1027.html"
+        "url": "/t/1027/p{{page}}.html"
       },
       {
         "name": "国产剧",
-        "url": "/t/1101/p{{page}}.html",
-        "url2": "/t/1101.html"
+        "url": "/t/1101/p{{page}}.html"
       },
       {
         "name": "香港剧",
-        "url": "/t/1102/p{{page}}.html",
-        "url2": "/t/1102.html"
+        "url": "/t/1102/p{{page}}.html"
       },
       {
         "name": "韩国剧",
-        "url": "/t/1103/p{{page}}.html",
-        "url2": "/t/1103.html"
+        "url": "/t/1103/p{{page}}.html"
       },
       {
         "name": "欧美剧",
-        "url": "/t/1104/p{{page}}.html",
-        "url2": "/t/1104.html"
+        "url": "/t/1104/p{{page}}.html"
       },
       {
         "name": "台湾剧",
-        "url": "/t/1105/p{{page}}.html",
-        "url2": "/t/1105.html"
+        "url": "/t/1105/p{{page}}.html"
       },
       {
         "name": "日本剧",
-        "url": "/t/1106/p{{page}}.html",
-        "url2": "/t/1106.html"
+        "url": "/t/1106/p{{page}}.html"
       },
       {
         "name": "泰国剧",
-        "url": "/t/1108/p{{page}}.html",
-        "url2": "/t/1108.html"
+        "url": "/t/1108/p{{page}}.html"
       }
     ],
     "list": {
-      "list": ".w4-item",
+      "list": "a.w4-item, .w4-item",
       "name": ".t@title||.t@text||img@alt",
-      "tips": ".r@text||.i@text",
+      "tips": ".r@text||.i@text||.s@text",
       "coverUrl": "img@data-src||img@src",
-      "detailUrl": "a@href||@href"
+      "detailUrl": "href"
     },
     "search": {
       "url": "/s/{{key}}.html",
-      "list": ".w4-item",
+      "list": "a.w4-item, .w4-item",
       "name": ".t@title||.t@text||img@alt",
       "tips": ".r@text||.i@text",
       "coverUrl": "img@data-src||img@src",
-      "detailUrl": "a@href||@href"
+      "detailUrl": "href"
     },
     "detail": {
-      "meta": ".w4-meta@html||.w4-info@html||h1@text"
+      "meta": "h1@text||.w4-meta@html||.w4-info@html"
     },
     "play": {
       "list": ".w4-episode-list a, .w4-line-item",
