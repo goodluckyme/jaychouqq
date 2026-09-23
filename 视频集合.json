@@ -1,5 +1,233 @@
 [
   {
+    "name": "📺57短剧",
+    "api": "https://57duanju.org",
+    "type": 2,
+    "searchable": true,
+    "removeReferer": false,
+    "header": {
+      "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+      "Referer": "https://57duanju.org/",
+      "Accept-Language": "zh-CN,zh;q=0.9"
+    },
+    "categories": [
+      {
+        "name": "成人AI短剧",
+        "url": "/aichengduanju/{{page}}/",
+        "url2": "/aichengduanju/"
+      },
+      {
+        "name": "热门短剧",
+        "url": "/hot-dramas/{{page}}/",
+        "url2": "/hot-dramas/"
+      },
+      {
+        "name": "连载中",
+        "url": "/ongoing/{{page}}/",
+        "url2": "/ongoing/"
+      },
+      {
+        "name": "人气",
+        "url": "/popular/{{page}}/",
+        "url2": "/popular/"
+      },
+      {
+        "name": "排行",
+        "url": "/top/{{page}}/",
+        "url2": "/top/"
+      }
+    ],
+    "list": {
+      "list": "a[href*='/events/']",
+      "name": "img@alt||@title||text",
+      "tips": "",
+      "coverUrl": "img@src||img@data-src",
+      "detailUrl": "href"
+    },
+    "search": {
+      "url": "/search/?q={{key}}",
+      "list": "a[href*='/events/']",
+      "name": "img@alt||@title||text",
+      "coverUrl": "img@src||img@data-src",
+      "detailUrl": "href"
+    },
+    "detail": {
+      "meta": "title@text||h1@text"
+    },
+    "play": {
+      "list": "video",
+      "name": "播放",
+      "url": "data-hls-src||data-fallback-src||src||data-hls"
+    },
+    "toc": {
+      "list": "video",
+      "name": "播放",
+      "url": "data-hls-src||data-fallback-src||src||data-hls"
+    }
+  },
+  {
+    "name": "📺57短剧(JS)",
+    "api": "https://57duanju.org",
+    "type": 2,
+    "searchable": true,
+    "removeReferer": false,
+    "header": {
+      "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+      "Referer": "https://57duanju.org/",
+      "Accept-Language": "zh-CN,zh;q=0.9"
+    },
+    "categories": [
+      {
+        "name": "成人AI短剧",
+        "url": "/aichengduanju/{{page}}/",
+        "url2": "/aichengduanju/"
+      },
+      {
+        "name": "热门短剧",
+        "url": "/hot-dramas/{{page}}/",
+        "url2": "/hot-dramas/"
+      },
+      {
+        "name": "连载中",
+        "url": "/ongoing/{{page}}/",
+        "url2": "/ongoing/"
+      },
+      {
+        "name": "人气",
+        "url": "/popular/{{page}}/",
+        "url2": "/popular/"
+      },
+      {
+        "name": "排行",
+        "url": "/top/{{page}}/",
+        "url2": "/top/"
+      }
+    ],
+    "list": {
+      "list": "a[href*='/events/']",
+      "name": "img@alt||@title||text",
+      "tips": "",
+      "coverUrl": "img@src||img@data-src",
+      "detailUrl": "href"
+    },
+    "search": {
+      "url": "/search/?q={{key}}",
+      "list": "a[href*='/events/']",
+      "name": "img@alt||@title||text",
+      "coverUrl": "img@src||img@data-src",
+      "detailUrl": "href"
+    },
+    "detail": {
+      "meta": "title@text||h1@text"
+    },
+    "play": {
+      "list": "body@js:function p(h){var o=[],s={},i=0;function a(n,u){if(!u)return;u=String(u).replace(/&amp;/g,'&').replace(/\\\\u0026/g,'&').trim();if(!u||s[u]||!/m3u8|\\.mp4/i.test(u))return;s[u]=1;i++;o.push({name:n||('线'+i),url:u});}var m;m=h.match(/data-hls-src=[\"']([^\"']+)[\"']/i);if(m)a('HLS',m[1]);m=h.match(/data-fallback-src=[\"']([^\"']+)[\"']/i);if(m)a('MP4',m[1]);m=h.match(/\"contentUrl\"\\s*:\\s*\"([^\"]+)\"/);if(m)a('正片',m[1]);var r=/https?:\\/\\/[^\\s\"'<>]+\\.m3u8[^\\s\"'<>]*/gi;while((m=r.exec(h)))a('HLS',m[0]);r=/https?:\\/\\/[^\\s\"'<>]+\\.mp4[^\\s\"'<>]*/gi;while((m=r.exec(h)))a('MP4',m[0]);return o;} p(__result);",
+      "name": "$.name",
+      "url": "$.url",
+      "header": {
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15",
+        "Referer": "https://57duanju.org/",
+        "Origin": "https://57duanju.org"
+      }
+    },
+    "toc": {
+      "list": "body@js:function p(h){var o=[],s={},i=0;function a(n,u){if(!u)return;u=String(u).replace(/&amp;/g,'&').replace(/\\\\u0026/g,'&').trim();if(!u||s[u]||!/m3u8|\\.mp4/i.test(u))return;s[u]=1;i++;o.push({name:n||('线'+i),url:u});}var m;m=h.match(/data-hls-src=[\"']([^\"']+)[\"']/i);if(m)a('HLS',m[1]);m=h.match(/data-fallback-src=[\"']([^\"']+)[\"']/i);if(m)a('MP4',m[1]);m=h.match(/\"contentUrl\"\\s*:\\s*\"([^\"]+)\"/);if(m)a('正片',m[1]);var r=/https?:\\/\\/[^\\s\"'<>]+\\.m3u8[^\\s\"'<>]*/gi;while((m=r.exec(h)))a('HLS',m[0]);r=/https?:\\/\\/[^\\s\"'<>]+\\.mp4[^\\s\"'<>]*/gi;while((m=r.exec(h)))a('MP4',m[0]);return o;} p(__result);",
+      "name": "$.name",
+      "url": "$.url",
+      "header": {
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15",
+        "Referer": "https://57duanju.org/",
+        "Origin": "https://57duanju.org"
+      }
+    }
+  },
+  {
+    "name": "📺TinyAV",
+    "api": "https://tinyavideo.com",
+    "type": 2,
+    "searchable": true,
+    "removeReferer": false,
+    "header": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      "Referer": "https://tinyavideo.com/",
+      "Accept-Language": "zh-CN,zh;q=0.9"
+    },
+    "categories": [
+      {
+        "name": "日本-最新",
+        "url": "/japanese/new?page={{page}}",
+        "url2": "/japanese/new"
+      },
+      {
+        "name": "日本-今日热门",
+        "url": "/japanese/today-hot?page={{page}}",
+        "url2": "/japanese/today-hot"
+      },
+      {
+        "name": "日本-本周热门",
+        "url": "/japanese/weekly-hot?page={{page}}",
+        "url2": "/japanese/weekly-hot"
+      },
+      {
+        "name": "无码流出",
+        "url": "/uncensored-leak/new?page={{page}}",
+        "url2": "/uncensored-leak/new"
+      },
+      {
+        "name": "无码热门",
+        "url": "/uncensored-leak/hot?page={{page}}",
+        "url2": "/uncensored-leak/hot"
+      },
+      {
+        "name": "FC2最新",
+        "url": "/fc2/new?page={{page}}",
+        "url2": "/fc2/new"
+      },
+      {
+        "name": "亚洲最新",
+        "url": "/asian/new?page={{page}}",
+        "url2": "/asian/new"
+      },
+      {
+        "name": "欧美最新",
+        "url": "/western/new?page={{page}}",
+        "url2": "/western/new"
+      },
+      {
+        "name": "里番",
+        "url": "/hentai/new?page={{page}}",
+        "url2": "/hentai/new"
+      }
+    ],
+    "list": {
+      "list": "a[href*='/video/']",
+      "name": "img@alt",
+      "tips": ".count-number@text",
+      "coverUrl": "img@src||img@data-src",
+      "detailUrl": "href"
+    },
+    "search": {
+      "url": "/search?fulltext={{key}}",
+      "list": "a[href*='/video/']",
+      "name": "img@alt",
+      "coverUrl": "img@src||img@data-src",
+      "detailUrl": "href"
+    },
+    "detail": {
+      "meta": "title@text||h1@text"
+    },
+    "play": {
+      "list": "body@js:function p(h){var o=[],s={},i=0;function a(n,u){if(!u)return;u=String(u).replace(/&amp;/g,'&').trim();if(!u||s[u]||!/m3u8|\\.mp4/i.test(u))return;s[u]=1;i++;o.push({name:n||('线'+i),url:u});}var m=h.match(/window\\.m3u8List\\s*=\\s*\\[([\\s\\S]*?)\\]/);if(m){(m[1].match(/https?:[^\"'\\s]+/g)||[]).forEach(function(u,k){a(k?'线'+(k+1):'播放',u.replace(/[\"',]/g,''));});}m=h.match(/\"contentUrl\"\\s*:\\s*\"([^\"]+)\"/);if(m)a('正片',m[1]);var r=/https?:\\/\\/[^\\s\"'<>]+\\.m3u8[^\\s\"'<>]*/gi;while((m=r.exec(h)))a('HLS',m[0]);return o;} p(__result);",
+      "name": "$.name",
+      "url": "$.url"
+    },
+    "toc": {
+      "list": "body@js:function p(h){var o=[],s={},i=0;function a(n,u){if(!u)return;u=String(u).replace(/&amp;/g,'&').trim();if(!u||s[u]||!/m3u8|\\.mp4/i.test(u))return;s[u]=1;i++;o.push({name:n||('线'+i),url:u});}var m=h.match(/window\\.m3u8List\\s*=\\s*\\[([\\s\\S]*?)\\]/);if(m){(m[1].match(/https?:[^\"'\\s]+/g)||[]).forEach(function(u,k){a(k?'线'+(k+1):'播放',u.replace(/[\"',]/g,''));});}m=h.match(/\"contentUrl\"\\s*:\\s*\"([^\"]+)\"/);if(m)a('正片',m[1]);var r=/https?:\\/\\/[^\\s\"'<>]+\\.m3u8[^\\s\"'<>]*/gi;while((m=r.exec(h)))a('HLS',m[0]);return o;} p(__result);",
+      "name": "$.name",
+      "url": "$.url"
+    }
+  },
+  {
     "name": "📺骚火",
     "api": "https://saohuo.tv",
     "type": 2,
@@ -204,160 +432,6 @@
       "header": {
         "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15",
         "Referer": "https://91crdj.com/"
-      }
-    },
-    "removeReferer": false
-  },
-  {
-    "name": "📺57短剧",
-    "api": "https://57duanju.org",
-    "type": 2,
-    "searchable": true,
-    "header": {
-      "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
-      "Referer": "https://57duanju.org/",
-      "Accept-Language": "zh-CN,zh;q=0.9"
-    },
-    "categories": [
-      {
-        "name": "成人AI短剧",
-        "url": "/aichengduanju/{{page}}/",
-        "url2": "/aichengduanju/"
-      },
-      {
-        "name": "热门短剧",
-        "url": "/hot-dramas/{{page}}/",
-        "url2": "/hot-dramas/"
-      },
-      {
-        "name": "连载中",
-        "url": "/ongoing/{{page}}/",
-        "url2": "/ongoing/"
-      },
-      {
-        "name": "人气",
-        "url": "/popular/{{page}}/",
-        "url2": "/popular/"
-      },
-      {
-        "name": "排行",
-        "url": "/top/{{page}}/",
-        "url2": "/top/"
-      }
-    ],
-    "list": {
-      "list": "a[href*='/events/']",
-      "name": "img@alt||@title||text",
-      "tips": "",
-      "coverUrl": "img@src||img@data-src",
-      "detailUrl": "href"
-    },
-    "search": {
-      "url": "/search/?q={{key}}",
-      "list": "a[href*='/events/']",
-      "name": "img@alt||text",
-      "coverUrl": "img@src",
-      "detailUrl": "href"
-    },
-    "detail": {
-      "meta": "title@text||h1@text"
-    },
-    "play": {
-      "list": "body@js:function getPlay(html){try{var out=[],seen={},i=0;function add(n,u){if(!u)return;u=(u+'').replace(/&amp;/g,'&').replace(/\\\\u0026/g,'&').trim();if(!u||seen[u])return;if(!/m3u8|\\.mp4/i.test(u))return;seen[u]=1;i++;out.push({name:n||('线路'+i),url:u});}var m;m=html.match(/data-hls-src=[\"']([^\"']+)[\"']/i);if(m)add('HLS',m[1]);m=html.match(/data-fallback-src=[\"']([^\"']+)[\"']/i);if(m)add('MP4',m[1]);m=html.match(/data-hls=[\"']([^\"']+)[\"']/i);if(m)add('HLS',m[1]);m=html.match(/\"contentUrl\"\\s*:\\s*\"([^\"]+)\"/i);if(m)add('正片',m[1]);m=html.match(/<video[^>]+src=[\"']([^\"']+)[\"']/i);if(m)add('视频',m[1]);var re=/https?:\\/\\/[^\\s\"'<>\\\\]+\\.m3u8[^\\s\"'<>\\\\]*/gi;while((m=re.exec(html))!==null)add('HLS',m[0]);re=/https?:\\/\\/[^\\s\"'<>\\\\]+\\.mp4[^\\s\"'<>\\\\]*/gi;while((m=re.exec(html))!==null)add('MP4',m[0]);return out;}catch(e){return [];}} getPlay(__result);",
-      "name": "$.name",
-      "url": "$.url",
-      "header": {
-        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
-        "Referer": "https://57duanju.org/",
-        "Origin": "https://57duanju.org",
-        "Accept": "*/*"
-      }
-    },
-    "removeReferer": false
-  },
-  {
-    "name": "📺TinyAV",
-    "api": "https://tinyavideo.com",
-    "type": 2,
-    "searchable": true,
-    "header": {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-      "Referer": "https://tinyavideo.com/",
-      "Accept-Language": "zh-CN,zh;q=0.9"
-    },
-    "categories": [
-      {
-        "name": "日本-最新",
-        "url": "/japanese/new?page={{page}}",
-        "url2": "/japanese/new"
-      },
-      {
-        "name": "日本-今日热门",
-        "url": "/japanese/today-hot?page={{page}}",
-        "url2": "/japanese/today-hot"
-      },
-      {
-        "name": "日本-本周热门",
-        "url": "/japanese/weekly-hot?page={{page}}",
-        "url2": "/japanese/weekly-hot"
-      },
-      {
-        "name": "无码流出",
-        "url": "/uncensored-leak/new?page={{page}}",
-        "url2": "/uncensored-leak/new"
-      },
-      {
-        "name": "无码热门",
-        "url": "/uncensored-leak/hot?page={{page}}",
-        "url2": "/uncensored-leak/hot"
-      },
-      {
-        "name": "FC2最新",
-        "url": "/fc2/new?page={{page}}",
-        "url2": "/fc2/new"
-      },
-      {
-        "name": "亚洲最新",
-        "url": "/asian/new?page={{page}}",
-        "url2": "/asian/new"
-      },
-      {
-        "name": "欧美最新",
-        "url": "/western/new?page={{page}}",
-        "url2": "/western/new"
-      },
-      {
-        "name": "里番",
-        "url": "/hentai/new?page={{page}}",
-        "url2": "/hentai/new"
-      }
-    ],
-    "list": {
-      "list": "a[href*='/video/']",
-      "name": "img@alt",
-      "tips": ".count-number@text",
-      "coverUrl": "img@src||img@data-src",
-      "detailUrl": "href"
-    },
-    "search": {
-      "url": "/search?fulltext={{key}}",
-      "list": "a[href*='/video/']",
-      "name": "img@alt",
-      "coverUrl": "img@src",
-      "detailUrl": "href"
-    },
-    "detail": {
-      "meta": "title@text||h1@text"
-    },
-    "play": {
-      "list": "body@js:function getPlay(html){try{var out=[],seen={},i=0;function add(n,u){if(!u)return;u=(u+'').replace(/&amp;/g,'&').trim();if(!u||seen[u])return;if(!/m3u8|\\.mp4/i.test(u))return;if(/ad[sx]?\\.|analytics/i.test(u))return;seen[u]=1;i++;out.push({name:n||('线路'+i),url:u});}var m;m=html.match(/window\\.m3u8List\\s*=\\s*\\[([\\s\\S]*?)\\]/);if(m){var ps=m[1].match(/https?:[^\"'\\s]+/g)||[];for(var k=0;k<ps.length;k++)add(k?'线路'+(k+1):'播放',ps[k].replace(/[\"',]/g,''));}m=html.match(/\"contentUrl\"\\s*:\\s*\"([^\"]+)\"/i);if(m)add('正片',m[1]);var re=/https?:\\/\\/[^\\s\"'<>\\\\]+\\.m3u8[^\\s\"'<>\\\\]*/gi;while((m=re.exec(html))!==null)add('HLS',m[0]);return out;}catch(e){return [];}} getPlay(__result);",
-      "name": "$.name",
-      "url": "$.url",
-      "header": {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-        "Referer": "https://tinyavideo.com/",
-        "Origin": "https://tinyavideo.com",
-        "Accept": "*/*"
       }
     },
     "removeReferer": false
