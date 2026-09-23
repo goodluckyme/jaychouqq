@@ -644,10 +644,10 @@
     "name": "📺优酷",
     "api": "https://api.ukuapi88.com/api.php/provide/vod/"
   },
-  {
+  
+ {
     "name": "📺巨量",
-    "api": "https://api.juliang.live/api/provide/vod/",
-    "searchable": false
+    "api": "https://api.juliang.live/api/provide/vod/"
   },
   {
     "name": "📺无尽",
