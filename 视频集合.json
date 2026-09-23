@@ -338,7 +338,7 @@
       "meta": "title@text||h1@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){try{var out=[],seen={};var re=/https?:\\/\\/[^\\s\"'<>\\\\]+\\.m3u8[^\\s\"'<>\\\\]*/gi;var m,i=0;while((m=re.exec(html))!==null){var u=m[0].replace(/&amp;/g,'&');if(seen[u])continue;if(/ad|analytics/i.test(u))continue;seen[u]=1;i++;out.push({name:'线路'+i,url:u});}return out;}catch(e){return [];}} getPlay(__result);",
+      "list": "body@js:function getPlay(html){try{var out=[],seen={},i=0;function push(u){if(!u||seen[u]||!/\\.m3u8/i.test(u)||/ad|analytics/i.test(u))return;seen[u]=1;i++;out.push({name:i>1?('线路'+i):'播放',url:u.replace(/&amp;/g,'&')});}var lm=html.match(/window\\.m3u8List\\s*=\\s*\\[([\\s\\S]*?)\\]/);if(lm){var ps=lm[1].match(/\"(https?:[^\"]+)\"/g)||[];for(var k=0;k<ps.length;k++)push(ps[k].replace(/^\"|\"$/g,''));}var cm=html.match(/\"contentUrl\"\\s*:\\s*\"(https?:[^\"]+\\.m3u8[^\"]*)\"/i);if(cm)push(cm[1]);var re=/https?:\\/\\/[^\\s\"'<>\\\\]+\\.m3u8[^\\s\"'<>\\\\]*/gi;var m;while((m=re.exec(html))!==null)push(m[0]);return out;}catch(e){return [];}} getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     }
@@ -434,7 +434,7 @@
       "meta": "h1@text||.stui-content__detail@html"
     },
     "play": {
-      "list": ".stui-content__playlist a, .play-list a, ul li a",
+      "list": ".stui-content__playlist a",
       "name": "text",
       "url": "href"
     }
