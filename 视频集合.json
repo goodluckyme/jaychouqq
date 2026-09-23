@@ -204,6 +204,242 @@
     }
   },
   {
+    "name": "📺57短剧",
+    "api": "https://57duanju.org",
+    "type": 2,
+    "searchable": true,
+    "header": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      "Referer": "https://57duanju.org/",
+      "Accept-Language": "zh-CN,zh;q=0.9"
+    },
+    "categories": [
+      {
+        "name": "成人AI短剧",
+        "url": "/aichengduanju/{{page}}/",
+        "url2": "/aichengduanju/"
+      },
+      {
+        "name": "热门短剧",
+        "url": "/hot-dramas/{{page}}/",
+        "url2": "/hot-dramas/"
+      },
+      {
+        "name": "连载中",
+        "url": "/ongoing/{{page}}/",
+        "url2": "/ongoing/"
+      },
+      {
+        "name": "人气",
+        "url": "/popular/{{page}}/",
+        "url2": "/popular/"
+      },
+      {
+        "name": "排行",
+        "url": "/top/{{page}}/",
+        "url2": "/top/"
+      }
+    ],
+    "list": {
+      "list": "a[href*='/events/']",
+      "name": "img@alt",
+      "tips": "",
+      "coverUrl": "img@src",
+      "detailUrl": "href"
+    },
+    "search": {
+      "url": "/search/?q={{key}}",
+      "list": "a[href*='/events/']",
+      "name": "img@alt",
+      "coverUrl": "img@src",
+      "detailUrl": "href"
+    },
+    "detail": {
+      "meta": "title@text||h1@text"
+    },
+    "play": {
+      "list": "body@js:function getPlay(html){try{var out=[],seen={};var re=/https?:\\/\\/[^\\s\"'<>\\\\]+\\.m3u8[^\\s\"'<>\\\\]*/gi;var m,i=0;while((m=re.exec(html))!==null){var u=m[0].replace(/&amp;/g,'&');if(seen[u])continue;seen[u]=1;i++;out.push({name:'线路'+i,url:u});}if(!out.length){var v=html.match(/<video[^>]+src=[\"']([^\"']+)/i);if(v)out.push({name:'正片',url:v[1]});}return out;}catch(e){return [];}} getPlay(__result);",
+      "name": "$.name",
+      "url": "$.url"
+    }
+  },
+  {
+    "name": "📺TinyAV",
+    "api": "https://tinyavideo.com",
+    "type": 2,
+    "searchable": true,
+    "header": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      "Referer": "https://tinyavideo.com/",
+      "Accept-Language": "zh-CN,zh;q=0.9,zh-TW;q=0.8"
+    },
+    "categories": [
+      {
+        "name": "日本-最新",
+        "url": "/japanese/new?page={{page}}",
+        "url2": "/japanese/new"
+      },
+      {
+        "name": "日本-今日热门",
+        "url": "/japanese/today-hot?page={{page}}",
+        "url2": "/japanese/today-hot"
+      },
+      {
+        "name": "日本-本周热门",
+        "url": "/japanese/weekly-hot?page={{page}}",
+        "url2": "/japanese/weekly-hot"
+      },
+      {
+        "name": "无码流出",
+        "url": "/uncensored-leak/new?page={{page}}",
+        "url2": "/uncensored-leak/new"
+      },
+      {
+        "name": "无码热门",
+        "url": "/uncensored-leak/hot?page={{page}}",
+        "url2": "/uncensored-leak/hot"
+      },
+      {
+        "name": "FC2最新",
+        "url": "/fc2/new?page={{page}}",
+        "url2": "/fc2/new"
+      },
+      {
+        "name": "亚洲最新",
+        "url": "/asian/new?page={{page}}",
+        "url2": "/asian/new"
+      },
+      {
+        "name": "欧美最新",
+        "url": "/western/new?page={{page}}",
+        "url2": "/western/new"
+      },
+      {
+        "name": "里番",
+        "url": "/hentai/new?page={{page}}",
+        "url2": "/hentai/new"
+      }
+    ],
+    "list": {
+      "list": "a[href*='/video/']",
+      "name": "img@alt",
+      "tips": ".count-number@text",
+      "coverUrl": "img@src||img@data-src",
+      "detailUrl": "href"
+    },
+    "search": {
+      "url": "/search?fulltext={{key}}",
+      "list": "a[href*='/video/']",
+      "name": "img@alt",
+      "coverUrl": "img@src",
+      "detailUrl": "href"
+    },
+    "detail": {
+      "meta": "title@text||h1@text"
+    },
+    "play": {
+      "list": "body@js:function getPlay(html){try{var out=[],seen={};var re=/https?:\\/\\/[^\\s\"'<>\\\\]+\\.m3u8[^\\s\"'<>\\\\]*/gi;var m,i=0;while((m=re.exec(html))!==null){var u=m[0].replace(/&amp;/g,'&');if(seen[u])continue;if(/ad|analytics/i.test(u))continue;seen[u]=1;i++;out.push({name:'线路'+i,url:u});}return out;}catch(e){return [];}} getPlay(__result);",
+      "name": "$.name",
+      "url": "$.url"
+    }
+  },
+  {
+    "name": "📺网飞猫",
+    "api": "https://www.fjszjm.com",
+    "type": 2,
+    "searchable": true,
+    "header": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      "Referer": "https://www.fjszjm.com/",
+      "Accept-Language": "zh-CN,zh;q=0.9"
+    },
+    "categories": [
+      {
+        "name": "电影",
+        "url": "/wfmwutp/1-{{page}}.html",
+        "url2": "/wfmwutp/1.html"
+      },
+      {
+        "name": "电视剧",
+        "url": "/wfmwutp/2-{{page}}.html",
+        "url2": "/wfmwutp/2.html"
+      },
+      {
+        "name": "综艺",
+        "url": "/wfmwutp/3-{{page}}.html",
+        "url2": "/wfmwutp/3.html"
+      },
+      {
+        "name": "动漫",
+        "url": "/wfmwutp/4-{{page}}.html",
+        "url2": "/wfmwutp/4.html"
+      },
+      {
+        "name": "短剧",
+        "url": "/wfmwutp/5-{{page}}.html",
+        "url2": "/wfmwutp/5.html"
+      },
+      {
+        "name": "动作片",
+        "url": "/wfmwutp/6-{{page}}.html",
+        "url2": "/wfmwutp/6.html"
+      },
+      {
+        "name": "喜剧片",
+        "url": "/wfmwutp/7-{{page}}.html",
+        "url2": "/wfmwutp/7.html"
+      },
+      {
+        "name": "国产剧",
+        "url": "/wfmwutp/17-{{page}}.html",
+        "url2": "/wfmwutp/17.html"
+      },
+      {
+        "name": "港台剧",
+        "url": "/wfmwutp/18-{{page}}.html",
+        "url2": "/wfmwutp/18.html"
+      },
+      {
+        "name": "日韩剧",
+        "url": "/wfmwutp/20-{{page}}.html",
+        "url2": "/wfmwutp/20.html"
+      },
+      {
+        "name": "欧美剧",
+        "url": "/wfmwutp/21-{{page}}.html",
+        "url2": "/wfmwutp/21.html"
+      },
+      {
+        "name": "国产动漫",
+        "url": "/wfmwutp/27-{{page}}.html",
+        "url2": "/wfmwutp/27.html"
+      }
+    ],
+    "list": {
+      "list": "a.stui-vodlist__thumb",
+      "name": "title",
+      "tips": ".pic-text@text||.pic-text1@text",
+      "coverUrl": "data-original||data-src||src",
+      "detailUrl": "href"
+    },
+    "search": {
+      "url": "/wfmwusc/{{key}}-------------.html",
+      "list": "a.stui-vodlist__thumb",
+      "name": "title",
+      "tips": ".pic-text@text",
+      "coverUrl": "data-original||src",
+      "detailUrl": "href"
+    },
+    "detail": {
+      "meta": "h1@text||.stui-content__detail@html"
+    },
+    "play": {
+      "list": ".stui-content__playlist a, .play-list a, ul li a",
+      "name": "text",
+      "url": "href"
+    }
+  },
+  {
     "name": "奇优",
     "type": 2,
     "api": "http://www.wdbay.com",
