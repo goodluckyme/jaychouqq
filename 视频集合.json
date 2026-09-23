@@ -1,5 +1,311 @@
 [
   {
+    "name": "📺TinyAV",
+    "api": "https://tinyavideo.com",
+    "type": 2,
+    "searchable": true,
+    "removeReferer": false,
+    "header": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      "Referer": "https://tinyavideo.com/",
+      "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+    },
+    "categories": [
+      {
+        "name": "日本-最新",
+        "url": "/japanese/new?page={{page}}",
+        "url2": "/japanese/new"
+      },
+      {
+        "name": "日本-今日热门",
+        "url": "/japanese/today-hot?page={{page}}",
+        "url2": "/japanese/today-hot"
+      },
+      {
+        "name": "日本-本周热门",
+        "url": "/japanese/weekly-hot?page={{page}}",
+        "url2": "/japanese/weekly-hot"
+      },
+      {
+        "name": "无码流出",
+        "url": "/uncensored-leak/new?page={{page}}",
+        "url2": "/uncensored-leak/new"
+      },
+      {
+        "name": "无码热门",
+        "url": "/uncensored-leak/hot?page={{page}}",
+        "url2": "/uncensored-leak/hot"
+      },
+      {
+        "name": "FC2最新",
+        "url": "/fc2/new?page={{page}}",
+        "url2": "/fc2/new"
+      },
+      {
+        "name": "亚洲最新",
+        "url": "/asian/new?page={{page}}",
+        "url2": "/asian/new"
+      },
+      {
+        "name": "欧美最新",
+        "url": "/western/new?page={{page}}",
+        "url2": "/western/new"
+      },
+      {
+        "name": "里番",
+        "url": "/hentai/new?page={{page}}",
+        "url2": "/hentai/new"
+      }
+    ],
+    "list": {
+      "list": "a[href*='/video/']",
+      "name": "img@alt",
+      "tips": ".count-number@text",
+      "coverUrl": "img@src||img@data-src",
+      "detailUrl": "href"
+    },
+    "search": {
+      "url": "/search?fulltext={{key}}",
+      "list": "a[href*='/video/']",
+      "name": "img@alt",
+      "coverUrl": "img@src||img@data-src",
+      "detailUrl": "href"
+    },
+    "detail": {
+      "meta": "title@text||h1@text"
+    },
+    "play": {
+      "list": "body@js:function x(h){try{var o=[],s={},n=0;function add(name,u){u=(u||'').replace(/&amp;/g,'&').replace(/\\\\u0026/g,'&').trim();if(!u||s[u]||!/m3u8|\\.mp4/i.test(u))return;s[u]=1;n++;o.push({name:name||('播放'+n),url:u});}var m=h.match(/window\\.m3u8List\\s*=\\s*\\[([\\s\\S]*?)\\]/);if(m){var ps=m[1].match(/https?:[^\\\"'\\\\s]+/g)||[];for(var i=0;i<ps.length;i++)add(i===0?'播放':('线路'+(i+1)),ps[i].replace(/[\\\"',]/g,''));}m=h.match(/\\\"contentUrl\\\"\\s*:\\s*\\\"([^\\\"]+)\\\"/);if(m)add('正片',m[1]);var re=/https?:\\\\/\\\\/[^\\\\s\\\"'<>]+\\\\.m3u8[^\\\\s\\\"'<>]*/gi;while((m=re.exec(h))!==null)add('HLS',m[0]);return o;}catch(e){return [];}} x(__result);",
+      "name": "$.name",
+      "url": "$.url",
+      "header": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        "Referer": "https://tinyavideo.com/",
+        "Origin": "https://tinyavideo.com"
+      }
+    },
+    "toc": {
+      "list": "body@js:function x(h){try{var o=[],s={},n=0;function add(name,u){u=(u||'').replace(/&amp;/g,'&').replace(/\\\\u0026/g,'&').trim();if(!u||s[u]||!/m3u8|\\.mp4/i.test(u))return;s[u]=1;n++;o.push({name:name||('播放'+n),url:u});}var m=h.match(/window\\.m3u8List\\s*=\\s*\\[([\\s\\S]*?)\\]/);if(m){var ps=m[1].match(/https?:[^\\\"'\\\\s]+/g)||[];for(var i=0;i<ps.length;i++)add(i===0?'播放':('线路'+(i+1)),ps[i].replace(/[\\\"',]/g,''));}m=h.match(/\\\"contentUrl\\\"\\s*:\\s*\\\"([^\\\"]+)\\\"/);if(m)add('正片',m[1]);var re=/https?:\\\\/\\\\/[^\\\\s\\\"'<>]+\\\\.m3u8[^\\\\s\\\"'<>]*/gi;while((m=re.exec(h))!==null)add('HLS',m[0]);return o;}catch(e){return [];}} x(__result);",
+      "name": "$.name",
+      "url": "$.url"
+    }
+  },
+  {
+    "name": "📺网飞猫",
+    "api": "https://www.fjszjm.com",
+    "type": 2,
+    "searchable": true,
+    "removeReferer": false,
+    "header": {
+      "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+      "Referer": "https://www.fjszjm.com/",
+      "Accept-Language": "zh-CN,zh;q=0.9",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+    },
+    "categories": [
+      {
+        "name": "电影",
+        "url": "/wfmwutp/1-{{page}}.html",
+        "url2": "/wfmwutp/1.html"
+      },
+      {
+        "name": "电视剧",
+        "url": "/wfmwutp/2-{{page}}.html",
+        "url2": "/wfmwutp/2.html"
+      },
+      {
+        "name": "综艺",
+        "url": "/wfmwutp/3-{{page}}.html",
+        "url2": "/wfmwutp/3.html"
+      },
+      {
+        "name": "动漫",
+        "url": "/wfmwutp/4-{{page}}.html",
+        "url2": "/wfmwutp/4.html"
+      },
+      {
+        "name": "短剧",
+        "url": "/wfmwutp/5-{{page}}.html",
+        "url2": "/wfmwutp/5.html"
+      },
+      {
+        "name": "动作片",
+        "url": "/wfmwutp/6-{{page}}.html",
+        "url2": "/wfmwutp/6.html"
+      },
+      {
+        "name": "喜剧片",
+        "url": "/wfmwutp/7-{{page}}.html",
+        "url2": "/wfmwutp/7.html"
+      },
+      {
+        "name": "国产剧",
+        "url": "/wfmwutp/17-{{page}}.html",
+        "url2": "/wfmwutp/17.html"
+      },
+      {
+        "name": "港台剧",
+        "url": "/wfmwutp/18-{{page}}.html",
+        "url2": "/wfmwutp/18.html"
+      },
+      {
+        "name": "日韩剧",
+        "url": "/wfmwutp/20-{{page}}.html",
+        "url2": "/wfmwutp/20.html"
+      },
+      {
+        "name": "欧美剧",
+        "url": "/wfmwutp/21-{{page}}.html",
+        "url2": "/wfmwutp/21.html"
+      },
+      {
+        "name": "国产动漫",
+        "url": "/wfmwutp/27-{{page}}.html",
+        "url2": "/wfmwutp/27.html"
+      }
+    ],
+    "list": {
+      "list": "a.stui-vodlist__thumb",
+      "name": "title||alt",
+      "tips": ".pic-text@text||.pic-text1@text",
+      "coverUrl": "data-original||data-src||src",
+      "detailUrl": "href"
+    },
+    "search": {
+      "url": "/wfmwusc/{{key}}-------------.html",
+      "list": "a.stui-vodlist__thumb",
+      "name": "title||alt",
+      "tips": ".pic-text@text",
+      "coverUrl": "data-original||src",
+      "detailUrl": "href"
+    },
+    "detail": {
+      "meta": "h1@text||.stui-content__detail@html"
+    },
+    "play": {
+      "list": ".stui-content__playlist a",
+      "name": "text",
+      "url": "href"
+    },
+    "toc": {
+      "list": ".stui-content__playlist a",
+      "name": "text",
+      "url": "href"
+    }
+  },
+  {
+    "name": "📺网飞猫(直解)",
+    "api": "https://www.fjszjm.com",
+    "type": 2,
+    "searchable": true,
+    "removeReferer": false,
+    "header": {
+      "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+      "Referer": "https://www.fjszjm.com/",
+      "Accept-Language": "zh-CN,zh;q=0.9",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+    },
+    "categories": [
+      {
+        "name": "电影",
+        "url": "/wfmwutp/1-{{page}}.html",
+        "url2": "/wfmwutp/1.html"
+      },
+      {
+        "name": "电视剧",
+        "url": "/wfmwutp/2-{{page}}.html",
+        "url2": "/wfmwutp/2.html"
+      },
+      {
+        "name": "综艺",
+        "url": "/wfmwutp/3-{{page}}.html",
+        "url2": "/wfmwutp/3.html"
+      },
+      {
+        "name": "动漫",
+        "url": "/wfmwutp/4-{{page}}.html",
+        "url2": "/wfmwutp/4.html"
+      },
+      {
+        "name": "短剧",
+        "url": "/wfmwutp/5-{{page}}.html",
+        "url2": "/wfmwutp/5.html"
+      },
+      {
+        "name": "动作片",
+        "url": "/wfmwutp/6-{{page}}.html",
+        "url2": "/wfmwutp/6.html"
+      },
+      {
+        "name": "喜剧片",
+        "url": "/wfmwutp/7-{{page}}.html",
+        "url2": "/wfmwutp/7.html"
+      },
+      {
+        "name": "国产剧",
+        "url": "/wfmwutp/17-{{page}}.html",
+        "url2": "/wfmwutp/17.html"
+      },
+      {
+        "name": "港台剧",
+        "url": "/wfmwutp/18-{{page}}.html",
+        "url2": "/wfmwutp/18.html"
+      },
+      {
+        "name": "日韩剧",
+        "url": "/wfmwutp/20-{{page}}.html",
+        "url2": "/wfmwutp/20.html"
+      },
+      {
+        "name": "欧美剧",
+        "url": "/wfmwutp/21-{{page}}.html",
+        "url2": "/wfmwutp/21.html"
+      },
+      {
+        "name": "国产动漫",
+        "url": "/wfmwutp/27-{{page}}.html",
+        "url2": "/wfmwutp/27.html"
+      }
+    ],
+    "list": {
+      "list": "a.stui-vodlist__thumb",
+      "name": "title||alt",
+      "tips": ".pic-text@text||.pic-text1@text",
+      "coverUrl": "data-original||data-src||src",
+      "detailUrl": "href"
+    },
+    "search": {
+      "url": "/wfmwusc/{{key}}-------------.html",
+      "list": "a.stui-vodlist__thumb",
+      "name": "title||alt",
+      "tips": ".pic-text@text",
+      "coverUrl": "data-original||src",
+      "detailUrl": "href"
+    },
+    "detail": {
+      "meta": "h1@text||.stui-content__detail@html"
+    },
+    "play": {
+      "list": "body@js:function x(h){try{var o=[],s={};function add(n,u){u=(u||'').replace(/&amp;/g,'&').trim();if(!u||s[u])return;s[u]=1;o.push({name:n||('播放'+o.length),url:u});}var m=h.match(/player_aaaa\\s*=\\s*(\\{[\\s\\S]*?\\})\\s*;/);if(m){try{var j=JSON.parse(m[1].replace(/([\\{,])\\s*(\\w+)\\s*:/g,'$1\"$2\":').replace(/'/g,'\"'));var u=j.url||'';var e=String(j.encrypt||'0');if(e==='1'){try{u=base64Decode(u);}catch(ex){}}if(e==='2'){try{u=base64Decode(decodeURIComponent(u));}catch(ex){}}if(u)add('正片',u);}catch(ex){}}var re=/https?:\\\\/\\\\/[^\\\\s\\\"'<>]+\\\\.m3u8[^\\\\s\\\"'<>]*/gi;while((m=re.exec(h))!==null)add('HLS',m[0]);re=/href=[\\\"']([^\\\"']*wfmwupl[^\\\"']*)[\\\"']/gi;while((m=re.exec(h))!==null){var u=m[1];if(u.indexOf('http')!==0)u='https://www.fjszjm.com'+u;add('线路',u);}re=/class=[\\\"'][^\\\"']*stui-content__playlist[\\\"'][\\s\\S]*?href=[\\\"']([^\\\"']+)[\\\"']/gi;while((m=re.exec(h))!==null){var u=m[1];if(u.indexOf('http')!==0)u='https://www.fjszjm.com'+u;add(m[0].match(/>([^<]+)</)?RegExp.$1:'集',u);}return o;}catch(e){return [];}} x(__result);",
+      "name": "$.name",
+      "url": "$.url",
+      "header": {
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15",
+        "Referer": "https://www.fjszjm.com/"
+      }
+    },
+    "toc": {
+      "list": "body@js:function x(h){try{var o=[],s={};function add(n,u){u=(u||'').replace(/&amp;/g,'&').trim();if(!u||s[u])return;s[u]=1;o.push({name:n||('播放'+o.length),url:u});}var m=h.match(/player_aaaa\\s*=\\s*(\\{[\\s\\S]*?\\})\\s*;/);if(m){try{var j=JSON.parse(m[1].replace(/([\\{,])\\s*(\\w+)\\s*:/g,'$1\"$2\":').replace(/'/g,'\"'));var u=j.url||'';var e=String(j.encrypt||'0');if(e==='1'){try{u=base64Decode(u);}catch(ex){}}if(e==='2'){try{u=base64Decode(decodeURIComponent(u));}catch(ex){}}if(u)add('正片',u);}catch(ex){}}var re=/https?:\\\\/\\\\/[^\\\\s\\\"'<>]+\\\\.m3u8[^\\\\s\\\"'<>]*/gi;while((m=re.exec(h))!==null)add('HLS',m[0]);re=/href=[\\\"']([^\\\"']*wfmwupl[^\\\"']*)[\\\"']/gi;while((m=re.exec(h))!==null){var u=m[1];if(u.indexOf('http')!==0)u='https://www.fjszjm.com'+u;add('线路',u);}re=/class=[\\\"'][^\\\"']*stui-content__playlist[\\\"'][\\s\\S]*?href=[\\\"']([^\\\"']+)[\\\"']/gi;while((m=re.exec(h))!==null){var u=m[1];if(u.indexOf('http')!==0)u='https://www.fjszjm.com'+u;add(m[0].match(/>([^<]+)</)?RegExp.$1:'集',u);}return o;}catch(e){return [];}} x(__result);",
+      "name": "$.name",
+      "url": "$.url",
+      "header": {
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15",
+        "Referer": "https://www.fjszjm.com/"
+      }
+    }
+  },
+  {
     "name": "📺57短剧",
     "api": "https://57duanju.org",
     "type": 2,
@@ -139,92 +445,6 @@
         "Referer": "https://57duanju.org/",
         "Origin": "https://57duanju.org"
       }
-    }
-  },
-  {
-    "name": "📺TinyAV",
-    "api": "https://tinyavideo.com",
-    "type": 2,
-    "searchable": true,
-    "removeReferer": false,
-    "header": {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-      "Referer": "https://tinyavideo.com/",
-      "Accept-Language": "zh-CN,zh;q=0.9"
-    },
-    "categories": [
-      {
-        "name": "日本-最新",
-        "url": "/japanese/new?page={{page}}",
-        "url2": "/japanese/new"
-      },
-      {
-        "name": "日本-今日热门",
-        "url": "/japanese/today-hot?page={{page}}",
-        "url2": "/japanese/today-hot"
-      },
-      {
-        "name": "日本-本周热门",
-        "url": "/japanese/weekly-hot?page={{page}}",
-        "url2": "/japanese/weekly-hot"
-      },
-      {
-        "name": "无码流出",
-        "url": "/uncensored-leak/new?page={{page}}",
-        "url2": "/uncensored-leak/new"
-      },
-      {
-        "name": "无码热门",
-        "url": "/uncensored-leak/hot?page={{page}}",
-        "url2": "/uncensored-leak/hot"
-      },
-      {
-        "name": "FC2最新",
-        "url": "/fc2/new?page={{page}}",
-        "url2": "/fc2/new"
-      },
-      {
-        "name": "亚洲最新",
-        "url": "/asian/new?page={{page}}",
-        "url2": "/asian/new"
-      },
-      {
-        "name": "欧美最新",
-        "url": "/western/new?page={{page}}",
-        "url2": "/western/new"
-      },
-      {
-        "name": "里番",
-        "url": "/hentai/new?page={{page}}",
-        "url2": "/hentai/new"
-      }
-    ],
-    "list": {
-      "list": "a[href*='/video/']",
-      "name": "img@alt",
-      "tips": ".count-number@text",
-      "coverUrl": "img@src||img@data-src",
-      "detailUrl": "href"
-    },
-    "search": {
-      "url": "/search?fulltext={{key}}",
-      "list": "a[href*='/video/']",
-      "name": "img@alt",
-      "coverUrl": "img@src||img@data-src",
-      "detailUrl": "href"
-    },
-    "detail": {
-      "meta": "title@text||h1@text"
-    },
-    "play": {
-      "list": "body@js:function p(h){var o=[],s={},i=0;function a(n,u){if(!u)return;u=String(u).replace(/&amp;/g,'&').trim();if(!u||s[u]||!/m3u8|\\.mp4/i.test(u))return;s[u]=1;i++;o.push({name:n||('线'+i),url:u});}var m=h.match(/window\\.m3u8List\\s*=\\s*\\[([\\s\\S]*?)\\]/);if(m){(m[1].match(/https?:[^\"'\\s]+/g)||[]).forEach(function(u,k){a(k?'线'+(k+1):'播放',u.replace(/[\"',]/g,''));});}m=h.match(/\"contentUrl\"\\s*:\\s*\"([^\"]+)\"/);if(m)a('正片',m[1]);var r=/https?:\\/\\/[^\\s\"'<>]+\\.m3u8[^\\s\"'<>]*/gi;while((m=r.exec(h)))a('HLS',m[0]);return o;} p(__result);",
-      "name": "$.name",
-      "url": "$.url"
-    },
-    "toc": {
-      "list": "body@js:function p(h){var o=[],s={},i=0;function a(n,u){if(!u)return;u=String(u).replace(/&amp;/g,'&').trim();if(!u||s[u]||!/m3u8|\\.mp4/i.test(u))return;s[u]=1;i++;o.push({name:n||('线'+i),url:u});}var m=h.match(/window\\.m3u8List\\s*=\\s*\\[([\\s\\S]*?)\\]/);if(m){(m[1].match(/https?:[^\"'\\s]+/g)||[]).forEach(function(u,k){a(k?'线'+(k+1):'播放',u.replace(/[\"',]/g,''));});}m=h.match(/\"contentUrl\"\\s*:\\s*\"([^\"]+)\"/);if(m)a('正片',m[1]);var r=/https?:\\/\\/[^\\s\"'<>]+\\.m3u8[^\\s\"'<>]*/gi;while((m=r.exec(h)))a('HLS',m[0]);return o;} p(__result);",
-      "name": "$.name",
-      "url": "$.url"
     }
   },
   {
@@ -435,102 +655,6 @@
       }
     },
     "removeReferer": false
-  },
-  {
-    "name": "📺网飞猫",
-    "api": "https://www.fjszjm.com",
-    "type": 2,
-    "searchable": true,
-    "header": {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-      "Referer": "https://www.fjszjm.com/",
-      "Accept-Language": "zh-CN,zh;q=0.9"
-    },
-    "categories": [
-      {
-        "name": "电影",
-        "url": "/wfmwutp/1-{{page}}.html",
-        "url2": "/wfmwutp/1.html"
-      },
-      {
-        "name": "电视剧",
-        "url": "/wfmwutp/2-{{page}}.html",
-        "url2": "/wfmwutp/2.html"
-      },
-      {
-        "name": "综艺",
-        "url": "/wfmwutp/3-{{page}}.html",
-        "url2": "/wfmwutp/3.html"
-      },
-      {
-        "name": "动漫",
-        "url": "/wfmwutp/4-{{page}}.html",
-        "url2": "/wfmwutp/4.html"
-      },
-      {
-        "name": "短剧",
-        "url": "/wfmwutp/5-{{page}}.html",
-        "url2": "/wfmwutp/5.html"
-      },
-      {
-        "name": "动作片",
-        "url": "/wfmwutp/6-{{page}}.html",
-        "url2": "/wfmwutp/6.html"
-      },
-      {
-        "name": "喜剧片",
-        "url": "/wfmwutp/7-{{page}}.html",
-        "url2": "/wfmwutp/7.html"
-      },
-      {
-        "name": "国产剧",
-        "url": "/wfmwutp/17-{{page}}.html",
-        "url2": "/wfmwutp/17.html"
-      },
-      {
-        "name": "港台剧",
-        "url": "/wfmwutp/18-{{page}}.html",
-        "url2": "/wfmwutp/18.html"
-      },
-      {
-        "name": "日韩剧",
-        "url": "/wfmwutp/20-{{page}}.html",
-        "url2": "/wfmwutp/20.html"
-      },
-      {
-        "name": "欧美剧",
-        "url": "/wfmwutp/21-{{page}}.html",
-        "url2": "/wfmwutp/21.html"
-      },
-      {
-        "name": "国产动漫",
-        "url": "/wfmwutp/27-{{page}}.html",
-        "url2": "/wfmwutp/27.html"
-      }
-    ],
-    "list": {
-      "list": "a.stui-vodlist__thumb",
-      "name": "title",
-      "tips": ".pic-text@text||.pic-text1@text",
-      "coverUrl": "data-original||data-src||src",
-      "detailUrl": "href"
-    },
-    "search": {
-      "url": "/wfmwusc/{{key}}-------------.html",
-      "list": "a.stui-vodlist__thumb",
-      "name": "title",
-      "tips": ".pic-text@text",
-      "coverUrl": "data-original||src",
-      "detailUrl": "href"
-    },
-    "detail": {
-      "meta": "h1@text||.stui-content__detail@html"
-    },
-    "play": {
-      "list": ".stui-content__playlist a",
-      "name": "text",
-      "url": "href"
-    }
   },
   {
     "name": "奇优",
