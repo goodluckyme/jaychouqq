@@ -255,21 +255,22 @@
     "search": {
       "url": "/search/?q={{key}}",
       "list": "a[href*='/events/']",
-      "name": "img@alt||@title||text",
-      "coverUrl": "img@src||img@data-src",
+      "name": "img@alt||text",
+      "coverUrl": "img@src",
       "detailUrl": "href"
     },
     "detail": {
       "meta": "title@text||h1@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){try{var out=[],seen={},i=0;function push(n,u){if(!u)return;u=String(u).replace(/&amp;/g,'&').replace(/\\\\u0026/g,'&').trim();if(!u||seen[u])return;if(!/\\.(m3u8|mp4)(\\?|$)/i.test(u)&&u.indexOf('m3u8')<0)return;if(/ads?\\.|analytics|google|doubleclick/i.test(u))return;seen[u]=1;i++;out.push({name:n||('线路'+i),url:u});}var m;m=html.match(/data-hls=[\\\"']([^\\\"']+)[\\\"']/i);if(m)push('HLS',m[1]);m=html.match(/\\\"contentUrl\\\"\\s*:\\s*\\\"([^\\\"]+)\\\"/i);if(m)push('正片',m[1]);m=html.match(/<video[^>]+src=[\\\"']([^\\\"']+)[\\\"']/i);if(m)push('视频',m[1]);m=html.match(/<source[^>]+src=[\\\"']([^\\\"']+)[\\\"']/i);if(m)push('Source',m[1]);m=html.match(/<iframe[^>]+src=[\\\"']([^\\\"']+)[\\\"']/i);if(m&&/m3u8|play|player|video/i.test(m[1]))push('解析',m[1]);var re=/https?:\\\\/\\\\/[^\\\\s\\\"'<>\\\\\\\\]+\\\\.m3u8[^\\\\s\\\"'<>\\\\\\\\]*/gi;while((m=re.exec(html))!==null)push('',m[0]);re=/https?:\\\\/\\\\/[^\\\\s\\\"'<>\\\\\\\\]+\\\\.mp4[^\\\\s\\\"'<>\\\\\\\\]*/gi;while((m=re.exec(html))!==null)push('MP4',m[0]);return out;}catch(e){return [];}} getPlay(__result);",
+      "list": "body@js:function getPlay(html){try{var out=[],seen={},i=0;function add(n,u){if(!u)return;u=(u+'').replace(/&amp;/g,'&').replace(/\\\\u0026/g,'&').trim();if(!u||seen[u])return;if(!/m3u8|\\.mp4/i.test(u))return;seen[u]=1;i++;out.push({name:n||('线路'+i),url:u});}var m;m=html.match(/data-hls-src=[\"']([^\"']+)[\"']/i);if(m)add('HLS',m[1]);m=html.match(/data-fallback-src=[\"']([^\"']+)[\"']/i);if(m)add('MP4',m[1]);m=html.match(/data-hls=[\"']([^\"']+)[\"']/i);if(m)add('HLS',m[1]);m=html.match(/\"contentUrl\"\\s*:\\s*\"([^\"]+)\"/i);if(m)add('正片',m[1]);m=html.match(/<video[^>]+src=[\"']([^\"']+)[\"']/i);if(m)add('视频',m[1]);var re=/https?:\\/\\/[^\\s\"'<>\\\\]+\\.m3u8[^\\s\"'<>\\\\]*/gi;while((m=re.exec(html))!==null)add('HLS',m[0]);re=/https?:\\/\\/[^\\s\"'<>\\\\]+\\.mp4[^\\s\"'<>\\\\]*/gi;while((m=re.exec(html))!==null)add('MP4',m[0]);return out;}catch(e){return [];}} getPlay(__result);",
       "name": "$.name",
       "url": "$.url",
       "header": {
-        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15",
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
         "Referer": "https://57duanju.org/",
-        "Origin": "https://57duanju.org"
+        "Origin": "https://57duanju.org",
+        "Accept": "*/*"
       }
     },
     "removeReferer": false
@@ -282,7 +283,7 @@
     "header": {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
       "Referer": "https://tinyavideo.com/",
-      "Accept-Language": "zh-CN,zh;q=0.9,zh-TW;q=0.8"
+      "Accept-Language": "zh-CN,zh;q=0.9"
     },
     "categories": [
       {
@@ -349,12 +350,14 @@
       "meta": "title@text||h1@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){try{var out=[],seen={},i=0;function push(n,u){if(!u)return;u=String(u).replace(/&amp;/g,'&').replace(/\\\\u0026/g,'&').trim();if(!u||seen[u])return;if(!/\\.(m3u8|mp4)(\\?|$)/i.test(u)&&u.indexOf('m3u8')<0)return;if(/ads?\\.|analytics|google|doubleclick/i.test(u))return;seen[u]=1;i++;out.push({name:n||('线路'+i),url:u});}var m;m=html.match(/data-hls=[\\\"']([^\\\"']+)[\\\"']/i);if(m)push('HLS',m[1]);m=html.match(/\\\"contentUrl\\\"\\s*:\\s*\\\"([^\\\"]+)\\\"/i);if(m)push('正片',m[1]);m=html.match(/<video[^>]+src=[\\\"']([^\\\"']+)[\\\"']/i);if(m)push('视频',m[1]);m=html.match(/<source[^>]+src=[\\\"']([^\\\"']+)[\\\"']/i);if(m)push('Source',m[1]);m=html.match(/<iframe[^>]+src=[\\\"']([^\\\"']+)[\\\"']/i);if(m&&/m3u8|play|player|video/i.test(m[1]))push('解析',m[1]);var re=/https?:\\\\/\\\\/[^\\\\s\\\"'<>\\\\\\\\]+\\\\.m3u8[^\\\\s\\\"'<>\\\\\\\\]*/gi;while((m=re.exec(html))!==null)push('',m[0]);re=/https?:\\\\/\\\\/[^\\\\s\\\"'<>\\\\\\\\]+\\\\.mp4[^\\\\s\\\"'<>\\\\\\\\]*/gi;while((m=re.exec(html))!==null)push('MP4',m[0]);return out;}catch(e){return [];}} getPlay(__result);",
+      "list": "body@js:function getPlay(html){try{var out=[],seen={},i=0;function add(n,u){if(!u)return;u=(u+'').replace(/&amp;/g,'&').trim();if(!u||seen[u])return;if(!/m3u8|\\.mp4/i.test(u))return;if(/ad[sx]?\\.|analytics/i.test(u))return;seen[u]=1;i++;out.push({name:n||('线路'+i),url:u});}var m;m=html.match(/window\\.m3u8List\\s*=\\s*\\[([\\s\\S]*?)\\]/);if(m){var ps=m[1].match(/https?:[^\"'\\s]+/g)||[];for(var k=0;k<ps.length;k++)add(k?'线路'+(k+1):'播放',ps[k].replace(/[\"',]/g,''));}m=html.match(/\"contentUrl\"\\s*:\\s*\"([^\"]+)\"/i);if(m)add('正片',m[1]);var re=/https?:\\/\\/[^\\s\"'<>\\\\]+\\.m3u8[^\\s\"'<>\\\\]*/gi;while((m=re.exec(html))!==null)add('HLS',m[0]);return out;}catch(e){return [];}} getPlay(__result);",
       "name": "$.name",
       "url": "$.url",
       "header": {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-        "Referer": "https://tinyavideo.com/"
+        "Referer": "https://tinyavideo.com/",
+        "Origin": "https://tinyavideo.com",
+        "Accept": "*/*"
       }
     },
     "removeReferer": false
