@@ -134,12 +134,55 @@
     }
   },
   {
-    "name": "📺ZT采集",
-    "api": "https://api.ztcgi.com/api.php/provide/vod/",
-    "type": 1,
+    "name": "📺乌云影视",
+    "api": "https://wooyun.tv",
+    "type": 2,
     "searchable": true,
-    "quickSearch": 1,
-    "filterable": 1
+    "header": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      "Referer": "https://wooyun.tv/",
+      "Accept": "application/json"
+    },
+    "categories": [
+      {
+        "name": "最新1",
+        "url": "/movie/media/detail?mediaId={{page}}"
+      },
+      {
+        "name": "最新2",
+        "url": "/movie/media/detail?mediaId={{page}}"
+      },
+      {
+        "name": "最新3",
+        "url": "/movie/media/detail?mediaId={{page}}"
+      }
+    ],
+    "list": {
+      "list": "body@js:function getList(html){try{var j=JSON.parse(html);var d=j.data;if(!d||!d.id)return [];return [{title:d.title||d.originalTitle||'',pic:d.posterUrl||d.thumbUrl||'',url:String(d.id),tips:(d.mediaType&&d.mediaType.name)||String(d.releaseYear||'') }];}catch(e){return [];}} getList(__result);",
+      "name": "$.title",
+      "tips": "$.tips",
+      "coverUrl": "$.pic",
+      "detailUrl": "https://wooyun.tv/movie/media/detail?mediaId={{$.url}}"
+    },
+    "search": {
+      "url": "/movie/event/search/history?limit=10",
+      "list": "body@js:function getHot(html){try{var j=JSON.parse(html);var arr=(j.data&&j.data.hotSearch)||[];var out=[];for(var i=0;i<arr.length;i++){out.push({title:arr[i],pic:'',url:arr[i],tips:'热搜'});}return out;}catch(e){return [];}} getHot(__result);",
+      "name": "$.title",
+      "detailUrl": "$.url"
+    },
+    "detail": {
+      "meta": "$.data.title"
+    },
+    "play": {
+      "list": "body@js:function getPlay(html){try{var j=JSON.parse(html);var d=j.data;if(!d||!d.id)return [];var mid=d.id;return [{name:'拉取线路',url:'https://wooyun.tv/movie/media/video/group/list?mediaId='+mid}];}catch(e){return [];}} getPlay(__result);",
+      "name": "$.name",
+      "url": "$.url"
+    },
+    "toc": {
+      "list": "body@js:function getToc(html){try{var j=JSON.parse(html);var groups=j.data||[];var out=[];for(var g=0;g<groups.length;g++){var lang=groups[g].language||'线路';var pkgs=groups[g].packageList||[];for(var p=0;p<pkgs.length;p++){var vids=pkgs[p].videoList||[];for(var i=0;i<vids.length;i++){var v=vids[i];if(!v.playUrl)continue;var name=(v.remark||('第'+(v.epNo||1)+'集'));var url=v.playUrl;var m=url.match(/\\/(?:gen_overseas|hls_overseas)\\/(https?:.+)$/i);if(m)url=m[1];out.push({name:lang+' '+name,url:url});}}}return out;}catch(e){return [];}} getToc(__result);",
+      "name": "$.name",
+      "url": "$.url"
+    }
   },
   {
     "name": "奇优",
@@ -427,82 +470,6 @@
       "list": "body@js:function getPlayList(html) { var vodId = substring(html,'\\\"vodId\\\":',8,','); var script = substring(html,'episodeList',13,']',1); script = script.replaceAll('null',vodId); return script; }; getPlayList(__result)",
       "name": "name",
       "url": "/vod/play/{{$.playUrl}}/1/{{$.nid}}"
-    }
-  },
-  {
-    "name": "📺永乐视频",
-    "api": "https://www.59v.net",
-    "type": 2,
-    "searchable": true,
-    "header": {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-      "Referer": "https://www.59v.net/",
-      "Accept-Language": "zh-CN,zh;q=0.9"
-    },
-    "categories": [
-      {
-        "name": "电影",
-        "url": "/vodtype/1-{{page}}.html",
-        "url2": "/vodtype/1.html"
-      },
-      {
-        "name": "连续剧",
-        "url": "/vodtype/2-{{page}}.html",
-        "url2": "/vodtype/2.html"
-      },
-      {
-        "name": "综艺",
-        "url": "/vodtype/3-{{page}}.html",
-        "url2": "/vodtype/3.html"
-      },
-      {
-        "name": "动漫",
-        "url": "/vodtype/4-{{page}}.html",
-        "url2": "/vodtype/4.html"
-      },
-      {
-        "name": "国产剧",
-        "url": "/vodtype/13-{{page}}.html",
-        "url2": "/vodtype/13.html"
-      },
-      {
-        "name": "港台剧",
-        "url": "/vodtype/14-{{page}}.html",
-        "url2": "/vodtype/14.html"
-      },
-      {
-        "name": "日韩剧",
-        "url": "/vodtype/15-{{page}}.html",
-        "url2": "/vodtype/15.html"
-      },
-      {
-        "name": "欧美剧",
-        "url": "/vodtype/16-{{page}}.html",
-        "url2": "/vodtype/16.html"
-      }
-    ],
-    "list": {
-      "list": ".stui-vodlist__thumb, .myui-vodlist__thumb, .module-item-pic a, .module-poster-item",
-      "name": "title||alt||.module-poster-item-title@text",
-      "tips": ".pic-text@text||.module-item-note@text||.module-item-text@text",
-      "coverUrl": "data-original||data-src||src",
-      "detailUrl": "href"
-    },
-    "search": {
-      "url": "/vodsearch/-------------.html?wd={{key}}",
-      "list": ".stui-vodlist__thumb, .myui-vodlist__thumb, .module-item-pic a, .module-poster-item",
-      "name": "title||alt",
-      "tips": ".pic-text@text||.module-item-note@text",
-      "coverUrl": "data-original||data-src||src",
-      "detailUrl": "href"
-    },
-    "detail": {
-      "meta": ".stui-content__detail@html||.myui-content__detail@html||.module-info-main@html||h1@text"
-    },
-    "play": {
-      "list": ".stui-content__playlist a, .myui-content__list a, .module-play-list a, .module-list a",
-      "name": "text",
-      "url": "href"
     }
   },
   {
