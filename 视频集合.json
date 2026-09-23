@@ -422,79 +422,78 @@
     }
   },
   {
-    "name": "📺4K-电影",
-    "api": "https://www.4kvm.org",
+    "name": "📺麻豆4K",
+    "api": "https://madou8.pw",
     "type": 2,
     "searchable": true,
     "header": {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
-      "Referer": "https://www.4kvm.org/"
+      "Referer": "https://madou8.pw/asian/zh-CN",
+      "Accept-Language": "zh-CN,zh;q=0.9"
     },
     "categories": [
       {
-        "name": "电影",
-        "url": "/movie?page={{page}}",
-        "url2": "/movie"
-      }
-    ],
-    "search": {
-      "url": "/search?q={{key}}",
-      "list": "a[href*=/play/]",
-      "name": "img@alt||@title||@text",
-      "coverUrl": "img@data-src||img@src",
-      "detailUrl": "href"
-    },
-    "list": {
-      "list": ".movie-card, a[href*=/play/]",
-      "name": "img@alt||@title",
-      "coverUrl": "img@data-src||img@src",
-      "detailUrl": "a@href||@href"
-    },
-    "detail": {
-      "meta": "h1@text||.title@text"
-    },
-    "play": {
-      "list": "a[href*=/play/]",
-      "name": "text||title",
-      "url": "href"
-    }
-  },
-  {
-    "name": "📺4K-追剧",
-    "api": "https://www.4kvm.org",
-    "type": 2,
-    "searchable": true,
-    "header": {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
-      "Referer": "https://www.4kvm.org/"
-    },
-    "categories": [
+        "name": "最新上架",
+        "url": "/asian/zh-CN/videos/new-releases/page/{{page}}",
+        "url2": "/asian/zh-CN/videos/new-releases"
+      },
       {
-        "name": "电视剧",
-        "url": "/tv?page={{page}}",
-        "url2": "/tv"
+        "name": "最近更新",
+        "url": "/asian/zh-CN/videos/recent/page/{{page}}",
+        "url2": "/asian/zh-CN/videos/recent"
+      },
+      {
+        "name": "今日热门",
+        "url": "/asian/zh-CN/videos/hot/today/page/{{page}}",
+        "url2": "/asian/zh-CN/videos/hot/today"
+      },
+      {
+        "name": "本周热门",
+        "url": "/asian/zh-CN/videos/hot/week/page/{{page}}",
+        "url2": "/asian/zh-CN/videos/hot/week"
+      },
+      {
+        "name": "本月热门",
+        "url": "/asian/zh-CN/videos/hot/month/page/{{page}}",
+        "url2": "/asian/zh-CN/videos/hot/month"
+      },
+      {
+        "name": "中文字幕",
+        "url": "/asian/zh-CN/videos/tag/%E4%B8%AD%E6%96%87%E5%AD%97%E5%B9%95/page/{{page}}",
+        "url2": "/asian/zh-CN/videos/tag/%E4%B8%AD%E6%96%87%E5%AD%97%E5%B9%95"
+      },
+      {
+        "name": "无码流出",
+        "url": "/asian/zh-CN/videos/tag/%E6%97%A0%E7%A0%81%E6%B5%81%E5%87%BA/page/{{page}}",
+        "url2": "/asian/zh-CN/videos/tag/%E6%97%A0%E7%A0%81%E6%B5%81%E5%87%BA"
+      },
+      {
+        "name": "亚洲首页",
+        "url": "/asian/zh-CN"
       }
     ],
-    "search": {
-      "url": "/search?q={{key}}",
-      "list": "a[href*=/play/]",
-      "name": "img@alt||@title||@text",
-      "coverUrl": "img@data-src||img@src",
-      "detailUrl": "href"
-    },
     "list": {
-      "list": ".movie-card, a[href*=/play/]",
-      "name": "img@alt||@title",
-      "coverUrl": "img@data-src||img@src",
-      "detailUrl": "a@href||@href"
+      "list": ".streamit-video-card:not([data-streamit-ad-card])",
+      "name": "img@alt||.streamit-video-card__title@text||.streamit-video-card__caption@text",
+      "tips": ".streamit-video-card__time@text",
+      "coverUrl": "img.streamit-video-card__thumb@src||img@src",
+      "detailUrl": "a.streamit-video-card__media-link@href||a@href"
+    },
+    "search": {
+      "url": "/asian/zh-CN/videos/search/{{key}}",
+      "list": ".streamit-video-card:not([data-streamit-ad-card])",
+      "name": "img@alt||.streamit-video-card__title@text",
+      "tips": ".streamit-video-card__time@text",
+      "coverUrl": "img.streamit-video-card__thumb@src||img@src",
+      "detailUrl": "a.streamit-video-card__media-link@href||a@href"
     },
     "detail": {
-      "meta": "h1@text||.title@text"
+      "meta": "h1@text||title@text"
     },
     "play": {
-      "list": "a[href*=/play/]",
-      "name": "text||title",
-      "url": "href"
+      "list": "body@js:function getMadouPlay(html){try{var m=html.match(/\\\"videoUid\\\"\\s*:\\s*\\\"([0-9a-fA-F]+)\\\"/);if(!m)m=html.match(/videoUid\\\"?\\s*[:=]\\s*[\\\"']([0-9a-fA-F]+)[\\\"']/);if(!m)return [];var uid=m[1];var api='https://madou8.pw/asian/zh-CN/api/video/stream?videoUid='+uid;return [{name:'默认线路',url:api,uid:uid}];}catch(e){return [];}} getMadouPlay(__result);",
+      "name": "$.name",
+      "url": "$.url"
     }
   },
   {
