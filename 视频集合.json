@@ -134,84 +134,73 @@
     }
   },
   {
-    "name": "📺乌云影视",
-    "api": "https://wooyun.tv",
+    "name": "📺91短剧",
+    "api": "https://91crdj.com",
     "type": 2,
     "searchable": true,
     "header": {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-      "Referer": "https://wooyun.tv/",
-      "Origin": "https://wooyun.tv",
-      "Accept": "application/json",
-      "Content-Type": "application/json"
+      "Referer": "https://91crdj.com/",
+      "Accept-Language": "zh-CN,zh;q=0.9"
     },
     "categories": [
       {
-        "name": "全部最新",
-        "url": "/movie/media/search",
-        "method": "POST",
-        "body": "{\"keyword\":\"\",\"pageIndex\":{{page}},\"pageSize\":24}"
+        "name": "成人短剧",
+        "url": "/duanju/page/{{page}}/",
+        "url2": "/duanju/"
       },
       {
-        "name": "电影关键词",
-        "url": "/movie/media/search",
-        "method": "POST",
-        "body": "{\"keyword\":\"电影\",\"pageIndex\":{{page}},\"pageSize\":24}"
+        "name": "成人漫剧",
+        "url": "/manju/page/{{page}}/",
+        "url2": "/manju/"
       },
       {
-        "name": "电视剧",
-        "url": "/movie/media/search",
-        "method": "POST",
-        "body": "{\"keyword\":\"剧\",\"pageIndex\":{{page}},\"pageSize\":24}"
+        "name": "真人剧",
+        "url": "/zhenrenju/page/{{page}}/",
+        "url2": "/zhenrenju/"
       },
       {
-        "name": "动漫",
-        "url": "/movie/media/search",
-        "method": "POST",
-        "body": "{\"keyword\":\"动漫\",\"pageIndex\":{{page}},\"pageSize\":24}"
+        "name": "91成人短剧",
+        "url": "/biaoqian/91chengrenduanju/page/{{page}}/",
+        "url2": "/biaoqian/91chengrenduanju/"
       },
       {
-        "name": "动作",
-        "url": "/movie/media/search",
-        "method": "POST",
-        "body": "{\"keyword\":\"动作\",\"pageIndex\":{{page}},\"pageSize\":24}"
+        "name": "AI短剧",
+        "url": "/biaoqian/aiduanju/page/{{page}}/",
+        "url2": "/biaoqian/aiduanju/"
       },
       {
-        "name": "喜剧",
-        "url": "/movie/media/search",
-        "method": "POST",
-        "body": "{\"keyword\":\"喜剧\",\"pageIndex\":{{page}},\"pageSize\":24}"
+        "name": "武打短剧",
+        "url": "/biaoqian/wudaduanju/page/{{page}}/",
+        "url2": "/biaoqian/wudaduanju/"
+      },
+      {
+        "name": "玄幻短剧",
+        "url": "/biaoqian/xuanhuanduanju/page/{{page}}/",
+        "url2": "/biaoqian/xuanhuanduanju/"
       }
     ],
     "list": {
-      "list": "$.data.records",
-      "name": "$.title",
-      "tips": "$.mediaType.name||$.releaseYear",
-      "coverUrl": "$.posterUrl||$.thumbUrl",
-      "detailUrl": "https://wooyun.tv/movie/media/detail?mediaId={{$.id}}"
+      "list": "a.card",
+      "name": "img@alt||@data-track-item-name",
+      "tips": "",
+      "coverUrl": "img@data-src||img@src",
+      "detailUrl": "href"
     },
     "search": {
-      "url": "/movie/media/search",
-      "method": "POST",
-      "body": "{\"keyword\":\"{{key}}\",\"pageIndex\":1,\"pageSize\":24}",
-      "list": "$.data.records",
-      "name": "$.title",
-      "tips": "$.mediaType.name",
-      "coverUrl": "$.posterUrl",
-      "detailUrl": "https://wooyun.tv/movie/media/detail?mediaId={{$.id}}"
+      "url": "/?s={{key}}",
+      "list": "a.card",
+      "name": "img@alt||@data-track-item-name",
+      "coverUrl": "img@data-src||img@src",
+      "detailUrl": "href"
     },
     "detail": {
-      "meta": "$.data.title"
+      "meta": "title@text||h1@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){try{var j=JSON.parse(html);var d=j.data;if(!d||!d.id)return [];return [{name:'播放',url:'https://wooyun.tv/movie/media/video/group/list?mediaId='+d.id}];}catch(e){return [];}} getPlay(__result);",
-      "name": "$.name",
-      "url": "$.url"
-    },
-    "toc": {
-      "list": "body@js:function getToc(html){try{var j=JSON.parse(html);var groups=j.data||[];var out=[];for(var g=0;g<groups.length;g++){var lang=groups[g].language||'线路';var pkgs=groups[g].packageList||[];for(var p=0;p<pkgs.length;p++){var vids=pkgs[p].videoList||[];for(var i=0;i<vids.length;i++){var v=vids[i];if(!v.playUrl)continue;var name=v.remark||('第'+(v.epNo||1)+'集');var url=v.playUrl;var m=String(url).match(/\\/(?:gen_overseas|hls_overseas)\\/(https?:.+)$/i);if(m)url=m[1];out.push({name:lang+' '+name,url:url});}}}return out;}catch(e){return [];}} getToc(__result);",
-      "name": "$.name",
-      "url": "$.url"
+      "list": "a[href*='/1/'], a.card",
+      "name": "text",
+      "url": "href"
     }
   },
   {
