@@ -1,14 +1,304 @@
 [
   {
+    "name": "🎨A漫天堂",
+    "type": 12,
+    "api": "https://aman3.org",
+    "header": {
+      "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+      "Referer": "https://aman3.org/",
+      "Accept-Language": "zh-CN,zh;q=0.9"
+    },
+    "categories": [
+      {
+        "name": "最新",
+        "url": "/nbook"
+      },
+      {
+        "name": "排行",
+        "url": "/booktop"
+      },
+      {
+        "name": "全部",
+        "url": "/bookcata/all/ob/time/st/all/page/{{page}}",
+        "url2": "/bookcata/all/ob/time/st/all"
+      },
+      {
+        "name": "韩漫",
+        "url": "/bookcata/韩漫/ob/time/st/all/page/{{page}}",
+        "url2": "/bookcata/韩漫/ob/time/st/all"
+      },
+      {
+        "name": "日漫",
+        "url": "/bookcata/日漫/ob/time/st/all/page/{{page}}",
+        "url2": "/bookcata/日漫/ob/time/st/all"
+      },
+      {
+        "name": "3D漫画",
+        "url": "/bookcata/3D漫画/ob/time/st/all/page/{{page}}",
+        "url2": "/bookcata/3D漫画/ob/time/st/all"
+      },
+      {
+        "name": "美女",
+        "url": "/bookcata/美女/ob/time/st/all/page/{{page}}",
+        "url2": "/bookcata/美女/ob/time/st/all"
+      },
+      {
+        "name": "单本",
+        "url": "/bookcata/单本/ob/time/st/all/page/{{page}}",
+        "url2": "/bookcata/单本/ob/time/st/all"
+      },
+      {
+        "name": "已完结",
+        "url": "/bookcata/all/ob/time/st/completed/page/{{page}}",
+        "url2": "/bookcata/all/ob/time/st/completed"
+      },
+      {
+        "name": "更新中",
+        "url": "/bookcata/all/ob/time/st/serialized/page/{{page}}",
+        "url2": "/bookcata/all/ob/time/st/serialized"
+      },
+      {
+        "name": "按阅读",
+        "url": "/bookcata/all/ob/hits/st/all/page/{{page}}",
+        "url2": "/bookcata/all/ob/hits/st/all"
+      }
+    ],
+    "list": {
+      "list": ".hl-list-item, .hl-vod-list .hl-list-item",
+      "name": "a.hl-item-thumb@title||.hl-item-title@text||img@alt",
+      "coverUrl": "a.hl-item-thumb@data-original||img@data-original||img@src",
+      "detailUrl": "a.hl-item-thumb@href||a@href",
+      "tips": ".hl-item-sub@text||.hl-item-text@text"
+    },
+    "search": {
+      "url": "/cata.php?key={{key}}",
+      "list": ".hl-list-item, .hl-vod-list .hl-list-item",
+      "name": "a.hl-item-thumb@title||.hl-item-title@text||img@alt",
+      "coverUrl": "a.hl-item-thumb@data-original||img@data-original||img@src",
+      "detailUrl": "a.hl-item-thumb@href||a@href"
+    },
+    "detail": {
+      "intro": ".hl-content-text@text||.hl-dc-content@text||h1@text",
+      "tips": ".hl-data-item@text||.hl-item-sub@text"
+    },
+    "toc": {
+      "list": "a.module-play-list-link, #hl-plays-list a",
+      "name": "title||text",
+      "url": "href"
+    },
+    "content": {
+      "content": ".img-wrap img@src||.conch-content img@src||img[src*='nnpic']@src||img[src*='upload']@src"
+    },
+    "searchable": true,
+    "discoverable": true
+  },
+  {
+    "name": "🎨HO5HO全彩",
+    "type": 12,
+    "api": "https://www.ho5ho.com",
+    "header": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      "Referer": "https://www.ho5ho.com/",
+      "Accept-Language": "zh-TW,zh;q=0.9,en;q=0.8"
+    },
+    "categories": [
+      {
+        "name": "最新",
+        "url": "/page/{{page}}/",
+        "url2": "/"
+      },
+      {
+        "name": "最高评分",
+        "url": "/?m_orderby=rating"
+      },
+      {
+        "name": "全彩",
+        "url": "/manga-genre/%e5%85%a8%e5%bd%a9/page/{{page}}/",
+        "url2": "/manga-genre/%e5%85%a8%e5%bd%a9/"
+      },
+      {
+        "name": "无码",
+        "url": "/manga-tag/%e7%84%a1%e7%a2%bc/page/{{page}}/",
+        "url2": "/manga-tag/%e7%84%a1%e7%a2%bc/"
+      },
+      {
+        "name": "NTR",
+        "url": "/manga-genre/ntr/page/{{page}}/",
+        "url2": "/manga-genre/ntr/"
+      },
+      {
+        "name": "乱伦",
+        "url": "/manga-genre/%e4%ba%82%e5%80%ab/page/{{page}}/",
+        "url2": "/manga-genre/%e4%ba%82%e5%80%ab/"
+      },
+      {
+        "name": "催眠",
+        "url": "/manga-genre/%e5%82%ac%e7%9c%a0/page/{{page}}/",
+        "url2": "/manga-genre/%e5%82%ac%e7%9c%a0/"
+      },
+      {
+        "name": "同人",
+        "url": "/manga-genre/%e5%90%8c%e4%ba%ba/page/{{page}}/",
+        "url2": "/manga-genre/%e5%90%8c%e4%ba%ba/"
+      },
+      {
+        "name": "多P",
+        "url": "/manga-genre/%e5%a4%9ap/page/{{page}}/",
+        "url2": "/manga-genre/%e5%a4%9ap/"
+      },
+      {
+        "name": "女同",
+        "url": "/manga-genre/%e5%a5%b3%e5%90%8c/page/{{page}}/",
+        "url2": "/manga-genre/%e5%a5%b3%e5%90%8c/"
+      },
+      {
+        "name": "学生",
+        "url": "/manga-genre/%e5%ad%b8%e7%94%9f/page/{{page}}/",
+        "url2": "/manga-genre/%e5%ad%b8%e7%94%9f/"
+      },
+      {
+        "name": "M女",
+        "url": "/manga-genre/m%e5%a5%b3/page/{{page}}/",
+        "url2": "/manga-genre/m%e5%a5%b3/"
+      },
+      {
+        "name": "M男",
+        "url": "/manga-genre/m%e7%94%b7/page/{{page}}/",
+        "url2": "/manga-genre/m%e7%94%b7/"
+      }
+    ],
+    "list": {
+      "list": ".page-item-detail, .page-listing-item, .c-tabs-item__content",
+      "name": ".post-title a@text||.item-title a@text||h3 a@text||a@title",
+      "coverUrl": "img@data-src||img@src",
+      "detailUrl": "a@href||.post-title a@href",
+      "tips": ".chapter a@text||.meta-item@text"
+    },
+    "search": {
+      "url": "/?s={{key}}&post_type=wp-manga",
+      "list": ".c-tabs-item__content, .page-item-detail, .row.c-tabs-item",
+      "name": ".post-title a@text||h3 a@text||a@title",
+      "coverUrl": "img@data-src||img@src",
+      "detailUrl": "a@href||.post-title a@href"
+    },
+    "detail": {
+      "intro": ".description-summary@text||.summary__content@text||.manga-excerpt@text",
+      "tips": ".post-status@text||.post-content_item@text"
+    },
+    "toc": {
+      "list": "li.wp-manga-chapter a, .chapter-item a, .version-chap li a",
+      "name": "text",
+      "url": "href",
+      "reverse": true
+    },
+    "content": {
+      "content": ".reading-content img@data-src||.reading-content img@src||.page-break img@data-src||.page-break img@src||.wp-manga-chapter-img@src"
+    },
+    "searchable": true,
+    "discoverable": true
+  },
+  {
+    "name": "🎨ACG漫画",
+    "type": 12,
+    "api": "https://www.acgxmh.com",
+    "header": {
+      "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+      "Referer": "https://www.acgxmh.com/",
+      "Accept-Language": "zh-CN,zh;q=0.9"
+    },
+    "categories": [
+      {
+        "name": "漫画",
+        "url": "/h/index-{{page}}.html",
+        "url2": "/h/"
+      },
+      {
+        "name": "图集",
+        "url": "/hentai/index-{{page}}.html",
+        "url2": "/hentai/"
+      },
+      {
+        "name": "全彩",
+        "url": "/tags/full-color.html"
+      },
+      {
+        "name": "网漫",
+        "url": "/webtoon/"
+      },
+      {
+        "name": "西漫",
+        "url": "/western/"
+      },
+      {
+        "name": "动画",
+        "url": "/animation/"
+      },
+      {
+        "name": "写真",
+        "url": "/cos/"
+      },
+      {
+        "name": "有声",
+        "url": "/asmr/"
+      },
+      {
+        "name": "专题",
+        "url": "/special/"
+      }
+    ],
+    "list": {
+      "list": "#list li, ul#list li",
+      "name": "span.title a@text||a.thumb@title||img@alt",
+      "coverUrl": "a.thumb img@src||img@src",
+      "detailUrl": "a.thumb@href||a@href"
+    },
+    "search": {
+      "url": "/?q={{key}}",
+      "list": "#list li, ul#list li",
+      "name": "span.title a@text||a.thumb@title||img@alt",
+      "coverUrl": "a.thumb img@src||img@src",
+      "detailUrl": "a.thumb@href||a@href"
+    },
+    "detail": {
+      "intro": "h1.title@text||title@text",
+      "tips": "h1.title@text"
+    },
+    "toc": {
+      "list": "#pages a[href*='.html']",
+      "name": "text",
+      "url": "href"
+    },
+    "content": {
+      "content": ".manga-page img@src||.manga-picture img@src||.page img@src"
+    },
+    "searchable": true,
+    "discoverable": true
+  },
+  {
     "name": "🎨包子漫画",
     "type": 12,
     "api": "https://cn.baozimhcn.com",
     "categories": [
-      { "name": "推荐", "url": "/classify" },
-      { "name": "国漫", "url": "/classify?type=all&region=cn&state=all" },
-      { "name": "日本", "url": "/classify?type=all&region=jp&state=all" },
-      { "name": "韩国", "url": "/classify?type=all&region=kr&state=all" },
-      { "name": "欧美", "url": "/classify?type=all&region=en&state=all" }
+      {
+        "name": "推荐",
+        "url": "/classify"
+      },
+      {
+        "name": "国漫",
+        "url": "/classify?type=all&region=cn&state=all"
+      },
+      {
+        "name": "日本",
+        "url": "/classify?type=all&region=jp&state=all"
+      },
+      {
+        "name": "韩国",
+        "url": "/classify?type=all&region=kr&state=all"
+      },
+      {
+        "name": "欧美",
+        "url": "/classify?type=all&region=en&state=all"
+      }
     ],
     "detail": {
       "intro": ".comics-detail__desc.0@text",
@@ -40,33 +330,114 @@
     "api": "https://www.idmzj.com/api/v1",
     "key": "www.idmzj.com",
     "categories": [
-      { "name": "更新", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=0" },
-      { "name": "人气", "url": "/comic1/filter?sortType=1&page={{page}}&size=20&audience=0&theme=0" },
-      { "name": "少年", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=3262&theme=0" },
-      { "name": "少女", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=3263&theme=0" },
-      { "name": "青年", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=3264&theme=0" },
-      { "name": "冒险", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=1" },
-      { "name": "搞笑", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=2" },
-      { "name": "格斗", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=3" },
-      { "name": "科幻", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=4" },
-      { "name": "爱情", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=5" },
-      { "name": "侦探", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=6" },
-      { "name": "竞技", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=7" },
-      { "name": "魔法", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=8" },
-      { "name": "校园", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=9" },
-      { "name": "百合", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=11" },
-      { "name": "耽美", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=13" },
-      { "name": "历史", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=14" },
-      { "name": "战争", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=15" },
-      { "name": "宅系", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=16" },
-      { "name": "治愈", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=17" },
-      { "name": "仙侠", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=18" },
-      { "name": "武侠", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=19" },
-      { "name": "职场", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=20" },
-      { "name": "神鬼", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=21" },
-      { "name": "奇幻", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=22" },
-      { "name": "生活", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=23" },
-      { "name": "其它", "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=24" }
+      {
+        "name": "更新",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=0"
+      },
+      {
+        "name": "人气",
+        "url": "/comic1/filter?sortType=1&page={{page}}&size=20&audience=0&theme=0"
+      },
+      {
+        "name": "少年",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=3262&theme=0"
+      },
+      {
+        "name": "少女",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=3263&theme=0"
+      },
+      {
+        "name": "青年",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=3264&theme=0"
+      },
+      {
+        "name": "冒险",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=1"
+      },
+      {
+        "name": "搞笑",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=2"
+      },
+      {
+        "name": "格斗",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=3"
+      },
+      {
+        "name": "科幻",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=4"
+      },
+      {
+        "name": "爱情",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=5"
+      },
+      {
+        "name": "侦探",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=6"
+      },
+      {
+        "name": "竞技",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=7"
+      },
+      {
+        "name": "魔法",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=8"
+      },
+      {
+        "name": "校园",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=9"
+      },
+      {
+        "name": "百合",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=11"
+      },
+      {
+        "name": "耽美",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=13"
+      },
+      {
+        "name": "历史",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=14"
+      },
+      {
+        "name": "战争",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=15"
+      },
+      {
+        "name": "宅系",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=16"
+      },
+      {
+        "name": "治愈",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=17"
+      },
+      {
+        "name": "仙侠",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=18"
+      },
+      {
+        "name": "武侠",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=19"
+      },
+      {
+        "name": "职场",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=20"
+      },
+      {
+        "name": "神鬼",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=21"
+      },
+      {
+        "name": "奇幻",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=22"
+      },
+      {
+        "name": "生活",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=23"
+      },
+      {
+        "name": "其它",
+        "url": "/comic1/filter?sortType=0&page={{page}}&size=20&audience=0&theme=24"
+      }
     ],
     "detail": {
       "intro": "$.data.comicInfo.description",
@@ -97,7 +468,7 @@
     "toc": {
       "list": "$.data.comicInfo.chapterList[0].data",
       "name": "$.chapter_title",
-      "reverse":true,
+      "reverse": true,
       "url": "http://api.dmzj.com/dynamic/comicread/{{$.comic_id}}/{{$.chapter_id}}.json"
     },
     "searchable": true,
@@ -108,12 +479,30 @@
     "type": 12,
     "api": "https://m.kanman.com",
     "categories": [
-      { "name": "人气", "url": "/api/getsortlist/?comic_sort=&orderby=click&search_type=&search_key=&page={{page}}&size=48" },
-      { "name": "更新", "url": "/api/getsortlist/?comic_sort=&orderby=date&search_type=&search_key=&page={{page}}&size=48" },
-      { "name": "评分", "url": "/api/getsortlist/?comic_sort=&orderby=score&search_type=&search_key=&page={{page}}&size=48" },
-      { "name": "收藏", "url": "/api/getsortlist/?comic_sort=&orderby=shoucang&search_type=&search_key=&page={{page}}&size=48" },
-      { "name": "推理", "url": "/api/getsortlist/?comic_sort=tuili&orderby=&search_type=&search_key=&page={{page}}&size=48" },
-      { "name": "冒险", "url": "/api/getsortlist/?comic_sort=maoxian&orderby=&search_type=&search_key=&page={{page}}&size=48" }
+      {
+        "name": "人气",
+        "url": "/api/getsortlist/?comic_sort=&orderby=click&search_type=&search_key=&page={{page}}&size=48"
+      },
+      {
+        "name": "更新",
+        "url": "/api/getsortlist/?comic_sort=&orderby=date&search_type=&search_key=&page={{page}}&size=48"
+      },
+      {
+        "name": "评分",
+        "url": "/api/getsortlist/?comic_sort=&orderby=score&search_type=&search_key=&page={{page}}&size=48"
+      },
+      {
+        "name": "收藏",
+        "url": "/api/getsortlist/?comic_sort=&orderby=shoucang&search_type=&search_key=&page={{page}}&size=48"
+      },
+      {
+        "name": "推理",
+        "url": "/api/getsortlist/?comic_sort=tuili&orderby=&search_type=&search_key=&page={{page}}&size=48"
+      },
+      {
+        "name": "冒险",
+        "url": "/api/getsortlist/?comic_sort=maoxian&orderby=&search_type=&search_key=&page={{page}}&size=48"
+      }
     ],
     "detail": {
       "category": "[property=\"og:novel:category\"]@content",
@@ -145,7 +534,7 @@
     "toc": {
       "list": "$.data",
       "name": "$.chapter_name",
-      "reverse":true,
+      "reverse": true,
       "url": "/api/getchapterinfov2?product_id=1&productname=kmh&platformname=wap&comic_id={{$.comic_id}}&chapter_newid={{$.chapter_newid}}&isWebp=1&quality=low"
     }
   },
