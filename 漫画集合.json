@@ -1,5 +1,79 @@
 [
   {
+    "name": "🎨老司机禁漫",
+    "type": 12,
+    "api": "https://www.laosijix.com",
+    "header": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      "Referer": "https://www.laosijix.com/",
+      "Accept-Language": "zh-CN,zh;q=0.9,zh-TW;q=0.8"
+    },
+    "categories": [
+      {
+        "name": "更新",
+        "url": "/update"
+      },
+      {
+        "name": "排行",
+        "url": "/ranking"
+      },
+      {
+        "name": "全部",
+        "url": "/comics/all/ob/time/st/all/page/{{page}}",
+        "url2": "/comics/all/ob/time/st/all"
+      },
+      {
+        "name": "已完结",
+        "url": "/comics/all/ob/time/st/completed/page/{{page}}",
+        "url2": "/comics/all/ob/time/st/completed"
+      },
+      {
+        "name": "连载中",
+        "url": "/comics/all/ob/time/st/serialized/page/{{page}}",
+        "url2": "/comics/all/ob/time/st/serialized"
+      },
+      {
+        "name": "按热度",
+        "url": "/comics/all/ob/hits/st/all/page/{{page}}",
+        "url2": "/comics/all/ob/hits/st/all"
+      },
+      {
+        "name": "按评分",
+        "url": "/comics/all/ob/stars/st/all/page/{{page}}",
+        "url2": "/comics/all/ob/stars/st/all"
+      }
+    ],
+    "list": {
+      "list": "a[href^='/comic/']",
+      "name": ".title@text||title||img@alt",
+      "coverUrl": "img@src||source@srcset",
+      "detailUrl": "href",
+      "tips": ".last-time@text"
+    },
+    "search": {
+      "url": "/catalog.php?key={{key}}",
+      "list": "a[href*='/comic/']",
+      "name": ".title@text||title||img@alt",
+      "coverUrl": "img@src||source@srcset",
+      "detailUrl": "href"
+    },
+    "detail": {
+      "intro": "h1@text||.title@text||title@text",
+      "tips": ".last-time@text||.score@text"
+    },
+    "toc": {
+      "list": "span.vol-item-info a, .vol-item a",
+      "name": "text",
+      "url": "href",
+      "reverse": true
+    },
+    "content": {
+      "content": ".img-wrap img@data-src||.img-wrap img@src||#m_r_imgbox_0 img@data-src||img[data-src*='nnpic']@data-src||img[src*='nnpic']@src"
+    },
+    "searchable": true,
+    "discoverable": true
+  },
+  {
     "name": "🎨A漫天堂",
     "type": 12,
     "api": "https://aman3.org",
