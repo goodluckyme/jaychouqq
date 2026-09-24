@@ -1,103 +1,95 @@
 [
   {
-    "name": "📙速读谷",
+    "name": "📖速读谷",
     "type": 10,
     "api": "https://www.shudugu.org",
     "header": {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
       "Referer": "https://www.shudugu.org/",
       "Accept-Language": "zh-CN,zh;q=0.9"
     },
     "categories": [
       {
-        "name": "最新更新",
+        "name": "最新",
         "url": "/zuixin/{{page}}.html",
         "url2": "/zuixin/"
       },
       {
-        "name": "排行榜",
-        "url": "/paihang/"
+        "name": "完结",
+        "url": "/wanjie/{{page}}.html",
+        "url2": "/wanjie/"
       },
       {
-        "name": "完结小说",
-        "url": "/wanjie/"
+        "name": "排行",
+        "url": "/paihang/",
+        "url2": "/paihang/"
       },
       {
-        "name": "玄幻小说",
+        "name": "玄幻",
         "url": "/xuanhuan/{{page}}.html",
         "url2": "/xuanhuan/"
       },
       {
-        "name": "仙侠小说",
+        "name": "仙侠",
         "url": "/xianxia/{{page}}.html",
         "url2": "/xianxia/"
       },
       {
-        "name": "都市小说",
+        "name": "都市",
         "url": "/dushi/{{page}}.html",
         "url2": "/dushi/"
       },
       {
-        "name": "历史小说",
+        "name": "历史",
         "url": "/lishi/{{page}}.html",
         "url2": "/lishi/"
       },
       {
-        "name": "军事小说",
+        "name": "军事",
         "url": "/junshi/{{page}}.html",
         "url2": "/junshi/"
       },
       {
-        "name": "科幻小说",
+        "name": "科幻",
         "url": "/kehuan/{{page}}.html",
         "url2": "/kehuan/"
       },
       {
-        "name": "言情小说",
+        "name": "言情",
         "url": "/yanqing/{{page}}.html",
         "url2": "/yanqing/"
       },
       {
-        "name": "轻小说",
-        "url": "/qing/{{page}}.html",
-        "url2": "/qing/"
-      },
-      {
-        "name": "诸天无限",
-        "url": "/zhutianwuxian/{{page}}.html",
-        "url2": "/zhutianwuxian/"
-      },
-      {
-        "name": "奇幻小说",
+        "name": "奇幻",
         "url": "/qihuan/{{page}}.html",
         "url2": "/qihuan/"
       }
     ],
     "list": {
-      "list": "ul.list li, .list li, .top li",
-      "name": "p a@text||a:not(.imga)@text||img@alt",
-      "detailUrl": "a.imga@href||a@href",
-      "coverUrl": "img@src",
-      "author": ""
+      "list": ".list li, .item, div.item",
+      "name": "p a@text||h3 a@text||a@text||img@alt",
+      "detailUrl": "a.imga@href||h3 a@href||a@href",
+      "coverUrl": "img@src||img@data-src",
+      "tips": ".itemtxt span@text||span@text"
     },
     "search": {
-      "url": "/i/sor.aspx?key={{key}}",
-      "list": "ul.list li, .list li, a[href^='/'][href$='/']",
-      "name": "text||a@text",
-      "detailUrl": "href||a@href",
+      "url": "/i/so.aspx?q={{key}}",
+      "list": ".list li, .item, div.item",
+      "name": "p a@text||h3 a@text||a@text||img@alt",
+      "detailUrl": "a@href",
       "coverUrl": "img@src"
     },
     "detail": {
-      "intro": ".intro@text||.book-intro@text||meta[name=description]@content",
-      "tips": "h1@text||title@text"
+      "intro": ".intro@text||.bookintro@text||meta[name=description]@content||.con@text"
     },
     "toc": {
-      "list": "#list li a, #list a, .dir a",
+      "list": ".dir li a, .dir a, ul li a[href$='.html']",
       "name": "text",
-      "url": "href"
+      "url": "href",
+      "reverse": false
     },
     "content": {
-      "content": "div.con@text||.con p@text||.con@html##速读谷"
+      "content": ".con p@text||.con@text||#content p@text||#content@text"
     },
     "searchable": true,
     "discoverable": true
@@ -193,81 +185,77 @@
     "discoverable": true
   },
   {
-    "name": "📙八叉书库",
+    "name": "📖八叉书库",
     "type": 10,
     "api": "https://bcshuku.com",
     "header": {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
       "Referer": "https://bcshuku.com/",
-      "Accept-Language": "zh-CN,zh;q=0.9",
-      "X-Requested-With": "XMLHttpRequest"
+      "Accept-Language": "zh-CN,zh;q=0.9"
     },
     "categories": [
       {
-        "name": "长篇",
-        "url": "/booklist1/{{page}}.html",
-        "url2": "/booklist1/1.html"
-      },
-      {
-        "name": "综合",
-        "url": "/booklist2/{{page}}.html",
-        "url2": "/booklist2/1.html"
-      },
-      {
-        "name": "武侠",
-        "url": "/booklist3/{{page}}.html",
-        "url2": "/booklist3/1.html"
-      },
-      {
-        "name": "历史",
-        "url": "/booklist4/{{page}}.html",
-        "url2": "/booklist4/1.html"
-      },
-      {
-        "name": "都市",
-        "url": "/booklist5/{{page}}.html",
-        "url2": "/booklist5/1.html"
+        "name": "全部",
+        "url": "/booklist1?page={{page}}",
+        "url2": "/booklist1"
       },
       {
         "name": "玄幻",
-        "url": "/booklist6/{{page}}.html",
-        "url2": "/booklist6/1.html"
+        "url": "/booklist2?page={{page}}",
+        "url2": "/booklist2"
       },
       {
-        "name": "女生",
-        "url": "/booklist7/{{page}}.html",
-        "url2": "/booklist7/1.html"
+        "name": "都市",
+        "url": "/booklist3?page={{page}}",
+        "url2": "/booklist3"
       },
       {
-        "name": "其他",
-        "url": "/booklist8/{{page}}.html",
-        "url2": "/booklist8/1.html"
+        "name": "言情",
+        "url": "/booklist4?page={{page}}",
+        "url2": "/booklist4"
       },
       {
-        "name": "现代",
-        "url": "/booklist9/{{page}}.html",
-        "url2": "/booklist9/1.html"
+        "name": "历史",
+        "url": "/booklist5?page={{page}}",
+        "url2": "/booklist5"
+      },
+      {
+        "name": "科幻",
+        "url": "/booklist6?page={{page}}",
+        "url2": "/booklist6"
+      },
+      {
+        "name": "武侠",
+        "url": "/booklist7?page={{page}}",
+        "url2": "/booklist7"
+      },
+      {
+        "name": "游戏",
+        "url": "/booklist8?page={{page}}",
+        "url2": "/booklist8"
+      },
+      {
+        "name": "其它",
+        "url": "/booklist9?page={{page}}",
+        "url2": "/booklist9"
       }
     ],
     "list": {
-      "list": ".each_truyen, a[href*='/novel'][title]",
-      "name": "title||img@alt||a@title",
-      "detailUrl": "href||a@href",
-      "coverUrl": "img@src||img@srcset",
+      "list": "div.each_truyen",
+      "name": "a@title||img@alt||.truyen-title@text",
+      "detailUrl": "a@href",
+      "coverUrl": "img@src||img@data-src",
       "tips": ".hoan-thanh-mau@text"
     },
     "search": {
-      "url": "/e/search/index.php",
-      "method": "POST",
-      "post": "keyboard={{key}}&show=title&tempid=1",
-      "list": ".each_truyen, a[href*='/novel'][title]",
-      "name": "title||img@alt",
-      "detailUrl": "href||a@href",
+      "url": "/?s={{key}}",
+      "list": "div.each_truyen",
+      "name": "a@title||img@alt",
+      "detailUrl": "a@href",
       "coverUrl": "img@src"
     },
     "detail": {
-      "intro": ".book-intro@text||.desc@text||meta[name=description]@content||.summary@text",
-      "tips": "h1@text||title@text"
+      "intro": ".desc@text||.book-desc@text||meta[name=description]@content"
     },
     "toc": {
       "list": "li.chap-right5 a, .list-chapter a, a[href*='/chapter']",
@@ -276,7 +264,7 @@
       "reverse": true
     },
     "content": {
-      "content": "body@js:try{var html=String(__result||'');var m=html.match(/\\.post\\(\\\"/conapi\\.php\\\"\\s*,\\s*(\\{[\\s\\S]*?\\})\\s*,/);if(!m){var c=html.match(/id=\\\"chapter-content\\\"[\\s\\S]*?<\\/div>/);return c?c[0].replace(/<[^>]+>/g,'').replace(/精彩内容正在加载中……/g,''):'';}var o=Function('return '+m[1])();var xhr=new XMLHttpRequest();xhr.open('POST','https://bcshuku.com/conapi.php',false);xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');xhr.setRequestHeader('Referer','https://bcshuku.com/');xhr.send('url='+encodeURIComponent(o.url)+'&mobile=1&isk=1&novel='+(o.novel||'')+'&chapter='+(o.chapter||''));var j=JSON.parse(xhr.responseText||'{}');return j.content||'';}catch(e){return '';}"
+      "content": "body@js:try{var html=String(__result||'');var m=html.match(/\\.post\\([\\\"']/conapi\\.php[\\\"']\\s*,\\s*(\\{[\\s\\S]*?\\})\\s*,/);if(!m){return '';}var o;try{o=JSON.parse(m[1].replace(/([{,])\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*:/g,'$1\"$2\":'));}catch(e){o=Function('return '+m[1])();}var body='url='+encodeURIComponent(o.url||'')+'&mobile=1&isk='+encodeURIComponent(o.isk||'0')+'&novel='+encodeURIComponent(o.novel||'')+'&chapter='+encodeURIComponent(o.chapter||'');var xhr=new XMLHttpRequest();xhr.open('POST','https://bcshuku.com/conapi.php',false);xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');xhr.setRequestHeader('Referer','https://bcshuku.com/');xhr.send(body);var j=JSON.parse(xhr.responseText||'{}');return j.content||'';}catch(e){return '';}"
     },
     "searchable": true,
     "discoverable": true
