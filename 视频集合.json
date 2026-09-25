@@ -1773,120 +1773,110 @@
     }
   },
   {
-    "name": "📺Tube8",
-    "api": "https://www.tube8.com",
+    "name": "📺吉林猫",
+    "api": "https://jlm7.cc",
     "type": 2,
     "searchable": true,
     "removeReferer": false,
     "header": {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-      "Referer": "https://www.tube8.com/",
-      "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8",
+      "Referer": "https://jlm7.cc/",
+      "Accept-Language": "zh-CN,zh;q=0.9",
       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
     },
     "categories": [
       {
-        "name": "最新",
-        "url": "/newest/page/{{page}}/",
-        "url2": "/newest.html"
+        "name": "日韩自拍",
+        "url": "/index.php/vod/type/id/46/page/{{page}}.html",
+        "url2": "/index.php/vod/type/id/46.html"
       },
       {
-        "name": "最多观看",
-        "url": "/mostviewed/page/{{page}}/",
-        "url2": "/mostviewed.html"
+        "name": "色情主播",
+        "url": "/index.php/vod/type/id/43/page/{{page}}.html",
+        "url2": "/index.php/vod/type/id/43.html"
       },
       {
-        "name": "亚洲",
-        "url": "/cat/asian/?page={{page}}",
-        "url2": "/cat/asian/"
+        "name": "国产AV",
+        "url": "/index.php/vod/type/id/44/page/{{page}}.html",
+        "url2": "/index.php/vod/type/id/44.html"
       },
       {
-        "name": "日本",
-        "url": "/cat/japanese/?page={{page}}",
-        "url2": "/cat/japanese/"
+        "name": "乱伦侵犯",
+        "url": "/index.php/vod/type/id/59/page/{{page}}.html",
+        "url2": "/index.php/vod/type/id/59.html"
       },
       {
-        "name": "女同",
-        "url": "/cat/lesbian/?page={{page}}",
-        "url2": "/cat/lesbian/"
+        "name": "日本无码",
+        "url": "/index.php/vod/type/id/47/page/{{page}}.html",
+        "url2": "/index.php/vod/type/id/47.html"
       },
       {
-        "name": "业余",
-        "url": "/cat/amateur/?page={{page}}",
-        "url2": "/cat/amateur/"
+        "name": "无码字幕",
+        "url": "/index.php/vod/type/id/50/page/{{page}}.html",
+        "url2": "/index.php/vod/type/id/50.html"
       },
       {
-        "name": "熟女",
-        "url": "/cat/milf/?page={{page}}",
-        "url2": "/cat/milf/"
+        "name": "色情动漫",
+        "url": "/index.php/vod/type/id/49/page/{{page}}.html",
+        "url2": "/index.php/vod/type/id/49.html"
       },
       {
-        "name": "肛交",
-        "url": "/cat/anal/?page={{page}}",
-        "url2": "/cat/anal/"
+        "name": "有码字幕",
+        "url": "/index.php/vod/type/id/48/page/{{page}}.html",
+        "url2": "/index.php/vod/type/id/48.html"
       },
       {
-        "name": "口交",
-        "url": "/cat/blowjob/?page={{page}}",
-        "url2": "/cat/blowjob/"
+        "name": "欧美AV",
+        "url": "/index.php/vod/type/id/51/page/{{page}}.html",
+        "url2": "/index.php/vod/type/id/51.html"
       },
       {
-        "name": "巨乳",
-        "url": "/cat/bigtits/?page={{page}}",
-        "url2": "/cat/bigtits/"
+        "name": "18禁重口味",
+        "url": "/index.php/vod/type/id/52/page/{{page}}.html",
+        "url2": "/index.php/vod/type/id/52.html"
       },
       {
-        "name": "年轻",
-        "url": "/cat/teens/?page={{page}}",
-        "url2": "/cat/teens/"
+        "name": "偷拍偷窥",
+        "url": "/index.php/vod/type/id/53/page/{{page}}.html",
+        "url2": "/index.php/vod/type/id/53.html"
       },
       {
-        "name": "三人",
-        "url": "/cat/threesome/?page={{page}}",
-        "url2": "/cat/threesome/"
+        "name": "网爆吃瓜",
+        "url": "/index.php/vod/type/id/54/page/{{page}}.html",
+        "url2": "/index.php/vod/type/id/54.html"
       },
       {
-        "name": "中出",
-        "url": "/cat/creampie/?page={{page}}",
-        "url2": "/cat/creampie/"
+        "name": "传媒A片",
+        "url": "/index.php/vod/type/id/55/page/{{page}}.html",
+        "url2": "/index.php/vod/type/id/55.html"
       },
       {
-        "name": "重口",
-        "url": "/cat/hardcore/?page={{page}}",
-        "url2": "/cat/hardcore/"
+        "name": "探花约炮",
+        "url": "/index.php/vod/type/id/56/page/{{page}}.html",
+        "url2": "/index.php/vod/type/id/56.html"
       },
       {
-        "name": "金发",
-        "url": "/cat/blonde/?page={{page}}",
-        "url2": "/cat/blonde/"
+        "name": "三级伦理",
+        "url": "/index.php/vod/type/id/57/page/{{page}}.html",
+        "url2": "/index.php/vod/type/id/57.html"
       },
       {
-        "name": "黑发",
-        "url": "/cat/brunette/?page={{page}}",
-        "url2": "/cat/brunette/"
-      },
-      {
-        "name": "阿拉伯",
-        "url": "/cat/arab/?page={{page}}",
-        "url2": "/cat/arab/"
-      },
-      {
-        "name": "黑人",
-        "url": "/cat/ebony/?page={{page}}",
-        "url2": "/cat/ebony/"
+        "name": "AV解说",
+        "url": "/index.php/vod/type/id/58/page/{{page}}.html",
+        "url2": "/index.php/vod/type/id/58.html"
       }
     ],
     "list": {
-      "list": "a.tm_video_title, a.video-title-text, a[href*='/porn-video/']",
-      "name": "text||span@text||title||img@alt",
+      "list": "a[href*='/vod/play/id/']",
+      "name": "img@alt||img@title||title||text",
       "tips": "",
-      "coverUrl": "img@data-src||img@src||.thumb-image-container img@src",
+      "coverUrl": "img@data-src||img@src||.poster img@data-src",
       "detailUrl": "href"
     },
     "search": {
-      "url": "/searches.html?q={{key}}",
-      "list": "a.tm_video_title, a.video-title-text, a[href*='/porn-video/']",
-      "name": "text||span@text||title||img@alt",
+      "url": "/index.php/vod/search.html?wd={{key}}",
+      "list": "a[href*='/vod/play/id/']",
+      "name": "img@alt||title||text",
       "coverUrl": "img@data-src||img@src",
       "detailUrl": "href"
     },
@@ -1894,12 +1884,12 @@
       "meta": "title@text||h1@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m,u,raw=String(html||'');\nfunction add(n,url){url=(url||'').replace(/\\\\\\//g,'/').replace(/&amp;/g,'&');if(!url||s[url])return;s[url]=1;r.push({name:n,url:url});}\n// direct mp4/m3u8 in page\nvar re=/https?:\\\\\\/\\\\\\/[^\\\"'\\\\s]+?\\.(?:m3u8|mp4)[^\\\"'\\\\s]*/gi;while((m=re.exec(raw))){u=m[0].replace(/\\\\\\//g,'/');add(u.indexOf('1080')>=0?'1080P':(u.indexOf('720')>=0?'720P':(u.indexOf('480')>=0?'480P':'直链')),u);}\nre=/https?:\\/\\/[^\\\"'\\s|<>]+?\\.(?:m3u8|mp4)[^\\\"'\\s|<>]*/gi;while((m=re.exec(raw))){add('直链',m[0].replace(/&amp;/g,'&'));}\n// media/hls endpoint -> JSON\nm=raw.match(/https?:\\\\\\/\\\\\\/www\\.tube8\\.com\\\\\\/media\\\\\\/hls\\\\\\/\\?s=[^\\\"'\\\\s]+/)||raw.match(/https?:\\/\\/www\\.tube8\\.com\\/media\\/hls\\/\\?s=[^\\\"'\\s]+/);\nif(m){try{var api=m[0].replace(/\\\\\\//g,'/');var x=new XMLHttpRequest();x.open('GET',api,false);x.setRequestHeader('Referer','https://www.tube8.com/');x.send(null);var j=JSON.parse(x.responseText||'[]');\nfor(var i=0;i<j.length;i++){var it=j[i],q=String(it.quality||it.height||'播放'),vu=it.videoUrl||'';add(q.indexOf('P')>=0?q:q+'P',vu);}}catch(e){}}\n// media/mp4 endpoint\nm=raw.match(/https?:\\\\\\/\\\\\\/www\\.tube8\\.com\\\\\\/media\\\\\\/mp4\\\\\\/\\?s=[^\\\"'\\\\s]+/)||raw.match(/https?:\\/\\/www\\.tube8\\.com\\/media\\/mp4\\/\\?s=[^\\\"'\\s]+/);\nif(m&&!r.length){try{var api2=m[0].replace(/\\\\\\//g,'/');var x2=new XMLHttpRequest();x2.open('GET',api2,false);x2.setRequestHeader('Referer','https://www.tube8.com/');x2.send(null);var j2=JSON.parse(x2.responseText||'[]');\nfor(var k=0;k<j2.length;k++){add(String(j2[k].quality||'MP4')+(String(j2[k].quality||'').indexOf('P')>=0?'':'P'),j2[k].videoUrl||'');}}catch(e){}}\nr.sort(function(a,b){function sc(n){var x=parseInt(n,10);return isNaN(x)?0:x;}return sc(b.name)-sc(a.name);});\nreturn r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m,u,raw=String(html||'');\nfunction add(n,url){url=(url||'').replace(/&amp;/g,'&').trim();if(!url||s[url])return;if(!/\\.(m3u8|mp4)(\\?|$)/i.test(url)&&url.indexOf('m3u8')<0)return;s[url]=1;r.push({name:n,url:url});}\n// source = '...'\nm=raw.match(/source\\s*=\\s*['\"](https?:[^'\"]+)['\"]/);if(m)add('播放',m[1]);\n// data-url 正片$m3u8\nvar re=/data-url=[\"'](?:正片\\$)?(https?:[^\"']+)[\"']/gi;while((m=re.exec(raw))){add('播放',m[1]);}\n// player_aaaa\nm=raw.match(/\"url\"\\s*:\\s*\"(https?:[^\"]+)\"/);if(m)add('播放',m[1].replace(/\\\\\\//g,'/'));\n// generic\nre=/https?:\\/\\/[^\\\"'\\s|<>]+?\\.(?:m3u8|mp4)[^\\\"'\\s|<>]*/gi;while((m=re.exec(raw))){add('直链',m[0]);}\nreturn r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     },
     "toc": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m,u,raw=String(html||'');\nfunction add(n,url){url=(url||'').replace(/\\\\\\//g,'/').replace(/&amp;/g,'&');if(!url||s[url])return;s[url]=1;r.push({name:n,url:url});}\n// direct mp4/m3u8 in page\nvar re=/https?:\\\\\\/\\\\\\/[^\\\"'\\\\s]+?\\.(?:m3u8|mp4)[^\\\"'\\\\s]*/gi;while((m=re.exec(raw))){u=m[0].replace(/\\\\\\//g,'/');add(u.indexOf('1080')>=0?'1080P':(u.indexOf('720')>=0?'720P':(u.indexOf('480')>=0?'480P':'直链')),u);}\nre=/https?:\\/\\/[^\\\"'\\s|<>]+?\\.(?:m3u8|mp4)[^\\\"'\\s|<>]*/gi;while((m=re.exec(raw))){add('直链',m[0].replace(/&amp;/g,'&'));}\n// media/hls endpoint -> JSON\nm=raw.match(/https?:\\\\\\/\\\\\\/www\\.tube8\\.com\\\\\\/media\\\\\\/hls\\\\\\/\\?s=[^\\\"'\\\\s]+/)||raw.match(/https?:\\/\\/www\\.tube8\\.com\\/media\\/hls\\/\\?s=[^\\\"'\\s]+/);\nif(m){try{var api=m[0].replace(/\\\\\\//g,'/');var x=new XMLHttpRequest();x.open('GET',api,false);x.setRequestHeader('Referer','https://www.tube8.com/');x.send(null);var j=JSON.parse(x.responseText||'[]');\nfor(var i=0;i<j.length;i++){var it=j[i],q=String(it.quality||it.height||'播放'),vu=it.videoUrl||'';add(q.indexOf('P')>=0?q:q+'P',vu);}}catch(e){}}\n// media/mp4 endpoint\nm=raw.match(/https?:\\\\\\/\\\\\\/www\\.tube8\\.com\\\\\\/media\\\\\\/mp4\\\\\\/\\?s=[^\\\"'\\\\s]+/)||raw.match(/https?:\\/\\/www\\.tube8\\.com\\/media\\/mp4\\/\\?s=[^\\\"'\\s]+/);\nif(m&&!r.length){try{var api2=m[0].replace(/\\\\\\//g,'/');var x2=new XMLHttpRequest();x2.open('GET',api2,false);x2.setRequestHeader('Referer','https://www.tube8.com/');x2.send(null);var j2=JSON.parse(x2.responseText||'[]');\nfor(var k=0;k<j2.length;k++){add(String(j2[k].quality||'MP4')+(String(j2[k].quality||'').indexOf('P')>=0?'':'P'),j2[k].videoUrl||'');}}catch(e){}}\nr.sort(function(a,b){function sc(n){var x=parseInt(n,10);return isNaN(x)?0:x;}return sc(b.name)-sc(a.name);});\nreturn r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m,u,raw=String(html||'');\nfunction add(n,url){url=(url||'').replace(/&amp;/g,'&').trim();if(!url||s[url])return;if(!/\\.(m3u8|mp4)(\\?|$)/i.test(url)&&url.indexOf('m3u8')<0)return;s[url]=1;r.push({name:n,url:url});}\n// source = '...'\nm=raw.match(/source\\s*=\\s*['\"](https?:[^'\"]+)['\"]/);if(m)add('播放',m[1]);\n// data-url 正片$m3u8\nvar re=/data-url=[\"'](?:正片\\$)?(https?:[^\"']+)[\"']/gi;while((m=re.exec(raw))){add('播放',m[1]);}\n// player_aaaa\nm=raw.match(/\"url\"\\s*:\\s*\"(https?:[^\"]+)\"/);if(m)add('播放',m[1].replace(/\\\\\\//g,'/'));\n// generic\nre=/https?:\\/\\/[^\\\"'\\s|<>]+?\\.(?:m3u8|mp4)[^\\\"'\\s|<>]*/gi;while((m=re.exec(raw))){add('直链',m[0]);}\nreturn r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     }
