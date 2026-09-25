@@ -1161,135 +1161,113 @@
     }
   },
   {
-    "name": "📺5LX短剧",
-    "api": "https://18.5lxtv.com",
+    "name": "📺Porn87",
+    "api": "https://porn87.com",
     "type": 2,
     "searchable": true,
     "removeReferer": false,
     "header": {
       "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
-      "Referer": "https://18.5lxtv.com/",
-      "Origin": "https://18.5lxtv.com",
-      "Accept-Language": "zh-CN,zh;q=0.9",
-      "Accept": "*/*"
+      "Referer": "https://porn87.com/",
+      "Accept-Language": "zh-CN,zh;q=0.9,zh-TW;q=0.8",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
     },
     "categories": [
       {
         "name": "最新",
-        "url": "/latest?page={{page}}",
-        "url2": "/latest"
+        "url": "/main/tag?lineup=create_time&page={{page}}",
+        "url2": "/main/tag?lineup=create_time"
       },
       {
-        "name": "排行",
-        "url": "/ranking?page={{page}}",
-        "url2": "/ranking"
+        "name": "热门",
+        "url": "/main/tag?lineup=recent_views&page={{page}}",
+        "url2": "/main/tag?lineup=recent_views"
       },
       {
-        "name": "无码",
-        "url": "/uncensored?page={{page}}",
-        "url2": "/uncensored"
+        "name": "高清日本AV",
+        "url": "/main/tag?name=%E9%AB%98%E6%B8%85%E6%97%A5%E6%9C%ACAV&page={{page}}",
+        "url2": "/main/tag?name=%E9%AB%98%E6%B8%85%E6%97%A5%E6%9C%ACAV"
       },
       {
-        "name": "有码",
-        "url": "/censored?page={{page}}",
-        "url2": "/censored"
+        "name": "中港台",
+        "url": "/main/tag?name=%E4%B8%AD%E6%B8%AF%E5%8F%B0&page={{page}}",
+        "url2": "/main/tag?name=%E4%B8%AD%E6%B8%AF%E5%8F%B0"
       },
       {
-        "name": "国产",
-        "url": "/chinese?page={{page}}",
-        "url2": "/chinese"
+        "name": "人妻",
+        "url": "/main/tag?name=%E4%BA%BA%E5%A6%BB&page={{page}}",
+        "url2": "/main/tag?name=%E4%BA%BA%E5%A6%BB"
       },
       {
-        "name": "自拍",
-        "url": "/selfie?page={{page}}",
-        "url2": "/selfie"
+        "name": "巨乳",
+        "url": "/main/tag?name=%E5%B7%A8%E4%B9%B3&page={{page}}",
+        "url2": "/main/tag?name=%E5%B7%A8%E4%B9%B3"
       },
       {
         "name": "素人",
-        "url": "/amateur?page={{page}}",
-        "url2": "/amateur"
+        "url": "/main/tag?name=%E7%B4%A0%E4%BA%BA&page={{page}}",
+        "url2": "/main/tag?name=%E7%B4%A0%E4%BA%BA"
       },
       {
-        "name": "专属",
-        "url": "/exclusive?page={{page}}",
-        "url2": "/exclusive"
+        "name": "少女女友",
+        "url": "/main/tag?name=%E5%B0%91%E5%A5%B3%E5%A5%B3%E5%8F%8B&page={{page}}",
+        "url2": "/main/tag?name=%E5%B0%91%E5%A5%B3%E5%A5%B3%E5%8F%8B"
       },
       {
-        "name": "动漫",
-        "url": "/anime?page={{page}}",
-        "url2": "/anime"
+        "name": "口交",
+        "url": "/main/tag?name=%E5%8F%A3%E4%BA%A4&page={{page}}",
+        "url2": "/main/tag?name=%E5%8F%A3%E4%BA%A4"
       },
       {
-        "name": "欧美",
-        "url": "/western?page={{page}}",
-        "url2": "/western"
+        "name": "中出",
+        "url": "/main/tag?name=%E4%B8%AD%E5%87%BA&page={{page}}",
+        "url2": "/main/tag?name=%E4%B8%AD%E5%87%BA"
       },
       {
-        "name": "OnlyFans",
-        "url": "/of?page={{page}}",
-        "url2": "/of"
+        "name": "偷拍",
+        "url": "/main/tag?name=%E5%81%B7%E6%8B%8D&page={{page}}",
+        "url2": "/main/tag?name=%E5%81%B7%E6%8B%8D"
       },
       {
-        "name": "UP主",
-        "url": "/upzhu?page={{page}}",
-        "url2": "/upzhu"
+        "name": "制服",
+        "url": "/main/tag?name=%E5%88%B6%E6%9C%8D&page={{page}}",
+        "url2": "/main/tag?name=%E5%88%B6%E6%9C%8D"
       },
       {
-        "name": "黑料",
-        "url": "/scandal?page={{page}}",
-        "url2": "/scandal"
+        "name": "名人明星",
+        "url": "/main/tag?name=%E5%90%8D%E4%BA%BA%E6%98%8E%E6%98%9F&page={{page}}",
+        "url2": "/main/tag?name=%E5%90%8D%E4%BA%BA%E6%98%8E%E6%98%9F"
       },
       {
-        "name": "FC2",
-        "url": "/fc2?page={{page}}",
-        "url2": "/fc2"
-      },
-      {
-        "name": "绿帽",
-        "url": "/cuckold?page={{page}}",
-        "url2": "/cuckold"
-      },
-      {
-        "name": "Cos",
-        "url": "/cos?page={{page}}",
-        "url2": "/cos"
-      },
-      {
-        "name": "AI",
-        "url": "/ai?page={{page}}",
-        "url2": "/ai"
-      },
-      {
-        "name": "AI短剧",
-        "url": "/ai-drama?page={{page}}",
-        "url2": "/ai-drama"
+        "name": "多P",
+        "url": "/main/tag?name=%E5%A4%9AP&page={{page}}",
+        "url2": "/main/tag?name=%E5%A4%9AP"
       }
     ],
     "list": {
-      "list": "a[href*='/videos/']",
-      "name": "img@alt||@title||text",
-      "tips": "span@text||.text-xs@text",
-      "coverUrl": "img@src||img@data-src",
+      "list": "a[href*='/main/html?id=']",
+      "name": "span@text||img@alt||@title||text",
+      "tips": ".video_time@text||p@text",
+      "coverUrl": "img.video_thumbnail@src||img@src||img@preview_image",
       "detailUrl": "href"
     },
     "search": {
-      "url": "/search?q={{key}}",
-      "list": "a[href*='/videos/']",
-      "name": "img@alt||@title||text",
-      "tips": "span@text",
-      "coverUrl": "img@src||img@data-src",
+      "url": "/main/search?name={{key}}",
+      "list": "a[href*='/main/html?id=']",
+      "name": "span@text||img@alt||text",
+      "coverUrl": "img.video_thumbnail@src||img@src",
       "detailUrl": "href"
     },
     "detail": {
-      "meta": "h1@text||title@text"
+      "meta": "title@text||h1@text||span@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){var slug='',t='',n='',m;m=html.match(/var\\s+slug\\s*=\\s*[\"']([^\"']+)[\"']/);if(m)slug=m[1];if(!slug){m=html.match(/\\/videos\\/([a-zA-Z0-9_\\-]+)/);if(m)slug=m[1];}m=html.match(/var\\s+t\\s*=\\s*(\\d{9,})/);if(m)t=m[1];m=html.match(/var\\s+n\\s*=\\s*[\"']([a-f0-9]{16,})[\"']/i);if(m)n=m[1];if(!slug)return'[]';if(!t||!n){m=html.match(/\\/api\\/play\\/[^\"'?\\s]+\\?t=(\\d+)&n=([a-f0-9]+)/i);if(m){t=m[1];n=m[2];}}if(!t||!n)return'[]';var u='https://18.5lxtv.com/api/play/'+encodeURIComponent(slug)+'?t='+t+'&n='+encodeURIComponent(n);return JSON.stringify([{name:'在线播放',url:u}]);}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m,re=/https?:\\/\\/(cdn-\\d+\\.porn87\\.com)\\/media\\/image_1\\/([a-z0-9]+)(?:_\\d+)?\\.(?:jpg|png|webp)/gi;while((m=re.exec(html))){var cdn=m[1],h=m[2];if(s[h])continue;s[h]=1;var u='https://'+cdn+'/media/video_1/'+h+'.mp4/index.m3u8';r.push({name:r.length?'线路'+(r.length+1):'播放',url:u});if(r.length>=3)break;}if(!r.length){m=html.match(/\\/main\\/embed\\?id=(\\d+)/);if(m)r.push({name:'Embed',url:'https://porn87.com/main/embed?id='+m[1]});}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     },
     "toc": {
-      "list": "body@js:function getPlay(html){var slug='',t='',n='',m;m=html.match(/var\\s+slug\\s*=\\s*[\"']([^\"']+)[\"']/);if(m)slug=m[1];if(!slug){m=html.match(/\\/videos\\/([a-zA-Z0-9_\\-]+)/);if(m)slug=m[1];}m=html.match(/var\\s+t\\s*=\\s*(\\d{9,})/);if(m)t=m[1];m=html.match(/var\\s+n\\s*=\\s*[\"']([a-f0-9]{16,})[\"']/i);if(m)n=m[1];if(!slug)return'[]';if(!t||!n){m=html.match(/\\/api\\/play\\/[^\"'?\\s]+\\?t=(\\d+)&n=([a-f0-9]+)/i);if(m){t=m[1];n=m[2];}}if(!t||!n)return'[]';var u='https://18.5lxtv.com/api/play/'+encodeURIComponent(slug)+'?t='+t+'&n='+encodeURIComponent(n);return JSON.stringify([{name:'在线播放',url:u}]);}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m,re=/https?:\\/\\/(cdn-\\d+\\.porn87\\.com)\\/media\\/image_1\\/([a-z0-9]+)(?:_\\d+)?\\.(?:jpg|png|webp)/gi;while((m=re.exec(html))){var cdn=m[1],h=m[2];if(s[h])continue;s[h]=1;var u='https://'+cdn+'/media/video_1/'+h+'.mp4/index.m3u8';r.push({name:r.length?'线路'+(r.length+1):'播放',url:u});if(r.length>=3)break;}if(!r.length){m=html.match(/\\/main\\/embed\\?id=(\\d+)/);if(m)r.push({name:'Embed',url:'https://porn87.com/main/embed?id='+m[1]});}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     }
@@ -1309,93 +1287,93 @@
     "categories": [
       {
         "name": "最近更新",
-        "url": "/dm539/cn/new?page={{page}}",
-        "url2": "/dm539/cn/new"
+        "url": "/cn/new?page={{page}}",
+        "url2": "/cn/new"
       },
       {
         "name": "新作上市",
-        "url": "/dm635/cn/release?page={{page}}",
-        "url2": "/dm635/cn/release"
+        "url": "/cn/release?page={{page}}",
+        "url2": "/cn/release"
       },
       {
         "name": "无码流出",
-        "url": "/dm817/cn/uncensored-leak?page={{page}}",
-        "url2": "/dm817/cn/uncensored-leak"
+        "url": "/cn/uncensored-leak?page={{page}}",
+        "url2": "/cn/uncensored-leak"
       },
       {
         "name": "中文字幕",
-        "url": "/dm278/cn/chinese-subtitle?page={{page}}",
-        "url2": "/dm278/cn/chinese-subtitle"
+        "url": "/cn/chinese-subtitle?page={{page}}",
+        "url2": "/cn/chinese-subtitle"
       },
       {
         "name": "今日热门",
-        "url": "/dm301/cn/today-hot?page={{page}}",
-        "url2": "/dm301/cn/today-hot"
+        "url": "/cn/today-hot?page={{page}}",
+        "url2": "/cn/today-hot"
       },
       {
         "name": "本周热门",
-        "url": "/dm170/cn/weekly-hot?page={{page}}",
-        "url2": "/dm170/cn/weekly-hot"
+        "url": "/cn/weekly-hot?page={{page}}",
+        "url2": "/cn/weekly-hot"
       },
       {
         "name": "本月热门",
-        "url": "/dm273/cn/monthly-hot?page={{page}}",
-        "url2": "/dm273/cn/monthly-hot"
+        "url": "/cn/monthly-hot?page={{page}}",
+        "url2": "/cn/monthly-hot"
       },
       {
         "name": "FC2",
-        "url": "/dm597/cn/fc2?page={{page}}",
-        "url2": "/dm597/cn/fc2"
+        "url": "/cn/fc2?page={{page}}",
+        "url2": "/cn/fc2"
       },
       {
         "name": "HEYZO",
-        "url": "/dm2208642/cn/heyzo?page={{page}}",
-        "url2": "/dm2208642/cn/heyzo"
+        "url": "/cn/heyzo?page={{page}}",
+        "url2": "/cn/heyzo"
       },
       {
         "name": "东京热",
-        "url": "/dm42/cn/tokyohot?page={{page}}",
-        "url2": "/dm42/cn/tokyohot"
+        "url": "/cn/tokyohot?page={{page}}",
+        "url2": "/cn/tokyohot"
       },
       {
         "name": "一本道",
-        "url": "/dm5199603/cn/1pondo?page={{page}}",
-        "url2": "/dm5199603/cn/1pondo"
+        "url": "/cn/1pondo?page={{page}}",
+        "url2": "/cn/1pondo"
       },
       {
         "name": "加勒比",
-        "url": "/dm7704788/cn/caribbeancom?page={{page}}",
-        "url2": "/dm7704788/cn/caribbeancom"
+        "url": "/cn/caribbeancom?page={{page}}",
+        "url2": "/cn/caribbeancom"
       },
       {
-        "name": "麻豆传媒",
-        "url": "/dm63/cn/madou?page={{page}}",
-        "url2": "/dm63/cn/madou"
+        "name": "麻豆",
+        "url": "/cn/madou?page={{page}}",
+        "url2": "/cn/madou"
       },
       {
         "name": "SIRO",
-        "url": "/dm36/cn/siro?page={{page}}",
-        "url2": "/dm36/cn/siro"
+        "url": "/cn/siro?page={{page}}",
+        "url2": "/cn/siro"
       },
       {
         "name": "LUXU",
-        "url": "/dm34/cn/luxu?page={{page}}",
-        "url2": "/dm34/cn/luxu"
+        "url": "/cn/luxu?page={{page}}",
+        "url2": "/cn/luxu"
       }
     ],
     "list": {
-      "list": "body@js:function getList(html){var r=[],s={},m,re=/href=[\"'](https?:\\/\\/missav\\.media(?:\\/dm\\d+)?\\/cn\\/([a-z0-9]+-\\d+[a-z0-9\\-]*))[\"']/gi;while((m=re.exec(html))){var code=m[2].toLowerCase();if(s[code])continue;s[code]=1;var name=code.toUpperCase();var cover='https://fourhoi.mrstcdn.store/'+code+'/cover-t.jpg';r.push({name:name,url:m[1],cover:cover});}return r.length?JSON.stringify(r):'[]';}getList(__result);",
-      "name": "$.name",
-      "coverUrl": "$.cover",
-      "detailUrl": "$.url",
-      "tips": ""
+      "list": "a[href*='/cn/'][alt]",
+      "name": "alt||img@alt||@title||text",
+      "tips": "",
+      "coverUrl": "img@data-src||img@src||video@poster",
+      "detailUrl": "href"
     },
     "search": {
       "url": "/cn/search/{{key}}",
-      "list": "body@js:function getList(html){var r=[],s={},m,re=/href=[\"'](https?:\\/\\/missav\\.media(?:\\/dm\\d+)?\\/cn\\/([a-z0-9]+-\\d+[a-z0-9\\-]*))[\"']/gi;while((m=re.exec(html))){var code=m[2].toLowerCase();if(s[code])continue;s[code]=1;var name=code.toUpperCase();var cover='https://fourhoi.mrstcdn.store/'+code+'/cover-t.jpg';r.push({name:name,url:m[1],cover:cover});}return r.length?JSON.stringify(r):'[]';}getList(__result);",
-      "name": "$.name",
-      "coverUrl": "$.cover",
-      "detailUrl": "$.url"
+      "list": "a[href*='/cn/'][alt]",
+      "name": "alt||img@alt||@title||text",
+      "coverUrl": "img@data-src||img@src",
+      "detailUrl": "href"
     },
     "detail": {
       "meta": "h1@text||title@text"
