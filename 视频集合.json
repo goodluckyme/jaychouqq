@@ -1773,134 +1773,104 @@
     }
   },
   {
-    "name": "📺6P影视",
-    "api": "https://88ayyc35.6p.tattoo",
+    "name": "📺AcFun",
+    "api": "https://www.acfun.cn",
     "type": 2,
     "searchable": true,
     "removeReferer": false,
     "header": {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-      "Referer": "https://88ayyc35.6p.tattoo/",
+      "Referer": "https://www.acfun.cn/",
       "Accept-Language": "zh-CN,zh;q=0.9",
       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
     },
     "categories": [
       {
-        "name": "国产精选",
-        "url": "/index.php/vod/type/id/5/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/5.html"
+        "name": "动画",
+        "url": "/v/list1/index.htm",
+        "url2": "/v/list1/index.htm"
       },
       {
-        "name": "黑料吃瓜",
-        "url": "/index.php/vod/type/id/3/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/3.html"
+        "name": "娱乐",
+        "url": "/v/list60/index.htm",
+        "url2": "/v/list60/index.htm"
       },
       {
-        "name": "厂牌原创",
-        "url": "/index.php/vod/type/id/4/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/4.html"
+        "name": "音乐",
+        "url": "/v/list58/index.htm",
+        "url2": "/v/list58/index.htm"
       },
       {
-        "name": "明星换脸",
-        "url": "/index.php/vod/type/id/6/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/6.html"
+        "name": "舞蹈·偶像",
+        "url": "/v/list123/index.htm",
+        "url2": "/v/list123/index.htm"
       },
       {
-        "name": "AV解说",
-        "url": "/index.php/vod/type/id/7/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/7.html"
+        "name": "游戏",
+        "url": "/v/list59/index.htm",
+        "url2": "/v/list59/index.htm"
       },
       {
-        "name": "禁漫精选",
-        "url": "/index.php/vod/type/id/8/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/8.html"
+        "name": "科技",
+        "url": "/v/list70/index.htm",
+        "url2": "/v/list70/index.htm"
       },
       {
-        "name": "父女",
-        "url": "/index.php/vod/type/id/10/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/10.html"
+        "name": "体育",
+        "url": "/v/list68/index.htm",
+        "url2": "/v/list68/index.htm"
       },
       {
-        "name": "母子",
-        "url": "/index.php/vod/type/id/11/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/11.html"
+        "name": "鱼塘",
+        "url": "/v/list69/index.htm",
+        "url2": "/v/list69/index.htm"
       },
       {
-        "name": "兄妹",
-        "url": "/index.php/vod/type/id/12/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/12.html"
+        "name": "生活",
+        "url": "/v/list125/index.htm",
+        "url2": "/v/list125/index.htm"
       },
       {
-        "name": "学生",
-        "url": "/index.php/vod/type/id/13/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/13.html"
+        "name": "影视",
+        "url": "/v/list201/index.htm",
+        "url2": "/v/list201/index.htm"
       },
       {
-        "name": "嫂子",
-        "url": "/index.php/vod/type/id/14/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/14.html"
+        "name": "番剧",
+        "url": "/v/list204/index.htm",
+        "url2": "/v/list204/index.htm"
       },
       {
-        "name": "姐夫",
-        "url": "/index.php/vod/type/id/15/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/15.html"
-      },
-      {
-        "name": "师生",
-        "url": "/index.php/vod/type/id/16/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/16.html"
-      },
-      {
-        "name": "全家",
-        "url": "/index.php/vod/type/id/17/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/17.html"
-      },
-      {
-        "name": "真实缅北",
-        "url": "/index.php/vod/type/id/79/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/79.html"
-      },
-      {
-        "name": "恶心恐怖",
-        "url": "/index.php/vod/type/id/80/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/80.html"
-      },
-      {
-        "name": "黄金圣水",
-        "url": "/index.php/vod/type/id/81/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/81.html"
-      },
-      {
-        "name": "校园霸凌",
-        "url": "/index.php/vod/type/id/82/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/82.html"
+        "name": "国创",
+        "url": "/v/list205/index.htm",
+        "url2": "/v/list205/index.htm"
       }
     ],
     "list": {
-      "list": "body@js:function getList(html){\nfunction dec(s){try{if(typeof atob==='function'){var t=atob(s);try{return decodeURIComponent(escape(t))}catch(e){return t}}\nvar k='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',u=String(s||'').replace(/[^A-Za-z0-9\\+\\/]/g,''),o=[],i=0;\nwhile(i<u.length){var e1=k.indexOf(u.charAt(i++)),e2=k.indexOf(u.charAt(i++)),e3=k.indexOf(u.charAt(i++)),e4=k.indexOf(u.charAt(i++));\nvar b1=(e1<<2)|(e2>>4),b2=((e2&15)<<4)|(e3>>2),b3=((e3&3)<<6)|e4;o.push(b1);\nif(e3!==64&&u.charAt(i-2)!=='=')o.push(b2);if(e4!==64&&u.charAt(i-1)!=='=')o.push(b3)}\nvar t='';for(i=0;i<o.length;i++)t+=String.fromCharCode(o[i]);try{return decodeURIComponent(escape(t))}catch(e){return t}}catch(e){return''}}\nvar r=[],seen={},raw=String(html||'');\nvar mm=raw.match(/var\\s+str\\s*=\\s*['\"]([^'\"]+)['\"]/);\nif(mm){var d1=dec(mm[1]);var d2=d1?dec(d1):'';if(d2&&d2.length>500)raw=d2;else if(d1&&d1.length>500)raw=d1;}\nvar re=/href=[\"'](\\/index\\.php\\/vod\\/detail\\/id\\/(\\d+)\\.html)[\"']/g,m;\nwhile((m=re.exec(raw))){var u=m[1],id=m[2];if(seen[u])continue;seen[u]=1;\nvar block=raw.slice(Math.max(0,m.index-80),m.index+1000);\nvar title='',tm=block.match(/title=[\"']([^\"']{2,150})[\"']/);if(tm)title=tm[1];\nif(!title){tm=block.match(/alt=[\"']([^\"']{2,150})[\"']/);if(tm)title=tm[1];}\nif(!title)title='视频'+id;\nvar pic='',pm=block.match(/data-original=[\"']([^\"']+)[\"']/i)||block.match(/data-src=[\"']([^\"']+)[\"']/i)||block.match(/src=[\"'](https?:\\/\\/[^\"']+\\.(?:jpg|jpeg|png|webp)[^\"']*)[\"']/i);\nif(pm)pic=pm[1];\nr.push({name:title,id:u,pic:pic,tips:''});}\nreturn JSON.stringify(r);}getList(__result);",
-      "name": "$.name",
-      "tips": "$.tips",
-      "coverUrl": "$.pic",
-      "detailUrl": "$.id"
+      "list": "a[href*='/v/ac']",
+      "name": "img@alt||title||.text-overflow@text||text",
+      "tips": "",
+      "coverUrl": "img@src||img@data-src",
+      "detailUrl": "href"
     },
     "search": {
-      "url": "/index.php/vod/search.html?wd={{key}}",
-      "list": "body@js:function getList(html){\nfunction dec(s){try{if(typeof atob==='function'){var t=atob(s);try{return decodeURIComponent(escape(t))}catch(e){return t}}\nvar k='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',u=String(s||'').replace(/[^A-Za-z0-9\\+\\/]/g,''),o=[],i=0;\nwhile(i<u.length){var e1=k.indexOf(u.charAt(i++)),e2=k.indexOf(u.charAt(i++)),e3=k.indexOf(u.charAt(i++)),e4=k.indexOf(u.charAt(i++));\nvar b1=(e1<<2)|(e2>>4),b2=((e2&15)<<4)|(e3>>2),b3=((e3&3)<<6)|e4;o.push(b1);\nif(e3!==64&&u.charAt(i-2)!=='=')o.push(b2);if(e4!==64&&u.charAt(i-1)!=='=')o.push(b3)}\nvar t='';for(i=0;i<o.length;i++)t+=String.fromCharCode(o[i]);try{return decodeURIComponent(escape(t))}catch(e){return t}}catch(e){return''}}\nvar r=[],seen={},raw=String(html||'');\nvar mm=raw.match(/var\\s+str\\s*=\\s*['\"]([^'\"]+)['\"]/);\nif(mm){var d1=dec(mm[1]);var d2=d1?dec(d1):'';if(d2&&d2.length>500)raw=d2;else if(d1&&d1.length>500)raw=d1;}\nvar re=/href=[\"'](\\/index\\.php\\/vod\\/detail\\/id\\/(\\d+)\\.html)[\"']/g,m;\nwhile((m=re.exec(raw))){var u=m[1],id=m[2];if(seen[u])continue;seen[u]=1;\nvar block=raw.slice(Math.max(0,m.index-80),m.index+1000);\nvar title='',tm=block.match(/title=[\"']([^\"']{2,150})[\"']/);if(tm)title=tm[1];\nif(!title){tm=block.match(/alt=[\"']([^\"']{2,150})[\"']/);if(tm)title=tm[1];}\nif(!title)title='视频'+id;\nvar pic='',pm=block.match(/data-original=[\"']([^\"']+)[\"']/i)||block.match(/data-src=[\"']([^\"']+)[\"']/i)||block.match(/src=[\"'](https?:\\/\\/[^\"']+\\.(?:jpg|jpeg|png|webp)[^\"']*)[\"']/i);\nif(pm)pic=pm[1];\nr.push({name:title,id:u,pic:pic,tips:''});}\nreturn JSON.stringify(r);}getList(__result);",
-      "name": "$.name",
-      "tips": "$.tips",
-      "coverUrl": "$.pic",
-      "detailUrl": "$.id"
+      "url": "/search?keyword={{key}}",
+      "list": "a[href*='/v/ac'], a[href*='ac=']",
+      "name": "img@alt||title||text",
+      "tips": "",
+      "coverUrl": "img@src||img@data-src",
+      "detailUrl": "href"
     },
     "detail": {
       "meta": "title@text||h1@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){\nfunction dec(s){try{if(typeof atob==='function'){var t=atob(s);try{return decodeURIComponent(escape(t))}catch(e){return t}}\nvar k='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',u=String(s||'').replace(/[^A-Za-z0-9\\+\\/]/g,''),o=[],i=0;\nwhile(i<u.length){var e1=k.indexOf(u.charAt(i++)),e2=k.indexOf(u.charAt(i++)),e3=k.indexOf(u.charAt(i++)),e4=k.indexOf(u.charAt(i++));\nvar b1=(e1<<2)|(e2>>4),b2=((e2&15)<<4)|(e3>>2),b3=((e3&3)<<6)|e4;o.push(b1);\nif(e3!==64&&u.charAt(i-2)!=='=')o.push(b2);if(e4!==64&&u.charAt(i-1)!=='=')o.push(b3)}\nvar t='';for(i=0;i<o.length;i++)t+=String.fromCharCode(o[i]);try{return decodeURIComponent(escape(t))}catch(e){return t}}catch(e){return''}}\nvar r=[],seen={},raw=String(html||'');\nvar mm=raw.match(/var\\s+str\\s*=\\s*['\"]([^'\"]+)['\"]/);\nif(mm){var d1=dec(mm[1]);var d2=d1?dec(d1):'';if(d2&&d2.length>500)raw=d2;else if(d1&&d1.length>500)raw=d1;}\n// player_aaaa url\nvar m=raw.match(/player_aaaa\\s*=\\s*\\{[\\s\\S]{0,2000}?\"url\"\\s*:\\s*\"(https?:\\\\\\/\\\\\\/[^\"]+)\"/);\nif(m){var u=m[1].replace(/\\\\\\//g,'/').replace(/\\\\u0026/g,'&');r.push({name:'播放',url:u});}\nif(!r.length){m=raw.match(/\"url\"\\s*:\\s*\"(https?:\\\\\\/\\\\\\/[^\"]+\\.(?:m3u8|mp4)[^\"]*)\"/);if(m){r.push({name:'播放',url:m[1].replace(/\\\\\\//g,'/')});}}\nif(!r.length){var re=/https?:\\/\\/[^\\\"'\\s|<>]+?\\.(?:m3u8|mp4)[^\\\"'\\s|<>]*/gi;while((m=re.exec(raw))){var u=m[0].replace(/&amp;/g,'&');if(seen[u])continue;seen[u]=1;r.push({name:'播放',url:u});}}\n// if on detail page, return play page links\nif(!r.length){var re2=/href=[\"'](\\/index\\.php\\/vod\\/play\\/id\\/\\d+\\/sid\\/\\d+\\/nid\\/\\d+\\.html)[\"']/g;var i=0;while((m=re2.exec(raw))){if(seen[m[1]])continue;seen[m[1]]=1;i++;r.push({name:'第'+i+'集',url:m[1]});}}\nreturn r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m,u,raw=String(html||'');\nvar re=/https?:\\\\\\/\\\\\\/[^\\\"'\\\\s]+?\\.m3u8[^\\\"'\\\\s]*/gi;\nwhile((m=re.exec(raw))){u=m[0].replace(/\\\\\\//g,'/').replace(/\\\\u0026/g,'&').replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:u.indexOf('1080')>=0?'1080P':(u.indexOf('720')>=0?'720P':(u.indexOf('540')>=0?'540P':'播放')),url:u});}\nif(!r.length){re=/https?:\\/\\/[^\\\"'\\s|<>]+?\\.m3u8[^\\\"'\\s|<>]*/gi;while((m=re.exec(raw))){u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'播放',url:u});}}\nr.sort(function(a,b){var o={'1080P':1,'720P':2,'540P':3,'播放':9};return (o[a.name]||9)-(o[b.name]||9);});\nreturn r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     },
     "toc": {
-      "list": "body@js:function getPlay(html){\nfunction dec(s){try{if(typeof atob==='function'){var t=atob(s);try{return decodeURIComponent(escape(t))}catch(e){return t}}\nvar k='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',u=String(s||'').replace(/[^A-Za-z0-9\\+\\/]/g,''),o=[],i=0;\nwhile(i<u.length){var e1=k.indexOf(u.charAt(i++)),e2=k.indexOf(u.charAt(i++)),e3=k.indexOf(u.charAt(i++)),e4=k.indexOf(u.charAt(i++));\nvar b1=(e1<<2)|(e2>>4),b2=((e2&15)<<4)|(e3>>2),b3=((e3&3)<<6)|e4;o.push(b1);\nif(e3!==64&&u.charAt(i-2)!=='=')o.push(b2);if(e4!==64&&u.charAt(i-1)!=='=')o.push(b3)}\nvar t='';for(i=0;i<o.length;i++)t+=String.fromCharCode(o[i]);try{return decodeURIComponent(escape(t))}catch(e){return t}}catch(e){return''}}\nvar r=[],seen={},raw=String(html||'');\nvar mm=raw.match(/var\\s+str\\s*=\\s*['\"]([^'\"]+)['\"]/);\nif(mm){var d1=dec(mm[1]);var d2=d1?dec(d1):'';if(d2&&d2.length>500)raw=d2;else if(d1&&d1.length>500)raw=d1;}\n// player_aaaa url\nvar m=raw.match(/player_aaaa\\s*=\\s*\\{[\\s\\S]{0,2000}?\"url\"\\s*:\\s*\"(https?:\\\\\\/\\\\\\/[^\"]+)\"/);\nif(m){var u=m[1].replace(/\\\\\\//g,'/').replace(/\\\\u0026/g,'&');r.push({name:'播放',url:u});}\nif(!r.length){m=raw.match(/\"url\"\\s*:\\s*\"(https?:\\\\\\/\\\\\\/[^\"]+\\.(?:m3u8|mp4)[^\"]*)\"/);if(m){r.push({name:'播放',url:m[1].replace(/\\\\\\//g,'/')});}}\nif(!r.length){var re=/https?:\\/\\/[^\\\"'\\s|<>]+?\\.(?:m3u8|mp4)[^\\\"'\\s|<>]*/gi;while((m=re.exec(raw))){var u=m[0].replace(/&amp;/g,'&');if(seen[u])continue;seen[u]=1;r.push({name:'播放',url:u});}}\n// if on detail page, return play page links\nif(!r.length){var re2=/href=[\"'](\\/index\\.php\\/vod\\/play\\/id\\/\\d+\\/sid\\/\\d+\\/nid\\/\\d+\\.html)[\"']/g;var i=0;while((m=re2.exec(raw))){if(seen[m[1]])continue;seen[m[1]]=1;i++;r.push({name:'第'+i+'集',url:m[1]});}}\nreturn r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m,u,raw=String(html||'');\nvar re=/https?:\\\\\\/\\\\\\/[^\\\"'\\\\s]+?\\.m3u8[^\\\"'\\\\s]*/gi;\nwhile((m=re.exec(raw))){u=m[0].replace(/\\\\\\//g,'/').replace(/\\\\u0026/g,'&').replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:u.indexOf('1080')>=0?'1080P':(u.indexOf('720')>=0?'720P':(u.indexOf('540')>=0?'540P':'播放')),url:u});}\nif(!r.length){re=/https?:\\/\\/[^\\\"'\\s|<>]+?\\.m3u8[^\\\"'\\s|<>]*/gi;while((m=re.exec(raw))){u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'播放',url:u});}}\nr.sort(function(a,b){var o={'1080P':1,'720P':2,'540P':3,'播放':9};return (o[a.name]||9)-(o[b.name]||9);});\nreturn r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     }
