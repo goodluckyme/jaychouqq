@@ -1374,7 +1374,7 @@
       "url": "$.url"
     }
   },
-   {
+  {
     "name": "📺1234影视",
     "api": "https://www.1234sp.cc",
     "type": 2,
@@ -1436,7 +1436,7 @@
       "url": "href"
     }
   },
-    {
+  {
     "name": "📺麒麟影视",
     "api": "https://www.qlys.cc",
     "type": 2,
@@ -1588,7 +1588,7 @@
       "url": "href"
     }
   },
-   {
+  {
     "name": "📺红豆短剧",
     "api": "https://hdou.tv",
     "type": 2,
@@ -1787,12 +1787,12 @@
       "meta": "title@text||h1@text||li.title@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m,u;var re=/https?:\\\\/\\\\/[^\\\"'\\\\s<>]+\\\\.m3u8[^\\\"'\\\\s<>]*/gi;while((m=re.exec(html))){u=m[0].replace(/&amp;/g,'&');if(u.indexOf('155jx')>=0){var mm=u.match(/url=(https?:\\\\/\\\\/[^&]+)/);if(mm)u=decodeURIComponent(mm[1]);}if(s[u])continue;s[u]=1;r.push({name:'播放',url:u});}if(!r.length){m=html.match(/src=[\\\"'](\\\\/embed\\\\/\\\\d+\\\\.html)[\\\"']/);if(m)r.push({name:'播放',url:'https://www.qinav.com'+m[1]});}if(!r.length){m=html.match(/\\\\/video\\\\/(\\\\d+)/);if(m)r.push({name:'播放',url:'https://www.qinav.com/embed/'+m[1]+'.html'});}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m,u,id,emb,xhr,t;try{m=html.match(/\\/embed\\/(\\d+)\\.html/i)||html.match(/\\/video\\/(\\d+)/i);if(m){id=m[1];emb='https://www.qinav.com/embed/'+id+'.html';xhr=new XMLHttpRequest();xhr.open('GET',emb,false);xhr.setRequestHeader('Referer','https://www.qinav.com/video/'+id+'.html');xhr.setRequestHeader('User-Agent','Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1');try{xhr.send(null);t=xhr.responseText||'';}catch(e){t='';}var re=/https?:\\/\\/[^\"'\\\\\\s<>]+?\\.m3u8[^\"'\\\\\\s<>]*/gi;while((m=re.exec(t))){u=m[0].replace(/&amp;/g,'&');if(/155jx\\.com/i.test(u)){var mm=u.match(/url=(https?:\\/\\/[^&]+)/i);if(mm)u=decodeURIComponent(mm[1]);}if(s[u])continue;s[u]=1;r.push({name:'直链',url:u});}if(!r.length){m=t.match(/const\\s+url\\s*=\\s*['\"]([^'\"]+)['\"]/i);if(m&&m[1]){u=m[1].replace(/&amp;/g,'&');r.push({name:'直链',url:u});}}}if(!r.length){var re2=/https?:\\/\\/[^\"'\\\\\\s<>]+?\\.m3u8[^\"'\\\\\\s<>]*/gi;while((m=re2.exec(html))){u=m[0].replace(/&amp;/g,'&');if(/155jx\\.com/i.test(u)){var mm2=u.match(/url=(https?:\\/\\/[^&]+)/i);if(mm2)u=decodeURIComponent(mm2[1]);}if(s[u])continue;s[u]=1;r.push({name:'直链',url:u});}}if(!r.length&&id){r.push({name:'播放',url:emb});}}catch(e){}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     },
     "toc": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m,u;var re=/https?:\\\\/\\\\/[^\\\"'\\\\s<>]+\\\\.m3u8[^\\\"'\\\\s<>]*/gi;while((m=re.exec(html))){u=m[0].replace(/&amp;/g,'&');if(u.indexOf('155jx')>=0){var mm=u.match(/url=(https?:\\\\/\\\\/[^&]+)/);if(mm)u=decodeURIComponent(mm[1]);}if(s[u])continue;s[u]=1;r.push({name:'播放',url:u});}if(!r.length){m=html.match(/src=[\\\"'](\\\\/embed\\\\/\\\\d+\\\\.html)[\\\"']/);if(m)r.push({name:'播放',url:'https://www.qinav.com'+m[1]});}if(!r.length){m=html.match(/\\\\/video\\\\/(\\\\d+)/);if(m)r.push({name:'播放',url:'https://www.qinav.com/embed/'+m[1]+'.html'});}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m,u,id,emb,xhr,t;try{m=html.match(/\\/embed\\/(\\d+)\\.html/i)||html.match(/\\/video\\/(\\d+)/i);if(m){id=m[1];emb='https://www.qinav.com/embed/'+id+'.html';xhr=new XMLHttpRequest();xhr.open('GET',emb,false);xhr.setRequestHeader('Referer','https://www.qinav.com/video/'+id+'.html');xhr.setRequestHeader('User-Agent','Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1');try{xhr.send(null);t=xhr.responseText||'';}catch(e){t='';}var re=/https?:\\/\\/[^\"'\\\\\\s<>]+?\\.m3u8[^\"'\\\\\\s<>]*/gi;while((m=re.exec(t))){u=m[0].replace(/&amp;/g,'&');if(/155jx\\.com/i.test(u)){var mm=u.match(/url=(https?:\\/\\/[^&]+)/i);if(mm)u=decodeURIComponent(mm[1]);}if(s[u])continue;s[u]=1;r.push({name:'直链',url:u});}if(!r.length){m=t.match(/const\\s+url\\s*=\\s*['\"]([^'\"]+)['\"]/i);if(m&&m[1]){u=m[1].replace(/&amp;/g,'&');r.push({name:'直链',url:u});}}}if(!r.length){var re2=/https?:\\/\\/[^\"'\\\\\\s<>]+?\\.m3u8[^\"'\\\\\\s<>]*/gi;while((m=re2.exec(html))){u=m[0].replace(/&amp;/g,'&');if(/155jx\\.com/i.test(u)){var mm2=u.match(/url=(https?:\\/\\/[^&]+)/i);if(mm2)u=decodeURIComponent(mm2[1]);}if(s[u])continue;s[u]=1;r.push({name:'直链',url:u});}}if(!r.length&&id){r.push({name:'播放',url:emb});}}catch(e){}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     }
@@ -1857,7 +1857,7 @@
       }
     ],
     "list": {
-      "list": "a[href*='/shipin/']",
+      "list": "a[href*='/shipin/'][href$='.html']",
       "name": "title||img@alt||.station-list__title@text||text",
       "tips": "",
       "coverUrl": "img@src||img@data-src",
@@ -1874,12 +1874,250 @@
       "meta": "title@text||h1@text||.station-list__title@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m,u;m=html.match(/playurl\\s*=\\s*['\\\"]([^'\\\"]+)/i);if(m&&m[1]){u=m[1].replace(/&amp;/g,'&');if(!s[u]){s[u]=1;r.push({name:'播放',url:u});}}var re=/https?:\\\\/\\\\/[^\\\"'\\\\s<>]+\\\\.(?:m3u8|mp4|m4a|mp3)[^\\\"'\\\\s<>]*/gi;while((m=re.exec(html))){u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'播放',url:u});}if(!r.length){m=html.match(/src=['\\\"](\\\\/tt\\\\/[A-Fa-f0-9]+\\\\/?)['\\\"]/i);if(m){r.push({name:'播放',url:'https://www.djyyy.com'+m[1]});}}if(!r.length){m=html.match(/src=['\\\"](\\\\/t\\\\/[A-Fa-f0-9]+)['\\\"]/i);if(m){r.push({name:'播放',url:'https://www.djyyy.com'+m[1]});}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m,u,tt,xhr,t;try{m=html.match(/src=[\"'](\\/tt\\/[A-Fa-f0-9]+\\/?)[\"']/i)||html.match(/src=[\"'](\\/t\\/[A-Fa-f0-9]+)[\"']/i);if(m){tt='https://www.djyyy.com'+m[1];xhr=new XMLHttpRequest();xhr.open('GET',tt,false);xhr.setRequestHeader('Referer','https://www.djyyy.com/');xhr.setRequestHeader('User-Agent','Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1');try{xhr.send(null);t=xhr.responseText||'';}catch(e){t='';}m=t.match(/playurl\\s*=\\s*['\"]([^'\"]+)['\"]/i);if(m&&m[1]){u=m[1].replace(/&amp;/g,'&');r.push({name:'直链',url:u});}var re=/https?:\\/\\/[^\"'\\\\\\s<>]+?\\.(?:m3u8|mp4|mp3|m4a)[^\"'\\\\\\s<>]*/gi;while((m=re.exec(t))){u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'直链',url:u});}}if(!r.length){m=html.match(/playurl\\s*=\\s*['\"]([^'\"]+)['\"]/i);if(m&&m[1])r.push({name:'直链',url:m[1]});}if(!r.length){var re2=/https?:\\/\\/[^\"'\\\\\\s<>]+?\\.(?:m3u8|mp4|mp3|m4a)[^\"'\\\\\\s<>]*/gi;while((m=re2.exec(html))){u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'直链',url:u});}}}catch(e){}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     },
     "toc": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m,u;m=html.match(/playurl\\s*=\\s*['\\\"]([^'\\\"]+)/i);if(m&&m[1]){u=m[1].replace(/&amp;/g,'&');if(!s[u]){s[u]=1;r.push({name:'播放',url:u});}}var re=/https?:\\\\/\\\\/[^\\\"'\\\\s<>]+\\\\.(?:m3u8|mp4|m4a|mp3)[^\\\"'\\\\s<>]*/gi;while((m=re.exec(html))){u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'播放',url:u});}if(!r.length){m=html.match(/src=['\\\"](\\\\/tt\\\\/[A-Fa-f0-9]+\\\\/?)['\\\"]/i);if(m){r.push({name:'播放',url:'https://www.djyyy.com'+m[1]});}}if(!r.length){m=html.match(/src=['\\\"](\\\\/t\\\\/[A-Fa-f0-9]+)['\\\"]/i);if(m){r.push({name:'播放',url:'https://www.djyyy.com'+m[1]});}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m,u,tt,xhr,t;try{m=html.match(/src=[\"'](\\/tt\\/[A-Fa-f0-9]+\\/?)[\"']/i)||html.match(/src=[\"'](\\/t\\/[A-Fa-f0-9]+)[\"']/i);if(m){tt='https://www.djyyy.com'+m[1];xhr=new XMLHttpRequest();xhr.open('GET',tt,false);xhr.setRequestHeader('Referer','https://www.djyyy.com/');xhr.setRequestHeader('User-Agent','Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1');try{xhr.send(null);t=xhr.responseText||'';}catch(e){t='';}m=t.match(/playurl\\s*=\\s*['\"]([^'\"]+)['\"]/i);if(m&&m[1]){u=m[1].replace(/&amp;/g,'&');r.push({name:'直链',url:u});}var re=/https?:\\/\\/[^\"'\\\\\\s<>]+?\\.(?:m3u8|mp4|mp3|m4a)[^\"'\\\\\\s<>]*/gi;while((m=re.exec(t))){u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'直链',url:u});}}if(!r.length){m=html.match(/playurl\\s*=\\s*['\"]([^'\"]+)['\"]/i);if(m&&m[1])r.push({name:'直链',url:m[1]});}if(!r.length){var re2=/https?:\\/\\/[^\"'\\\\\\s<>]+?\\.(?:m3u8|mp4|mp3|m4a)[^\"'\\\\\\s<>]*/gi;while((m=re2.exec(html))){u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'直链',url:u});}}}catch(e){}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "name": "$.name",
+      "url": "$.url"
+    }
+  },
+  {
+    "name": "📺NewXVideos",
+    "api": "https://newxvideos.pages.dev",
+    "type": 2,
+    "searchable": true,
+    "removeReferer": false,
+    "header": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      "Referer": "https://newxvideos.pages.dev/",
+      "Accept": "application/json, text/html, */*",
+      "Accept-Language": "zh-CN,zh;q=0.9"
+    },
+    "categories": [
+      {
+        "name": "最新",
+        "url": "/api?play=list&page={{page}}",
+        "url2": "/api?play=list&page=1"
+      },
+      {
+        "name": "阿拉伯",
+        "url": "/api?play=class&c=Arab-159&page={{page}}",
+        "url2": "/api?play=class&c=Arab-159&page=1"
+      },
+      {
+        "name": "成熟",
+        "url": "/api?play=class&c=Mature-38&page={{page}}",
+        "url2": "/api?play=class&c=Mature-38&page=1"
+      },
+      {
+        "name": "出轨背叛",
+        "url": "/api?play=class&c=Cuckold-237&page={{page}}",
+        "url2": "/api?play=class&c=Cuckold-237&page=1"
+      },
+      {
+        "name": "调教",
+        "url": "/api?play=class&c=Femdom-235&page={{page}}",
+        "url2": "/api?play=class&c=Femdom-235&page=1"
+      },
+      {
+        "name": "肛交",
+        "url": "/api?play=class&c=Anal-12&page={{page}}",
+        "url2": "/api?play=class&c=Anal-12&page=1"
+      },
+      {
+        "name": "褐发",
+        "url": "/api?play=class&c=Brunette-25&page={{page}}",
+        "url2": "/api?play=class&c=Brunette-25&page=1"
+      },
+      {
+        "name": "黑人",
+        "url": "/api?play=class&c=Black_Woman-30&page={{page}}",
+        "url2": "/api?play=class&c=Black_Woman-30&page=1"
+      },
+      {
+        "name": "红发",
+        "url": "/api?play=class&c=Redhead-31&page={{page}}",
+        "url2": "/api?play=class&c=Redhead-31&page=1"
+      },
+      {
+        "name": "家庭乱搞",
+        "url": "/api?play=class&c=Fucked_Up_Family-81&page={{page}}",
+        "url2": "/api?play=class&c=Fucked_Up_Family-81&page=1"
+      },
+      {
+        "name": "金发",
+        "url": "/api?play=class&c=Blonde-20&page={{page}}",
+        "url2": "/api?play=class&c=Blonde-20&page=1"
+      },
+      {
+        "name": "巨屌",
+        "url": "/api?play=class&c=Big_Cock-34&page={{page}}",
+        "url2": "/api?play=class&c=Big_Cock-34&page=1"
+      },
+      {
+        "name": "巨乳",
+        "url": "/api?play=class&c=Big_Tits-23&page={{page}}",
+        "url2": "/api?play=class&c=Big_Tits-23&page=1"
+      },
+      {
+        "name": "巨臀",
+        "url": "/api?play=class&c=Big_Ass-24&page={{page}}",
+        "url2": "/api?play=class&c=Big_Ass-24&page=1"
+      },
+      {
+        "name": "口交",
+        "url": "/api?play=class&c=Blowjob-15&page={{page}}",
+        "url2": "/api?play=class&c=Blowjob-15&page=1"
+      },
+      {
+        "name": "拉丁裔",
+        "url": "/api?play=class&c=Latina-16&page={{page}}",
+        "url2": "/api?play=class&c=Latina-16&page=1"
+      },
+      {
+        "name": "辣妈",
+        "url": "/api?play=class&c=Milf-19&page={{page}}",
+        "url2": "/api?play=class&c=Milf-19&page=1"
+      },
+      {
+        "name": "裂开",
+        "url": "/api?play=class&c=Gapes-167&page={{page}}",
+        "url2": "/api?play=class&c=Gapes-167&page=1"
+      },
+      {
+        "name": "美臀",
+        "url": "/api?play=class&c=Ass-14&page={{page}}",
+        "url2": "/api?play=class&c=Ass-14&page=1"
+      },
+      {
+        "name": "女同",
+        "url": "/api?play=class&c=Lesbian-26&page={{page}}",
+        "url2": "/api?play=class&c=Lesbian-26&page=1"
+      },
+      {
+        "name": "胖女",
+        "url": "/api?play=class&c=bbw-51&page={{page}}",
+        "url2": "/api?play=class&c=bbw-51&page=1"
+      },
+      {
+        "name": "喷出",
+        "url": "/api?play=class&c=Squirting-56&page={{page}}",
+        "url2": "/api?play=class&c=Squirting-56&page=1"
+      },
+      {
+        "name": "拳交",
+        "url": "/api?play=class&c=Fisting-165&page={{page}}",
+        "url2": "/api?play=class&c=Fisting-165&page=1"
+      },
+      {
+        "name": "群交",
+        "url": "/api?play=class&c=Gangbang-69&page={{page}}",
+        "url2": "/api?play=class&c=Gangbang-69&page=1"
+      },
+      {
+        "name": "少女",
+        "url": "/api?play=class&c=Teen-13&page={{page}}",
+        "url2": "/api?play=class&c=Teen-13&page=1"
+      },
+      {
+        "name": "射颜",
+        "url": "/api?play=class&c=Cumshot-18&page={{page}}",
+        "url2": "/api?play=class&c=Cumshot-18&page=1"
+      },
+      {
+        "name": "摄像头",
+        "url": "/api?play=class&c=Cam_Porn-58&page={{page}}",
+        "url2": "/api?play=class&c=Cam_Porn-58&page=1"
+      },
+      {
+        "name": "双性恋",
+        "url": "/api?play=class&c=Bi_Sexual-62&page={{page}}",
+        "url2": "/api?play=class&c=Bi_Sexual-62&page=1"
+      },
+      {
+        "name": "丝袜",
+        "url": "/api?play=class&c=Stockings-28&page={{page}}",
+        "url2": "/api?play=class&c=Stockings-28&page=1"
+      },
+      {
+        "name": "涂油",
+        "url": "/api?play=class&c=Oiled-22&page={{page}}",
+        "url2": "/api?play=class&c=Oiled-22&page=1"
+      },
+      {
+        "name": "性感内衣",
+        "url": "/api?play=class&c=Lingerie-83&page={{page}}",
+        "url2": "/api?play=class&c=Lingerie-83&page=1"
+      },
+      {
+        "name": "亚洲",
+        "url": "/api?play=class&c=Asian_Woman-32&page={{page}}",
+        "url2": "/api?play=class&c=Asian_Woman-32&page=1"
+      },
+      {
+        "name": "业余",
+        "url": "/api?play=class&c=Amateur-65&page={{page}}",
+        "url2": "/api?play=class&c=Amateur-65&page=1"
+      },
+      {
+        "name": "异族",
+        "url": "/api?play=class&c=Interracial-27&page={{page}}",
+        "url2": "/api?play=class&c=Interracial-27&page=1"
+      },
+      {
+        "name": "印度",
+        "url": "/api?play=class&c=Indian-89&page={{page}}",
+        "url2": "/api?play=class&c=Indian-89&page=1"
+      },
+      {
+        "name": "中出",
+        "url": "/api?play=class&c=Creampie-40&page={{page}}",
+        "url2": "/api?play=class&c=Creampie-40&page=1"
+      },
+      {
+        "name": "自慰",
+        "url": "/api?play=class&c=Solo_and_Masturbation-33&page={{page}}",
+        "url2": "/api?play=class&c=Solo_and_Masturbation-33&page=1"
+      },
+      {
+        "name": "AI",
+        "url": "/api?play=class&c=AI-239&page={{page}}",
+        "url2": "/api?play=class&c=AI-239&page=1"
+      },
+      {
+        "name": "ASMR",
+        "url": "/api?play=class&c=ASMR-229&page={{page}}",
+        "url2": "/api?play=class&c=ASMR-229&page=1"
+      }
+    ],
+    "list": {
+      "list": "body@js:function getList(html){try{var j=JSON.parse(html);var arr=Array.isArray(j)?j:(j.videos||j.data||[]);return JSON.stringify(arr.map(function(v){var u=v.url||'';var xid='';try{xid=new URL(u,location.origin).searchParams.get('xvid')||'';}catch(e){var m=String(u).match(/xvid=([^&]+)/);xid=m?decodeURIComponent(m[1]):'';}return{name:v.title||v.name||'',id:xid||u,pic:v.img||v.pic||'',tips:v.time||v.duration||'',raw:u};}));}catch(e){return'[]';}}getList(__result);",
+      "name": "$.name",
+      "tips": "$.tips",
+      "coverUrl": "$.pic",
+      "detailUrl": "/api?xvid={{$.id}}"
+    },
+    "search": {
+      "url": "/api?play=k&k={{key}}&page=1",
+      "list": "body@js:function getList(html){try{var j=JSON.parse(html);var arr=Array.isArray(j)?j:(j.videos||j.data||[]);return JSON.stringify(arr.map(function(v){var u=v.url||'';var xid='';try{xid=new URL(u,location.origin).searchParams.get('xvid')||'';}catch(e){var m=String(u).match(/xvid=([^&]+)/);xid=m?decodeURIComponent(m[1]):'';}return{name:v.title||v.name||'',id:xid||u,pic:v.img||v.pic||'',tips:v.time||v.duration||'',raw:u};}));}catch(e){return'[]';}}getList(__result);",
+      "name": "$.name",
+      "tips": "$.tips",
+      "coverUrl": "$.pic",
+      "detailUrl": "/api?xvid={{$.id}}"
+    },
+    "detail": {
+      "meta": "body@js:function getMeta(html){try{var j=JSON.parse(html);return j.title||j.name||'';}catch(e){return'';}}getMeta(__result);"
+    },
+    "play": {
+      "list": "body@js:function getPlay(html){var r=[],s={};try{var j=JSON.parse(html);[['hls','默认HLS'],['hight','高清'],['high','高清'],['low','低清'],['url','播放']].forEach(function(p){var u=j[p[0]];if(u&&!s[u]){s[u]=1;r.push({name:p[1],url:u});}});if(!r.length&&j.data){var d=j.data;['hls','hight','high','low','url'].forEach(function(k){if(d[k]&&!s[d[k]]){s[d[k]]=1;r.push({name:k,url:d[k]});}});}var re=/https?:\\/\\/[^\"'\\\\\\s]+?\\.(?:m3u8|mp4)[^\"'\\\\\\s]*/gi,m;while((m=re.exec(html))){if(!s[m[0]]){s[m[0]]=1;r.push({name:'直链',url:m[0]});}}}catch(e){}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "name": "$.name",
+      "url": "$.url"
+    },
+    "toc": {
+      "list": "body@js:function getPlay(html){var r=[],s={};try{var j=JSON.parse(html);[['hls','默认HLS'],['hight','高清'],['high','高清'],['low','低清'],['url','播放']].forEach(function(p){var u=j[p[0]];if(u&&!s[u]){s[u]=1;r.push({name:p[1],url:u});}});if(!r.length&&j.data){var d=j.data;['hls','hight','high','low','url'].forEach(function(k){if(d[k]&&!s[d[k]]){s[d[k]]=1;r.push({name:k,url:d[k]});}});}var re=/https?:\\/\\/[^\"'\\\\\\s]+?\\.(?:m3u8|mp4)[^\"'\\\\\\s]*/gi,m;while((m=re.exec(html))){if(!s[m[0]]){s[m[0]]=1;r.push({name:'直链',url:m[0]});}}}catch(e){}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     }
