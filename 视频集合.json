@@ -1273,119 +1273,103 @@
     }
   },
   {
-    "name": "📺MissAV",
-    "api": "https://missav.media",
+    "name": "📺韩片电影",
+    "api": "https://koreanpornmovie.com",
     "type": 2,
     "searchable": true,
     "removeReferer": false,
     "header": {
       "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
-      "Referer": "https://missav.media/",
-      "Origin": "https://missav.media",
-      "Accept-Language": "zh-CN,zh;q=0.9",
-      "Accept": "*/*"
+      "Referer": "https://koreanpornmovie.com/",
+      "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
     },
     "categories": [
       {
-        "name": "最近更新",
-        "url": "/cn/new?page={{page}}",
-        "url2": "/cn/new"
+        "name": "最新",
+        "url": "/page/{{page}}/",
+        "url2": "/"
       },
       {
-        "name": "新作上市",
-        "url": "/cn/release?page={{page}}",
-        "url2": "/cn/release"
+        "name": "Latest",
+        "url": "/?filter=latest",
+        "url2": "/?filter=latest"
       },
       {
-        "name": "无码流出",
-        "url": "/cn/uncensored-leak?page={{page}}",
-        "url2": "/cn/uncensored-leak"
+        "name": "热门",
+        "url": "/?filter=popular",
+        "url2": "/?filter=popular"
       },
       {
-        "name": "中文字幕",
-        "url": "/cn/chinese-subtitle?page={{page}}",
-        "url2": "/cn/chinese-subtitle"
+        "name": "最多观看",
+        "url": "/?filter=most-viewed",
+        "url2": "/?filter=most-viewed"
       },
       {
-        "name": "今日热门",
-        "url": "/cn/today-hot?page={{page}}",
-        "url2": "/cn/today-hot"
+        "name": "最长",
+        "url": "/?filter=longest",
+        "url2": "/?filter=longest"
       },
       {
-        "name": "本周热门",
-        "url": "/cn/weekly-hot?page={{page}}",
-        "url2": "/cn/weekly-hot"
+        "name": "Korean",
+        "url": "/category/korean/page/{{page}}/",
+        "url2": "/category/korean/"
       },
       {
-        "name": "本月热门",
-        "url": "/cn/monthly-hot?page={{page}}",
-        "url2": "/cn/monthly-hot"
+        "name": "Amateur",
+        "url": "/tag/amateur/page/{{page}}/",
+        "url2": "/tag/amateur/"
       },
       {
-        "name": "FC2",
-        "url": "/cn/fc2?page={{page}}",
-        "url2": "/cn/fc2"
+        "name": "4K",
+        "url": "/tag/4k/page/{{page}}/",
+        "url2": "/tag/4k/"
       },
       {
-        "name": "HEYZO",
-        "url": "/cn/heyzo?page={{page}}",
-        "url2": "/cn/heyzo"
+        "name": "18+ movies",
+        "url": "/tag/18-movies/page/{{page}}/",
+        "url2": "/tag/18-movies/"
       },
       {
-        "name": "东京热",
-        "url": "/cn/tokyohot?page={{page}}",
-        "url2": "/cn/tokyohot"
+        "name": "Korean erotic",
+        "url": "/tag/korean-erotic/page/{{page}}/",
+        "url2": "/tag/korean-erotic/"
       },
       {
-        "name": "一本道",
-        "url": "/cn/1pondo?page={{page}}",
-        "url2": "/cn/1pondo"
+        "name": "Soft porn",
+        "url": "/tag/soft-porn-movies/page/{{page}}/",
+        "url2": "/tag/soft-porn-movies/"
       },
       {
-        "name": "加勒比",
-        "url": "/cn/caribbeancom?page={{page}}",
-        "url2": "/cn/caribbeancom"
-      },
-      {
-        "name": "麻豆",
-        "url": "/cn/madou?page={{page}}",
-        "url2": "/cn/madou"
-      },
-      {
-        "name": "SIRO",
-        "url": "/cn/siro?page={{page}}",
-        "url2": "/cn/siro"
-      },
-      {
-        "name": "LUXU",
-        "url": "/cn/luxu?page={{page}}",
-        "url2": "/cn/luxu"
+        "name": "Celebrity",
+        "url": "/tag/celebrity-porn-movies/page/{{page}}/",
+        "url2": "/tag/celebrity-porn-movies/"
       }
     ],
     "list": {
-      "list": "a[href*='/cn/'][alt]",
-      "name": "alt||img@alt||@title||text",
-      "tips": "",
+      "list": "article.loop-video, .loop-video, .thumb-block, .video-preview-item",
+      "name": "a@title||img@alt||.entry-title@text||h2@text||h3@text",
+      "tips": ".duration@text||.video-duration@text||span@text",
       "coverUrl": "img@data-src||img@src||video@poster",
-      "detailUrl": "href"
+      "detailUrl": "a@href||href"
     },
     "search": {
-      "url": "/cn/search/{{key}}",
-      "list": "a[href*='/cn/'][alt]",
-      "name": "alt||img@alt||@title||text",
+      "url": "/?s={{key}}",
+      "list": "article.loop-video, .loop-video, .thumb-block, .video-preview-item",
+      "name": "a@title||img@alt||.entry-title@text||h2@text",
       "coverUrl": "img@data-src||img@src",
-      "detailUrl": "href"
+      "detailUrl": "a@href||href"
     },
     "detail": {
-      "meta": "h1@text||title@text"
+      "meta": "h1@text||.entry-title@text||title@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m,parts,i,j,hexes,uuid,u;m=html.match(/'((?:m3u8\\|)[^']{10,300})'\\.split\\('\\|'\\)/);if(m){parts=m[1].split('|');i=parts.indexOf('m3u8');j=parts.indexOf('mrstcdn.store');if(i>=0&&j>i){hexes=parts.slice(i+1,j);uuid=hexes.reverse().join('-');u='https://surrit.mrstcdn.store/'+uuid+'/playlist.m3u8';r.push({name:'播放',url:u});}}}if(!r.length){m=html.match(/\\}\\('((?:[^'\\\\]|\\\\.)*)',\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*'((?:[^'\\\\]|\\\\.)*)'\\.split\\('\\|'\\)/);if(m){var p=m[1],a=+m[2],c=+m[3],k=m[4].split('|');function e(n){return(n<a?'':e(parseInt(n/a,10)))+((n=n%a)>35?String.fromCharCode(n+29):n.toString(36));}while(c--)if(k[c])p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c]);var urls=p.match(/https?:\\/\\/[^'\"\\\\\\s]+\\.m3u8/g)||[];for(i=0;i<urls.length;i++){u=urls[i].replace(/\\\\/g,'');if(u.indexOf('playlist')>=0||u.indexOf('1080')<0&&u.indexOf('720')<0){r.push({name:'播放',url:u});break;}}if(!r.length&&urls.length){r.push({name:'播放',url:urls[0].replace(/\\\\/g,'')});}}}if(!r.length){m=html.match(/https?:\\/\\/[^\"'\\\\\\s]+(?:surrit|mrstcdn)[^\"'\\\\\\s]*playlist\\.m3u8/i);if(m)r.push({name:'播放',url:m[0]});}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m;var re=/https?:\\/\\/koreanporn\\.stream\\/[^\"'\\s<>]+\\.mp4[^\"'\\s<>]*/gi;while((m=re.exec(html))){var u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'播放',url:u});break;}if(!r.length){m=html.match(/src=[\"'](https?:\\/\\/[^\"']+\\.mp4[^\"']*)[\"']/i);if(m&&m[1].indexOf('xvideos')<0&&m[1].indexOf('preview')<0)r.push({name:'播放',url:m[1]});}if(!r.length){m=html.match(/player-x\\.php\\?q=([A-Za-z0-9+/=]+)/);if(m){try{var d=decodeURIComponent(escape(atob(m[1])));var m2=d.match(/src=[\"'](https?:\\/\\/[^\"']+\\.mp4[^\"']*)[\"']/i);if(m2)r.push({name:'播放',url:m2[1]});}catch(e){}}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     },
     "toc": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m,parts,i,j,hexes,uuid,u;m=html.match(/'((?:m3u8\\|)[^']{10,300})'\\.split\\('\\|'\\)/);if(m){parts=m[1].split('|');i=parts.indexOf('m3u8');j=parts.indexOf('mrstcdn.store');if(i>=0&&j>i){hexes=parts.slice(i+1,j);uuid=hexes.reverse().join('-');u='https://surrit.mrstcdn.store/'+uuid+'/playlist.m3u8';r.push({name:'播放',url:u});}}}if(!r.length){m=html.match(/\\}\\('((?:[^'\\\\]|\\\\.)*)',\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*'((?:[^'\\\\]|\\\\.)*)'\\.split\\('\\|'\\)/);if(m){var p=m[1],a=+m[2],c=+m[3],k=m[4].split('|');function e(n){return(n<a?'':e(parseInt(n/a,10)))+((n=n%a)>35?String.fromCharCode(n+29):n.toString(36));}while(c--)if(k[c])p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c]);var urls=p.match(/https?:\\/\\/[^'\"\\\\\\s]+\\.m3u8/g)||[];for(i=0;i<urls.length;i++){u=urls[i].replace(/\\\\/g,'');if(u.indexOf('playlist')>=0||u.indexOf('1080')<0&&u.indexOf('720')<0){r.push({name:'播放',url:u});break;}}if(!r.length&&urls.length){r.push({name:'播放',url:urls[0].replace(/\\\\/g,'')});}}}if(!r.length){m=html.match(/https?:\\/\\/[^\"'\\\\\\s]+(?:surrit|mrstcdn)[^\"'\\\\\\s]*playlist\\.m3u8/i);if(m)r.push({name:'播放',url:m[0]});}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m;var re=/https?:\\/\\/koreanporn\\.stream\\/[^\"'\\s<>]+\\.mp4[^\"'\\s<>]*/gi;while((m=re.exec(html))){var u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'播放',url:u});break;}if(!r.length){m=html.match(/src=[\"'](https?:\\/\\/[^\"']+\\.mp4[^\"']*)[\"']/i);if(m&&m[1].indexOf('xvideos')<0&&m[1].indexOf('preview')<0)r.push({name:'播放',url:m[1]});}if(!r.length){m=html.match(/player-x\\.php\\?q=([A-Za-z0-9+/=]+)/);if(m){try{var d=decodeURIComponent(escape(atob(m[1])));var m2=d.match(/src=[\"'](https?:\\/\\/[^\"']+\\.mp4[^\"']*)[\"']/i);if(m2)r.push({name:'播放',url:m2[1]});}catch(e){}}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     }
