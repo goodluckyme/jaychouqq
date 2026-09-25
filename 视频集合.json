@@ -1281,8 +1281,9 @@
     "header": {
       "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
       "Referer": "https://missav.media/",
+      "Origin": "https://missav.media",
       "Accept-Language": "zh-CN,zh;q=0.9",
-      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+      "Accept": "*/*"
     },
     "categories": [
       {
@@ -1362,7 +1363,7 @@
       }
     ],
     "list": {
-      "list": "a[href*='/cn/'][alt], .missav_media-thumbnail a[href*='/cn/']",
+      "list": "a[href*='/cn/'][alt]",
       "name": "alt||img@alt||@title||text",
       "tips": "",
       "coverUrl": "img@data-src||img@src||video@poster",
@@ -1370,7 +1371,7 @@
     },
     "search": {
       "url": "/cn/search/{{key}}",
-      "list": "a[href*='/cn/'][alt], .missav_media-thumbnail a[href*='/cn/']",
+      "list": "a[href*='/cn/'][alt]",
       "name": "alt||img@alt||@title||text",
       "coverUrl": "img@data-src||img@src",
       "detailUrl": "href"
@@ -1379,12 +1380,12 @@
       "meta": "h1@text||title@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m;m=html.match(/\\}\\('((?:[^'\\\\]|\\\\.)*)',\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*'((?:[^'\\\\]|\\\\.)*)'\\.split\\('\\|'\\)/);if(m){var p=m[1],a=+m[2],c=+m[3],k=m[4].split('|');function e(n){return(n<a?'':e(parseInt(n/a,10)))+((n=n%a)>35?String.fromCharCode(n+29):n.toString(36));}while(c--)if(k[c])p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c]);var urls=p.match(/https?:\\/\\/[^'\"\\\\\\s]+\\.m3u8/g)||[];for(var i=0;i<urls.length;i++){var u=urls[i].replace(/\\\\/g,'');if(s[u])continue;s[u]=1;var name='播放';if(u.indexOf('1080')>=0)name='1080P';else if(u.indexOf('720')>=0)name='720P';else if(u.indexOf('playlist')>=0)name='自动';r.push({name:name,url:u});}}if(!r.length){m=html.match(/'(m3u8\\|[^']+surrit[^']*)'/);if(m){var parts=m[1].split('|');var idx={};for(var i=0;i<parts.length;i++)idx[parts[i]]=1;if(idx['surrit']&&idx['mrstcdn.store']){var hex=[];for(var i=0;i<parts.length;i++)if(/^[a-f0-9]{4,}$/i.test(parts[i]))hex.push(parts[i]);if(hex.length>=5){var uuid=hex.slice(-5).reverse?hex[4]+'-'+hex[3]+'-'+hex[2]+'-'+hex[1]+'-'+hex[0]:'';var u='https://surrit.mrstcdn.store/'+[hex[4],hex[3],hex[2],hex[1],hex[0]].join('-')+'/playlist.m3u8';r.push({name:'自动',url:u});r.push({name:'720P',url:u.replace('/playlist.m3u8','/720p/video.m3u8')});r.push({name:'1080P',url:u.replace('/playlist.m3u8','/1080p/video.m3u8')});}}}if(!r.length){var re=/https?:\\/\\/[^\"'\\\\\\s]+(?:surrit|mrstcdn)[^\"'\\\\\\s]*\\.m3u8/gi;while((m=re.exec(html))){if(!s[m[0]]){s[m[0]]=1;r.push({name:'播放',url:m[0]});}}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m,parts,i,j,hexes,uuid,base,u;m=html.match(/'((?:m3u8\\|)[^']{10,300})'\\.split\\('\\|'\\)/);if(m){parts=m[1].split('|');i=parts.indexOf('m3u8');j=parts.indexOf('mrstcdn.store');if(i>=0&&j>i){hexes=parts.slice(i+1,j);uuid=hexes.reverse().join('-');base='https://surrit.mrstcdn.store/'+uuid+'/';[['自动','playlist.m3u8'],['720P','720p/video.m3u8'],['1080P','1080p/video.m3u8']].forEach(function(x){u=base+x[1];if(!s[u]){s[u]=1;r.push({name:x[0],url:u});}});}}}if(!r.length){m=html.match(/\\}\\('((?:[^'\\\\]|\\\\.)*)',\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*'((?:[^'\\\\]|\\\\.)*)'\\.split\\('\\|'\\)/);if(m){var p=m[1],a=+m[2],c=+m[3],k=m[4].split('|');function e(n){return(n<a?'':e(parseInt(n/a,10)))+((n=n%a)>35?String.fromCharCode(n+29):n.toString(36));}while(c--)if(k[c])p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c]);var urls=p.match(/https?:\\/\\/[^'\"\\\\\\s]+\\.m3u8/g)||[];for(i=0;i<urls.length;i++){u=urls[i].replace(/\\\\/g,'');if(s[u])continue;s[u]=1;var name='播放';if(u.indexOf('1080')>=0)name='1080P';else if(u.indexOf('720')>=0)name='720P';else if(u.indexOf('playlist')>=0)name='自动';r.push({name:name,url:u});}}}if(!r.length){var re=/https?:\\/\\/[^\"'\\\\\\s]+(?:surrit|mrstcdn)[^\"'\\\\\\s]*\\.m3u8/gi;while((m=re.exec(html))){if(!s[m[0]]){s[m[0]]=1;r.push({name:'播放',url:m[0]});}}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     },
     "toc": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m;m=html.match(/\\}\\('((?:[^'\\\\]|\\\\.)*)',\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*'((?:[^'\\\\]|\\\\.)*)'\\.split\\('\\|'\\)/);if(m){var p=m[1],a=+m[2],c=+m[3],k=m[4].split('|');function e(n){return(n<a?'':e(parseInt(n/a,10)))+((n=n%a)>35?String.fromCharCode(n+29):n.toString(36));}while(c--)if(k[c])p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c]);var urls=p.match(/https?:\\/\\/[^'\"\\\\\\s]+\\.m3u8/g)||[];for(var i=0;i<urls.length;i++){var u=urls[i].replace(/\\\\/g,'');if(s[u])continue;s[u]=1;var name='播放';if(u.indexOf('1080')>=0)name='1080P';else if(u.indexOf('720')>=0)name='720P';else if(u.indexOf('playlist')>=0)name='自动';r.push({name:name,url:u});}}if(!r.length){m=html.match(/'(m3u8\\|[^']+surrit[^']*)'/);if(m){var parts=m[1].split('|');var idx={};for(var i=0;i<parts.length;i++)idx[parts[i]]=1;if(idx['surrit']&&idx['mrstcdn.store']){var hex=[];for(var i=0;i<parts.length;i++)if(/^[a-f0-9]{4,}$/i.test(parts[i]))hex.push(parts[i]);if(hex.length>=5){var uuid=hex.slice(-5).reverse?hex[4]+'-'+hex[3]+'-'+hex[2]+'-'+hex[1]+'-'+hex[0]:'';var u='https://surrit.mrstcdn.store/'+[hex[4],hex[3],hex[2],hex[1],hex[0]].join('-')+'/playlist.m3u8';r.push({name:'自动',url:u});r.push({name:'720P',url:u.replace('/playlist.m3u8','/720p/video.m3u8')});r.push({name:'1080P',url:u.replace('/playlist.m3u8','/1080p/video.m3u8')});}}}if(!r.length){var re=/https?:\\/\\/[^\"'\\\\\\s]+(?:surrit|mrstcdn)[^\"'\\\\\\s]*\\.m3u8/gi;while((m=re.exec(html))){if(!s[m[0]]){s[m[0]]=1;r.push({name:'播放',url:m[0]});}}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m,parts,i,j,hexes,uuid,base,u;m=html.match(/'((?:m3u8\\|)[^']{10,300})'\\.split\\('\\|'\\)/);if(m){parts=m[1].split('|');i=parts.indexOf('m3u8');j=parts.indexOf('mrstcdn.store');if(i>=0&&j>i){hexes=parts.slice(i+1,j);uuid=hexes.reverse().join('-');base='https://surrit.mrstcdn.store/'+uuid+'/';[['自动','playlist.m3u8'],['720P','720p/video.m3u8'],['1080P','1080p/video.m3u8']].forEach(function(x){u=base+x[1];if(!s[u]){s[u]=1;r.push({name:x[0],url:u});}});}}}if(!r.length){m=html.match(/\\}\\('((?:[^'\\\\]|\\\\.)*)',\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*'((?:[^'\\\\]|\\\\.)*)'\\.split\\('\\|'\\)/);if(m){var p=m[1],a=+m[2],c=+m[3],k=m[4].split('|');function e(n){return(n<a?'':e(parseInt(n/a,10)))+((n=n%a)>35?String.fromCharCode(n+29):n.toString(36));}while(c--)if(k[c])p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c]);var urls=p.match(/https?:\\/\\/[^'\"\\\\\\s]+\\.m3u8/g)||[];for(i=0;i<urls.length;i++){u=urls[i].replace(/\\\\/g,'');if(s[u])continue;s[u]=1;var name='播放';if(u.indexOf('1080')>=0)name='1080P';else if(u.indexOf('720')>=0)name='720P';else if(u.indexOf('playlist')>=0)name='自动';r.push({name:name,url:u});}}}if(!r.length){var re=/https?:\\/\\/[^\"'\\\\\\s]+(?:surrit|mrstcdn)[^\"'\\\\\\s]*\\.m3u8/gi;while((m=re.exec(html))){if(!s[m[0]]){s[m[0]]=1;r.push({name:'播放',url:m[0]});}}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     }
