@@ -1161,94 +1161,256 @@
     }
   },
   {
-    "name": "📺黄豆短剧",
-    "api": "https://hddj.tv",
+    "name": "📺5LX短剧",
+    "api": "https://18.5lxtv.com",
     "type": 2,
     "searchable": true,
     "removeReferer": false,
     "header": {
       "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
-      "Referer": "https://hddj.tv/",
+      "Referer": "https://18.5lxtv.com/",
+      "Accept-Language": "zh-CN,zh;q=0.9",
+      "Accept": "*/*"
+    },
+    "categories": [
+      {
+        "name": "最新",
+        "url": "/latest?page={{page}}",
+        "url2": "/latest"
+      },
+      {
+        "name": "排行",
+        "url": "/ranking?page={{page}}",
+        "url2": "/ranking"
+      },
+      {
+        "name": "无码",
+        "url": "/uncensored?page={{page}}",
+        "url2": "/uncensored"
+      },
+      {
+        "name": "有码",
+        "url": "/censored?page={{page}}",
+        "url2": "/censored"
+      },
+      {
+        "name": "国产",
+        "url": "/chinese?page={{page}}",
+        "url2": "/chinese"
+      },
+      {
+        "name": "自拍",
+        "url": "/selfie?page={{page}}",
+        "url2": "/selfie"
+      },
+      {
+        "name": "素人",
+        "url": "/amateur?page={{page}}",
+        "url2": "/amateur"
+      },
+      {
+        "name": "专属",
+        "url": "/exclusive?page={{page}}",
+        "url2": "/exclusive"
+      },
+      {
+        "name": "动漫",
+        "url": "/anime?page={{page}}",
+        "url2": "/anime"
+      },
+      {
+        "name": "欧美",
+        "url": "/western?page={{page}}",
+        "url2": "/western"
+      },
+      {
+        "name": "OnlyFans",
+        "url": "/of?page={{page}}",
+        "url2": "/of"
+      },
+      {
+        "name": "UP主",
+        "url": "/upzhu?page={{page}}",
+        "url2": "/upzhu"
+      },
+      {
+        "name": "黑料",
+        "url": "/scandal?page={{page}}",
+        "url2": "/scandal"
+      },
+      {
+        "name": "FC2",
+        "url": "/fc2?page={{page}}",
+        "url2": "/fc2"
+      },
+      {
+        "name": "绿帽",
+        "url": "/cuckold?page={{page}}",
+        "url2": "/cuckold"
+      },
+      {
+        "name": "Cos",
+        "url": "/cos?page={{page}}",
+        "url2": "/cos"
+      },
+      {
+        "name": "AI",
+        "url": "/ai?page={{page}}",
+        "url2": "/ai"
+      },
+      {
+        "name": "AI短剧",
+        "url": "/ai-drama?page={{page}}",
+        "url2": "/ai-drama"
+      }
+    ],
+    "list": {
+      "list": "a[href*='/videos/']",
+      "name": "img@alt||@title||text",
+      "tips": "span@text||.text-xs@text",
+      "coverUrl": "img@src||img@data-src",
+      "detailUrl": "href"
+    },
+    "search": {
+      "url": "/search?q={{key}}",
+      "list": "a[href*='/videos/']",
+      "name": "img@alt||@title||text",
+      "tips": "span@text",
+      "coverUrl": "img@src||img@data-src",
+      "detailUrl": "href"
+    },
+    "detail": {
+      "meta": "h1@text||title@text"
+    },
+    "play": {
+      "list": "body@js:function getPlay(html){var slug='',t='',n='',m;m=html.match(/var\\s+slug\\s*=\\s*[\\\"']([^\\\"']+)[\\\"']/);if(m)slug=m[1];if(!slug){m=html.match(/\\/videos\\/([a-zA-Z0-9_\\-]+)/);if(m)slug=m[1];}m=html.match(/var\\s+t\\s*=\\s*(\\d+)/);if(m)t=m[1];m=html.match(/var\\s+n\\s*=\\s*[\\\"']([^\\\"']+)[\\\"']/);if(m)n=m[1];if(!slug||!t||!n)return'[]';var u='https://18.5lxtv.com/api/play/'+encodeURIComponent(slug)+'?t='+t+'&n='+encodeURIComponent(n);return JSON.stringify([{name:'在线播放',url:u}]);}getPlay(__result);",
+      "name": "$.name",
+      "url": "$.url"
+    },
+    "toc": {
+      "list": "body@js:function getPlay(html){var slug='',t='',n='',m;m=html.match(/var\\s+slug\\s*=\\s*[\\\"']([^\\\"']+)[\\\"']/);if(m)slug=m[1];if(!slug){m=html.match(/\\/videos\\/([a-zA-Z0-9_\\-]+)/);if(m)slug=m[1];}m=html.match(/var\\s+t\\s*=\\s*(\\d+)/);if(m)t=m[1];m=html.match(/var\\s+n\\s*=\\s*[\\\"']([^\\\"']+)[\\\"']/);if(m)n=m[1];if(!slug||!t||!n)return'[]';var u='https://18.5lxtv.com/api/play/'+encodeURIComponent(slug)+'?t='+t+'&n='+encodeURIComponent(n);return JSON.stringify([{name:'在线播放',url:u}]);}getPlay(__result);",
+      "name": "$.name",
+      "url": "$.url"
+    }
+  },
+  {
+    "name": "📺MissAV",
+    "api": "https://missav.media",
+    "type": 2,
+    "searchable": true,
+    "removeReferer": false,
+    "header": {
+      "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+      "Referer": "https://missav.media/",
       "Accept-Language": "zh-CN,zh;q=0.9",
       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
     },
     "categories": [
       {
-        "name": "首页推荐",
-        "url": "/?page={{page}}",
-        "url2": "/"
+        "name": "最近更新",
+        "url": "/dm539/cn/new?page={{page}}",
+        "url2": "/dm539/cn/new"
       },
       {
-        "name": "魔改短剧",
-        "url": "/category/mgdj/?page={{page}}",
-        "url2": "/category/mgdj/"
+        "name": "新作上市",
+        "url": "/dm635/cn/release?page={{page}}",
+        "url2": "/dm635/cn/release"
       },
       {
-        "name": "AI短剧",
-        "url": "/category/ai/?page={{page}}",
-        "url2": "/category/ai/"
+        "name": "无码流出",
+        "url": "/dm817/cn/uncensored-leak?page={{page}}",
+        "url2": "/dm817/cn/uncensored-leak"
       },
       {
-        "name": "原创短剧",
-        "url": "/category/yuandou/?page={{page}}",
-        "url2": "/category/yuandou/"
+        "name": "中文字幕",
+        "url": "/dm278/cn/chinese-subtitle?page={{page}}",
+        "url2": "/dm278/cn/chinese-subtitle"
       },
       {
-        "name": "UP主播",
-        "url": "/category/up-zhubo/?page={{page}}",
-        "url2": "/category/up-zhubo/"
+        "name": "今日热门",
+        "url": "/dm301/cn/today-hot?page={{page}}",
+        "url2": "/dm301/cn/today-hot"
       },
       {
-        "name": "真人短剧",
-        "url": "/category/real/?page={{page}}",
-        "url2": "/category/real/"
+        "name": "本周热门",
+        "url": "/dm170/cn/weekly-hot?page={{page}}",
+        "url2": "/dm170/cn/weekly-hot"
       },
       {
-        "name": "二次元",
-        "url": "/category/erciyuan/?page={{page}}",
-        "url2": "/category/erciyuan/"
+        "name": "本月热门",
+        "url": "/dm273/cn/monthly-hot?page={{page}}",
+        "url2": "/dm273/cn/monthly-hot"
       },
       {
-        "name": "黑料",
-        "url": "/category/heiliao/?page={{page}}",
-        "url2": "/category/heiliao/"
+        "name": "FC2",
+        "url": "/dm597/cn/fc2?page={{page}}",
+        "url2": "/dm597/cn/fc2"
       },
       {
-        "name": "VIP专区",
-        "url": "/category/vip-zone/?page={{page}}",
-        "url2": "/category/vip-zone/"
+        "name": "HEYZO",
+        "url": "/dm2208642/cn/heyzo?page={{page}}",
+        "url2": "/dm2208642/cn/heyzo"
       },
       {
-        "name": "品牌",
-        "url": "/category/brand/?page={{page}}",
-        "url2": "/category/brand/"
+        "name": "东京热",
+        "url": "/dm42/cn/tokyohot?page={{page}}",
+        "url2": "/dm42/cn/tokyohot"
+      },
+      {
+        "name": "一本道",
+        "url": "/dm5199603/cn/1pondo?page={{page}}",
+        "url2": "/dm5199603/cn/1pondo"
+      },
+      {
+        "name": "加勒比",
+        "url": "/dm7704788/cn/caribbeancom?page={{page}}",
+        "url2": "/dm7704788/cn/caribbeancom"
+      },
+      {
+        "name": "麻豆传媒",
+        "url": "/dm63/cn/madou?page={{page}}",
+        "url2": "/dm63/cn/madou"
+      },
+      {
+        "name": "SIRO",
+        "url": "/dm36/cn/siro?page={{page}}",
+        "url2": "/dm36/cn/siro"
+      },
+      {
+        "name": "LUXU",
+        "url": "/dm34/cn/luxu?page={{page}}",
+        "url2": "/dm34/cn/luxu"
+      },
+      {
+        "name": "VR",
+        "url": "/cn/genres/VR?page={{page}}",
+        "url2": "/cn/genres/VR"
       }
     ],
     "list": {
-      "list": "article.dm-card, a.dm-card-cover, a[href*='/series/details/']",
-      "name": "img@alt||@aria-label||.dm-card-title@text||@title||text",
-      "tips": ".dm-card-heat@text||.dm-card-flag@text",
-      "coverUrl": "img@src||img@data-src||@src",
-      "detailUrl": "a.dm-card-cover@href||a[href*='/series/details/']@href||href"
+      "list": "a[href*='/cn/']",
+      "name": "img@alt||@title||text",
+      "tips": "",
+      "coverUrl": "img@data-src||img@src||src",
+      "detailUrl": "href"
     },
     "search": {
-      "url": "/search/?q={{key}}",
-      "list": "article.dm-card, a.dm-card-cover, a[href*='/series/details/']",
-      "name": "img@alt||@aria-label||@title||text",
-      "tips": ".dm-card-heat@text",
-      "coverUrl": "img@src||img@data-src",
-      "detailUrl": "a.dm-card-cover@href||href"
+      "url": "/cn/search/{{key}}",
+      "list": "a[href*='/cn/']",
+      "name": "img@alt||@title||text",
+      "coverUrl": "img@data-src||img@src",
+      "detailUrl": "href"
     },
     "detail": {
-      "meta": "h1@text||[data-title]@data-title||title@text"
+      "meta": "h1@text||title@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){var r=[],s={},id='',m;m=html.match(/\\/play\\/([a-zA-Z0-9]+)\\//);if(m)id=m[1];if(!id){m=html.match(/data-rid=[\\\"']([a-zA-Z0-9]+)[\\\"']/);if(m)id=m[1];}if(!id){m=html.match(/\\/series\\/details\\/([a-zA-Z0-9]+)/);if(m)id=m[1];}var eps=[];re=/[?&]ep=(\\d+)/g;while((m=re.exec(html))){var n=parseInt(m[1],10);if(eps.indexOf(n)<0)eps.push(n);}re=/\\/play\\/[a-zA-Z0-9]+\\/(\\d+)/g;while((m=re.exec(html))){var n=parseInt(m[1],10);if(eps.indexOf(n)<0)eps.push(n);}if(!eps.length)eps=[1];eps.sort(function(a,b){return a-b;});for(var i=0;i<eps.length;i++){var u='https://hddj.tv/play/'+id+'/'+eps[i]+'.m3u8';if(!s[u]){s[u]=1;r.push({name:'第'+eps[i]+'集',url:u});}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m;m=html.match(/\\}\\('((?:[^'\\\\]|\\\\.)+)',(\\d+),(\\d+),'((?:[^'\\\\]|\\\\.)+)'\\.split\\('\\|'\\)/);if(m){var p=m[1],a=parseInt(m[2],10),c=parseInt(m[3],10),k=m[4].split('|');function e(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36));}while(c--){if(k[c])p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c]);}var urls=p.match(/https?:\\/\\/[^'\\\\]+\\.m3u8/g)||[];for(var i=0;i<urls.length;i++){var u=urls[i].replace(/\\\\/g,'');if(s[u])continue;s[u]=1;var name='播放';if(u.indexOf('1080')>=0)name='1080P';else if(u.indexOf('720')>=0)name='720P';else if(u.indexOf('playlist')>=0)name='自动';r.push({name:name,url:u});}}if(!r.length){var re=/https?:\\/\\/[^\"'\\\\\\s]+surrit[^\"'\\\\\\s]+\\.m3u8/gi;while((m=re.exec(html))){if(!s[m[0]]){s[m[0]]=1;r.push({name:'播放',url:m[0]});}}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     },
     "toc": {
-      "list": "body@js:function getPlay(html){var r=[],s={},id='',m;m=html.match(/\\/play\\/([a-zA-Z0-9]+)\\//);if(m)id=m[1];if(!id){m=html.match(/data-rid=[\\\"']([a-zA-Z0-9]+)[\\\"']/);if(m)id=m[1];}if(!id){m=html.match(/\\/series\\/details\\/([a-zA-Z0-9]+)/);if(m)id=m[1];}var eps=[];re=/[?&]ep=(\\d+)/g;while((m=re.exec(html))){var n=parseInt(m[1],10);if(eps.indexOf(n)<0)eps.push(n);}re=/\\/play\\/[a-zA-Z0-9]+\\/(\\d+)/g;while((m=re.exec(html))){var n=parseInt(m[1],10);if(eps.indexOf(n)<0)eps.push(n);}if(!eps.length)eps=[1];eps.sort(function(a,b){return a-b;});for(var i=0;i<eps.length;i++){var u='https://hddj.tv/play/'+id+'/'+eps[i]+'.m3u8';if(!s[u]){s[u]=1;r.push({name:'第'+eps[i]+'集',url:u});}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m;m=html.match(/\\}\\('((?:[^'\\\\]|\\\\.)+)',(\\d+),(\\d+),'((?:[^'\\\\]|\\\\.)+)'\\.split\\('\\|'\\)/);if(m){var p=m[1],a=parseInt(m[2],10),c=parseInt(m[3],10),k=m[4].split('|');function e(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36));}while(c--){if(k[c])p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c]);}var urls=p.match(/https?:\\/\\/[^'\\\\]+\\.m3u8/g)||[];for(var i=0;i<urls.length;i++){var u=urls[i].replace(/\\\\/g,'');if(s[u])continue;s[u]=1;var name='播放';if(u.indexOf('1080')>=0)name='1080P';else if(u.indexOf('720')>=0)name='720P';else if(u.indexOf('playlist')>=0)name='自动';r.push({name:name,url:u});}}if(!r.length){var re=/https?:\\/\\/[^\"'\\\\\\s]+surrit[^\"'\\\\\\s]+\\.m3u8/gi;while((m=re.exec(html))){if(!s[m[0]]){s[m[0]]=1;r.push({name:'播放',url:m[0]});}}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     }
