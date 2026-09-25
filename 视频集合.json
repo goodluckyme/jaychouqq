@@ -1590,81 +1590,82 @@
   },
   {
     "name": "📺SupJav",
-    "api": "https://py.fzcrym.link:1314",
+    "api": "https://supjav.com",
     "type": 2,
     "searchable": true,
     "removeReferer": false,
     "header": {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-      "Accept": "text/html,application/xhtml+xml,*/*",
-      "Accept-Language": "zh-CN,zh;q=0.9"
+      "Referer": "https://supjav.com/",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8"
     },
     "categories": [
       {
         "name": "最新",
-        "url": "https://py.fzcrym.link:1314/fs?u=https%3A%2F%2Fsupjav.com%2Fpage%2F%7B%7Bpage%7D%7D%2F",
-        "url2": "https://py.fzcrym.link:1314/fs?u=https%3A%2F%2Fsupjav.com%2F"
+        "url": "/page/{{page}}/",
+        "url2": "/"
       },
       {
         "name": "热门",
-        "url": "https://py.fzcrym.link:1314/fs?u=https%3A%2F%2Fsupjav.com%2Fpopular%2Fpage%2F%7B%7Bpage%7D%7D%2F",
-        "url2": "https://py.fzcrym.link:1314/fs?u=https%3A%2F%2Fsupjav.com%2Fpopular%2F"
+        "url": "/popular/page/{{page}}/",
+        "url2": "/popular/"
       },
       {
         "name": "有码",
-        "url": "https://py.fzcrym.link:1314/fs?u=https%3A%2F%2Fsupjav.com%2Fcategory%2Fcensored-jav%2Fpage%2F%7B%7Bpage%7D%7D%2F",
-        "url2": "https://py.fzcrym.link:1314/fs?u=https%3A%2F%2Fsupjav.com%2Fcategory%2Fcensored-jav%2F"
+        "url": "/category/censored-jav/page/{{page}}/",
+        "url2": "/category/censored-jav/"
       },
       {
         "name": "无码",
-        "url": "https://py.fzcrym.link:1314/fs?u=https%3A%2F%2Fsupjav.com%2Fcategory%2Funcensored-jav%2Fpage%2F%7B%7Bpage%7D%7D%2F",
-        "url2": "https://py.fzcrym.link:1314/fs?u=https%3A%2F%2Fsupjav.com%2Fcategory%2Funcensored-jav%2F"
+        "url": "/category/uncensored-jav/page/{{page}}/",
+        "url2": "/category/uncensored-jav/"
       },
       {
         "name": "素人",
-        "url": "https://py.fzcrym.link:1314/fs?u=https%3A%2F%2Fsupjav.com%2Fcategory%2Famateur%2Fpage%2F%7B%7Bpage%7D%7D%2F",
-        "url2": "https://py.fzcrym.link:1314/fs?u=https%3A%2F%2Fsupjav.com%2Fcategory%2Famateur%2F"
+        "url": "/category/amateur/page/{{page}}/",
+        "url2": "/category/amateur/"
       },
       {
         "name": "中文字幕",
-        "url": "https://py.fzcrym.link:1314/fs?u=https%3A%2F%2Fsupjav.com%2Fcategory%2Fchinese-subtitles%2Fpage%2F%7B%7Bpage%7D%7D%2F",
-        "url2": "https://py.fzcrym.link:1314/fs?u=https%3A%2F%2Fsupjav.com%2Fcategory%2Fchinese-subtitles%2F"
+        "url": "/category/chinese-subtitles/page/{{page}}/",
+        "url2": "/category/chinese-subtitles/"
       },
       {
         "name": "破解",
-        "url": "https://py.fzcrym.link:1314/fs?u=https%3A%2F%2Fsupjav.com%2Fcategory%2Freducing-mosaic%2Fpage%2F%7B%7Bpage%7D%7D%2F",
-        "url2": "https://py.fzcrym.link:1314/fs?u=https%3A%2F%2Fsupjav.com%2Fcategory%2Freducing-mosaic%2F"
+        "url": "/category/reducing-mosaic/page/{{page}}/",
+        "url2": "/category/reducing-mosaic/"
       },
       {
         "name": "英文字幕",
-        "url": "https://py.fzcrym.link:1314/fs?u=https%3A%2F%2Fsupjav.com%2Fcategory%2Fenglish-subtitles%2Fpage%2F%7B%7Bpage%7D%7D%2F",
-        "url2": "https://py.fzcrym.link:1314/fs?u=https%3A%2F%2Fsupjav.com%2Fcategory%2Fenglish-subtitles%2F"
+        "url": "/category/english-subtitles/page/{{page}}/",
+        "url2": "/category/english-subtitles/"
       }
     ],
     "list": {
-      "list": "body@js:function getList(html){var r=[],s={},re=/<div class=\"post\">([\\s\\S]*?)(?=<div class=\"post\">|<\\/main>|$)/gi,m;while((m=re.exec(html))){var b=m[1];var hm=b.match(/href=\"(https?:\\/\\/supjav\\.com\\/\\d+\\.html|\\/\\d+\\.html)\"/i);if(!hm)continue;var h=hm[1];if(h.charAt(0)==='/')h='https://supjav.com'+h;if(s[h])continue;s[h]=1;var t=(b.match(/title=\"([^\"]+)\"/)||[])[1]||'';t=t.replace(/&amp;/g,'&');var pic='';var pm=b.match(/data-original=\"([^\"]+)\"/)||b.match(/data-src=\"([^\"]+)\"/)||b.match(/src=\"(https?:\\/\\/[^\"]+)\"/);if(pm)pic=pm[1];r.push({name:t,id:h,pic:pic,tips:''});}return JSON.stringify(r);}getList(__result);",
-      "name": "$.name",
-      "tips": "$.tips",
-      "coverUrl": "$.pic",
-      "detailUrl": "https://py.fzcrym.link:1314/fs?u={{$.id}}"
+      "list": "div.post",
+      "name": "a@title||img@alt||title",
+      "tips": "",
+      "coverUrl": "img@data-original||img@data-src||img@src",
+      "detailUrl": "a@href"
     },
     "search": {
-      "url": "https://py.fzcrym.link:1314/fs?u=https%3A%2F%2Fsupjav.com%2F%3Fs%3D%7B%7Bkey%7D%7D",
-      "list": "body@js:function getList(html){var r=[],s={},re=/<div class=\"post\">([\\s\\S]*?)(?=<div class=\"post\">|<\\/main>|$)/gi,m;while((m=re.exec(html))){var b=m[1];var hm=b.match(/href=\"(https?:\\/\\/supjav\\.com\\/\\d+\\.html|\\/\\d+\\.html)\"/i);if(!hm)continue;var h=hm[1];if(h.charAt(0)==='/')h='https://supjav.com'+h;if(s[h])continue;s[h]=1;var t=(b.match(/title=\"([^\"]+)\"/)||[])[1]||'';t=t.replace(/&amp;/g,'&');var pic='';var pm=b.match(/data-original=\"([^\"]+)\"/)||b.match(/data-src=\"([^\"]+)\"/)||b.match(/src=\"(https?:\\/\\/[^\"]+)\"/);if(pm)pic=pm[1];r.push({name:t,id:h,pic:pic,tips:''});}return JSON.stringify(r);}getList(__result);",
-      "name": "$.name",
-      "coverUrl": "$.pic",
-      "detailUrl": "https://py.fzcrym.link:1314/fs?u={{$.id}}"
+      "url": "/?s={{key}}",
+      "list": "div.post",
+      "name": "a@title||img@alt||title",
+      "coverUrl": "img@data-original||img@data-src||img@src",
+      "detailUrl": "a@href"
     },
     "detail": {
       "meta": "h1@text||title@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m;var re=/data-link=\"([0-9a-f]{40,})\"/g;var names=[];var nre=/data-link=\"[0-9a-f]{40,}\"[^>]*>([^<]{1,12})</g;while((m=nre.exec(html)))names.push(m[1].trim());var i=0;while((m=re.exec(html))){var lk=m[1];var nm=names[i]||('线路'+(i+1));i++;r.push({name:nm,url:'https://lk1.supremejav.com/supjav.php?l='+lk});}if(!r.length){var re2=/https?:\\/\\/[^\"'\\\\\\s]+?\\.(?:m3u8|mp4)[^\"'\\\\\\s]*/gi;while((m=re2.exec(html)))r.push({name:'直链',url:m[0]});}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],names=[],m,i=0;var nre=/data-link=\"[0-9a-f]{40,}\"[^>]*>([^<]{1,20})</gi;while((m=nre.exec(html)))names.push(m[1].trim());var re=/data-link=\"([0-9a-f]{40,})\"/gi;while((m=re.exec(html))){var nm=names[i]||('线路'+(i+1));i++;r.push({name:nm,url:'https://lk1.supremejav.com/supjav.php?l='+m[1]});}if(!r.length){var re2=/https?:\\/\\/[^\\\"'\\s<>]+\\.(?:m3u8|mp4)[^\\\"'\\s<>]*/gi;while((m=re2.exec(html)))r.push({name:'直链',url:m[0]});}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     },
     "toc": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m;var re=/data-link=\"([0-9a-f]{40,})\"/g;var names=[];var nre=/data-link=\"[0-9a-f]{40,}\"[^>]*>([^<]{1,12})</g;while((m=nre.exec(html)))names.push(m[1].trim());var i=0;while((m=re.exec(html))){var lk=m[1];var nm=names[i]||('线路'+(i+1));i++;r.push({name:nm,url:'https://lk1.supremejav.com/supjav.php?l='+lk});}if(!r.length){var re2=/https?:\\/\\/[^\"'\\\\\\s]+?\\.(?:m3u8|mp4)[^\"'\\\\\\s]*/gi;while((m=re2.exec(html)))r.push({name:'直链',url:m[0]});}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],names=[],m,i=0;var nre=/data-link=\"[0-9a-f]{40,}\"[^>]*>([^<]{1,20})</gi;while((m=nre.exec(html)))names.push(m[1].trim());var re=/data-link=\"([0-9a-f]{40,})\"/gi;while((m=re.exec(html))){var nm=names[i]||('线路'+(i+1));i++;r.push({name:nm,url:'https://lk1.supremejav.com/supjav.php?l='+m[1]});}if(!r.length){var re2=/https?:\\/\\/[^\\\"'\\s<>]+\\.(?:m3u8|mp4)[^\\\"'\\s<>]*/gi;while((m=re2.exec(html)))r.push({name:'直链',url:m[0]});}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     }
@@ -1844,57 +1845,63 @@
     }
   },
   {
-    "name": "📺TwitterAPP",
-    "api": "https://twitter-app.local",
+    "name": "📺Fangsung",
+    "api": "https://www.fangsung.com",
     "type": 2,
     "searchable": true,
     "removeReferer": false,
     "header": {
-      "User-Agent": "Mozilla/5.0 (Linux; Android 11; M2012K10C Build/RP1A.200720.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.141 Mobile Safari/537.36;SuiRui/twitter/ver=1.4.4",
-      "Accept": "application/json",
-      "Accept-Language": "zh-CN,zh;q=0.9"
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      "Referer": "https://www.fangsung.com/",
+      "Accept-Language": "zh-CN,zh;q=0.9",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
     },
     "categories": [
       {
-        "name": "精选日榜",
-        "url": "/api/video/getRankVideos?pageSize=20&page={{page}}&type=1",
-        "url2": "/api/video/getRankVideos?pageSize=20&page=1&type=1"
+        "name": "首页",
+        "url": "/",
+        "url2": "/"
       },
       {
-        "name": "精选周榜",
-        "url": "/api/video/getRankVideos?pageSize=20&page={{page}}&type=2",
-        "url2": "/api/video/getRankVideos?pageSize=20&page=1&type=2"
+        "name": "最新",
+        "url": "/latest/",
+        "url2": "/latest/"
       },
       {
-        "name": "精选月榜",
-        "url": "/api/video/getRankVideos?pageSize=20&page={{page}}&type=3",
-        "url2": "/api/video/getRankVideos?pageSize=20&page=1&type=3"
+        "name": "热门",
+        "url": "/hot/",
+        "url2": "/hot/"
+      },
+      {
+        "name": "分类",
+        "url": "/category/",
+        "url2": "/category/"
       }
     ],
     "list": {
-      "list": "body@js:function getList(html){try{var j=JSON.parse(html);var arr=j.data||j.videoList||[];if(!Array.isArray(arr))arr=[];return JSON.stringify(arr.map(function(k){var pic='';var c=k.coverImg||[];if(Array.isArray(c)&&c[0])pic=c[0];else if(typeof c==='string')pic=c;return{name:k.title||k.nickName||String(k.videoId),id:String(k.videoId||''),pic:pic,tips:''};}));}catch(e){return'[]';}}getList(__result);",
-      "name": "$.name",
-      "tips": "$.tips",
-      "coverUrl": "$.pic",
-      "detailUrl": "$.id"
+      "list": "a[href*='/video/'], a[href*='/vod/'], a[href*='/play/'], .post, .item, article",
+      "name": "title||img@alt||text",
+      "tips": ".duration@text||.note@text",
+      "coverUrl": "img@data-src||img@data-original||img@src",
+      "detailUrl": "href"
     },
     "search": {
-      "url": "/api/search/keyWord?pageSize=20&page={{page}}&searchWord={{key}}&searchType=1",
-      "list": "body@js:function getList(html){try{var j=JSON.parse(html);var arr=j.videoList||j.data||[];if(!Array.isArray(arr))arr=[];return JSON.stringify(arr.map(function(k){var pic='';var c=k.coverImg||[];if(Array.isArray(c)&&c[0])pic=c[0];else if(typeof c==='string')pic=c;return{name:k.title||k.nickName||String(k.videoId),id:String(k.videoId||''),pic:pic,tips:''};}));}catch(e){return'[]';}}getList(__result);",
-      "name": "$.name",
-      "coverUrl": "$.pic",
-      "detailUrl": "$.id"
+      "url": "/?s={{key}}",
+      "list": "a[href*='/video/'], a[href*='/vod/'], .post, .item",
+      "name": "title||img@alt||text",
+      "coverUrl": "img@data-src||img@src",
+      "detailUrl": "href"
     },
     "detail": {
-      "meta": "title@text"
+      "meta": "h1@text||title@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){var r=[];try{var j=JSON.parse(html);var d=j.data||j;var u=d.playPath||d.videoUrl||'';if(u)r.push({name:'播放',url:u});}catch(e){}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m,u;var re=/https?:\\/\\/[^\\\"'\\s<>]+\\.(?:m3u8|mp4)[^\\\"'\\s<>]*/gi;while((m=re.exec(html))){u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'播放',url:u});}if(!r.length){m=html.match(/src=[\\\"']([^\\\"']*(?:embed|play|player)[^\\\"']*)[\\\"']/i);if(m)r.push({name:'播放',url:m[1]});}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     },
     "toc": {
-      "list": "body@js:function getPlay(html){var r=[];try{var j=JSON.parse(html);var d=j.data||j;var u=d.playPath||d.videoUrl||'';if(u)r.push({name:'播放',url:u});}catch(e){}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m,u;var re=/https?:\\/\\/[^\\\"'\\s<>]+\\.(?:m3u8|mp4)[^\\\"'\\s<>]*/gi;while((m=re.exec(html))){u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'播放',url:u});}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     }
@@ -2023,6 +2030,63 @@
     },
     "toc": {
       "list": "body@js:function getPlay(html){var r=[],s={},m,u;[['setVideoHLS','HLS'],['setVideoUrlHigh','高清'],['setVideoUrlLow','标清']].forEach(function(p){var re=new RegExp(p[0]+\"\\\\(['\\\"]([^'\\\"]+)\");m=html.match(re);if(m){u=m[1].replace(/&amp;/g,'&');if(u&&!s[u]){s[u]=1;r.push({name:p[1],url:u});}}});var re2=/https?:\\/\\/[^\"'\\\\\\s]+?\\.(?:m3u8|mp4)[^\"'\\\\\\s]*/gi;while((m=re2.exec(html))){u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'直链',url:u});}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "name": "$.name",
+      "url": "$.url"
+    }
+  },
+  {
+    "name": "📺91Goff",
+    "api": "https://best.gofffpwtl.cc",
+    "type": 2,
+    "searchable": true,
+    "removeReferer": false,
+    "header": {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      "Referer": "https://best.gofffpwtl.cc/",
+      "Accept-Language": "zh-CN,zh;q=0.9",
+      "Accept": "text/html,application/xhtml+xml,*/*"
+    },
+    "categories": [
+      {
+        "name": "91视频",
+        "url": "/comic/index/video?category=play&page={{page}}",
+        "url2": "/comic/index/video?category=play"
+      },
+      {
+        "name": "本月热门",
+        "url": "/comic/index/video?category=now_month_hot&page={{page}}",
+        "url2": "/comic/index/video?category=now_month_hot"
+      },
+      {
+        "name": "原创",
+        "url": "/comic/index/video?category=original&page={{page}}",
+        "url2": "/comic/index/video?category=original"
+      }
+    ],
+    "list": {
+      "list": "a[href*='video_key=']",
+      "name": "img@alt||title||text",
+      "tips": "",
+      "coverUrl": "img@data-src||img@src",
+      "detailUrl": "href"
+    },
+    "search": {
+      "url": "/comic/index/search?keyword={{key}}&page={{page}}",
+      "list": "a[href*='video_key=']",
+      "name": "img@alt||title||text",
+      "coverUrl": "img@data-src||img@src",
+      "detailUrl": "href"
+    },
+    "detail": {
+      "meta": "title@text||h1@text"
+    },
+    "play": {
+      "list": "body@js:function getPlay(html){var r=[],s={},m,u,id;m=String(html).match(/video_key=(\\d+)/)||String(html).match(/videoId\\s*=\\s*['\\\"]?(\\d+)/);if(m)id=m[1];if(id){try{var x=new XMLHttpRequest();x.open('GET','https://best.gofffpwtl.cc/index/embed?id='+id,false);x.setRequestHeader('Referer','https://best.gofffpwtl.cc/comic/index/detail?video_key='+id);x.send(null);var t=x.responseText||'';var re=/https?:\\\\/\\\\/[^\\\"'\\\\s<>]+\\\\.m3u8[^\\\"'\\\\s<>]*/gi;while((m=re.exec(t))){u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'播放',url:u});}m=t.match(/<source[^>]+src=[\\\"']([^\\\"']+)[\\\"']/i);if(m&&!s[m[1]]){r.push({name:'播放',url:m[1]});}m=t.match(/data-url[^=]*=[\\\"']([^\\\"']+)[\\\"']/i);if(m&&!s[m[1]]){r.push({name:'播放',url:m[1]});}if(!r.length)r.push({name:'播放',url:'https://best.gofffpwtl.cc/index/embed?id='+id});}catch(e){}}if(!r.length){var re2=/https?:\\\\/\\\\/[^\\\"'\\\\s<>]+\\\\.(?:m3u8|mp4)[^\\\"'\\\\s<>]*/gi;while((m=re2.exec(html))){u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'播放',url:u});}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "name": "$.name",
+      "url": "$.url"
+    },
+    "toc": {
+      "list": "body@js:function getPlay(html){var r=[],s={},m,u,id;m=String(html).match(/video_key=(\\d+)/)||String(html).match(/videoId\\s*=\\s*['\\\"]?(\\d+)/);if(m)id=m[1];if(id){try{var x=new XMLHttpRequest();x.open('GET','https://best.gofffpwtl.cc/index/embed?id='+id,false);x.setRequestHeader('Referer','https://best.gofffpwtl.cc/comic/index/detail?video_key='+id);x.send(null);var t=x.responseText||'';var re=/https?:\\\\/\\\\/[^\\\"'\\\\s<>]+\\\\.m3u8[^\\\"'\\\\s<>]*/gi;while((m=re.exec(t))){u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'播放',url:u});}m=t.match(/<source[^>]+src=[\\\"']([^\\\"']+)[\\\"']/i);if(m&&!s[m[1]]){r.push({name:'播放',url:m[1]});}m=t.match(/data-url[^=]*=[\\\"']([^\\\"']+)[\\\"']/i);if(m&&!s[m[1]]){r.push({name:'播放',url:m[1]});}if(!r.length)r.push({name:'播放',url:'https://best.gofffpwtl.cc/index/embed?id='+id});}catch(e){}}if(!r.length){var re2=/https?:\\\\/\\\\/[^\\\"'\\\\s<>]+\\\\.(?:m3u8|mp4)[^\\\"'\\\\s<>]*/gi;while((m=re2.exec(html))){u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'播放',url:u});}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     }
