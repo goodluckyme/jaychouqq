@@ -1061,5 +1061,194 @@
       "name": "title||text",
       "url": "href"
     }
+  },
+  {
+    "name": "📺57吃瓜",
+    "api": "https://57chigua.co",
+    "type": 2,
+    "searchable": true,
+    "removeReferer": false,
+    "header": {
+      "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+      "Referer": "https://57chigua.co/",
+      "Accept-Language": "zh-CN,zh;q=0.9"
+    },
+    "categories": [
+      {
+        "name": "全部",
+        "url": "/page/{{page}}/",
+        "url2": "/"
+      },
+      {
+        "name": "热门",
+        "url": "/hot/{{page}}/",
+        "url2": "/hot/"
+      },
+      {
+        "name": "成人AI短剧",
+        "url": "/aichengduanju/{{page}}/",
+        "url2": "/aichengduanju/"
+      },
+      {
+        "name": "今日吃瓜",
+        "url": "/jrcg/{{page}}/",
+        "url2": "/jrcg/"
+      },
+      {
+        "name": "每日大赛",
+        "url": "/mrds/{{page}}/",
+        "url2": "/mrds/"
+      },
+      {
+        "name": "网红黑料",
+        "url": "/wanghong/{{page}}/",
+        "url2": "/wanghong/"
+      },
+      {
+        "name": "网黄合集",
+        "url": "/video/{{page}}/",
+        "url2": "/video/"
+      },
+      {
+        "name": "出轨劈腿",
+        "url": "/cheating/{{page}}/",
+        "url2": "/cheating/"
+      },
+      {
+        "name": "直播擦边",
+        "url": "/live/{{page}}/",
+        "url2": "/live/"
+      },
+      {
+        "name": "社会事件",
+        "url": "/society/{{page}}/",
+        "url2": "/society/"
+      },
+      {
+        "name": "明星八卦",
+        "url": "/star/{{page}}/",
+        "url2": "/star/"
+      }
+    ],
+    "list": {
+      "list": "a[href*='/events/']",
+      "name": "img@alt||@title||h2@text||h3@text||text",
+      "tips": "",
+      "coverUrl": "img@src||img@data-src",
+      "detailUrl": "href"
+    },
+    "search": {
+      "url": "/search/?q={{key}}",
+      "list": "a[href*='/events/']",
+      "name": "img@alt||@title||h2@text||h3@text||text",
+      "coverUrl": "img@src||img@data-src",
+      "detailUrl": "href"
+    },
+    "detail": {
+      "meta": "title@text||h1@text"
+    },
+    "play": {
+      "list": "video",
+      "name": "播放",
+      "url": "data-hls-src||data-fallback-src||src||data-hls"
+    },
+    "toc": {
+      "list": "video",
+      "name": "播放",
+      "url": "data-hls-src||data-fallback-src||src||data-hls"
+    }
+  },
+  {
+    "name": "📺黄豆短剧",
+    "api": "https://hddj.tv",
+    "type": 2,
+    "searchable": true,
+    "removeReferer": false,
+    "header": {
+      "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+      "Referer": "https://hddj.tv/",
+      "Accept-Language": "zh-CN,zh;q=0.9",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+    },
+    "categories": [
+      {
+        "name": "首页推荐",
+        "url": "/?page={{page}}",
+        "url2": "/"
+      },
+      {
+        "name": "魔改短剧",
+        "url": "/category/mgdj/?page={{page}}",
+        "url2": "/category/mgdj/"
+      },
+      {
+        "name": "AI短剧",
+        "url": "/category/ai/?page={{page}}",
+        "url2": "/category/ai/"
+      },
+      {
+        "name": "原创短剧",
+        "url": "/category/yuandou/?page={{page}}",
+        "url2": "/category/yuandou/"
+      },
+      {
+        "name": "UP主播",
+        "url": "/category/up-zhubo/?page={{page}}",
+        "url2": "/category/up-zhubo/"
+      },
+      {
+        "name": "真人短剧",
+        "url": "/category/real/?page={{page}}",
+        "url2": "/category/real/"
+      },
+      {
+        "name": "二次元",
+        "url": "/category/erciyuan/?page={{page}}",
+        "url2": "/category/erciyuan/"
+      },
+      {
+        "name": "黑料",
+        "url": "/category/heiliao/?page={{page}}",
+        "url2": "/category/heiliao/"
+      },
+      {
+        "name": "VIP专区",
+        "url": "/category/vip-zone/?page={{page}}",
+        "url2": "/category/vip-zone/"
+      },
+      {
+        "name": "品牌",
+        "url": "/category/brand/?page={{page}}",
+        "url2": "/category/brand/"
+      }
+    ],
+    "list": {
+      "list": "a[href*='/series/details/'], .dm-card a",
+      "name": "img@alt||.dm-card-title@text||@title||text",
+      "tips": ".dm-card-heat@text||.dm-card-flag@text",
+      "coverUrl": "img@data-src||img@src||data-src",
+      "detailUrl": "href"
+    },
+    "search": {
+      "url": "/search/?q={{key}}",
+      "list": "a[href*='/series/details/'], .dm-card a",
+      "name": "img@alt||.dm-card-title@text||@title||text",
+      "tips": ".dm-card-heat@text",
+      "coverUrl": "img@data-src||img@src",
+      "detailUrl": "href"
+    },
+    "detail": {
+      "meta": "h1@text||title@text||[data-title]@data-title"
+    },
+    "play": {
+      "list": "video, [data-video-src], a[href*='/play/']",
+      "name": "播放||text",
+      "url": "data-video-src||data-hls-src||src||href"
+    },
+    "toc": {
+      "list": "video, [data-video-src], a[href*='/watch/'], a[href*='?ep=']",
+      "name": "text||播放",
+      "url": "data-video-src||href"
+    }
   }
 ]
