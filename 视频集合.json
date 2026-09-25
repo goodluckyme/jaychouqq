@@ -1773,123 +1773,124 @@
     }
   },
   {
-    "name": "📺吉林猫",
-    "api": "https://jlm7.cc",
+    "name": "📺新片场",
+    "api": "https://www.xinpianchang.com",
     "type": 2,
     "searchable": true,
     "removeReferer": false,
     "header": {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-      "Referer": "https://jlm7.cc/",
+      "Referer": "https://www.xinpianchang.com/",
       "Accept-Language": "zh-CN,zh;q=0.9",
       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
     },
     "categories": [
       {
-        "name": "日韩自拍",
-        "url": "/index.php/vod/type/id/46/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/46.html"
+        "name": "推荐",
+        "url": "/recommend/editor",
+        "url2": "/recommend/editor"
       },
       {
-        "name": "色情主播",
-        "url": "/index.php/vod/type/id/43/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/43.html"
+        "name": "全球精选",
+        "url": "/discover/article-9999-0",
+        "url2": "/discover/article-9999-0"
       },
       {
-        "name": "国产AV",
-        "url": "/index.php/vod/type/id/44/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/44.html"
+        "name": "广告片",
+        "url": "/discover/article-1-0",
+        "url2": "/discover/article-1-0"
       },
       {
-        "name": "乱伦侵犯",
-        "url": "/index.php/vod/type/id/59/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/59.html"
+        "name": "宣传片",
+        "url": "/discover/article-16-0",
+        "url2": "/discover/article-16-0"
       },
       {
-        "name": "日本无码",
-        "url": "/index.php/vod/type/id/47/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/47.html"
+        "name": "竖屏广告",
+        "url": "/discover/article-332-0",
+        "url2": "/discover/article-332-0"
       },
       {
-        "name": "无码字幕",
-        "url": "/index.php/vod/type/id/50/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/50.html"
+        "name": "AIGC",
+        "url": "/discover/article-329-0",
+        "url2": "/discover/article-329-0"
       },
       {
-        "name": "色情动漫",
-        "url": "/index.php/vod/type/id/49/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/49.html"
+        "name": "剧情短片",
+        "url": "/discover/article-31-0",
+        "url2": "/discover/article-31-0"
       },
       {
-        "name": "有码字幕",
-        "url": "/index.php/vod/type/id/48/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/48.html"
+        "name": "纪录片",
+        "url": "/discover/article-49-0",
+        "url2": "/discover/article-49-0"
       },
       {
-        "name": "欧美AV",
-        "url": "/index.php/vod/type/id/51/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/51.html"
+        "name": "摄影",
+        "url": "/discover/article-61-0",
+        "url2": "/discover/article-61-0"
       },
       {
-        "name": "18禁重口味",
-        "url": "/index.php/vod/type/id/52/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/52.html"
+        "name": "视觉探索",
+        "url": "/discover/article-76-0",
+        "url2": "/discover/article-76-0"
       },
       {
-        "name": "偷拍偷窥",
-        "url": "/index.php/vod/type/id/53/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/53.html"
+        "name": "三维CG",
+        "url": "/discover/article-347-0",
+        "url2": "/discover/article-347-0"
       },
       {
-        "name": "网爆吃瓜",
-        "url": "/index.php/vod/type/id/54/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/54.html"
+        "name": "二维动画",
+        "url": "/discover/article-69-0",
+        "url2": "/discover/article-69-0"
       },
       {
-        "name": "传媒A片",
-        "url": "/index.php/vod/type/id/55/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/55.html"
+        "name": "音乐/声音",
+        "url": "/discover/article-27-0",
+        "url2": "/discover/article-27-0"
       },
       {
-        "name": "探花约炮",
-        "url": "/index.php/vod/type/id/56/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/56.html"
+        "name": "学习分享",
+        "url": "/discover/article-144-0",
+        "url2": "/discover/article-144-0"
       },
       {
-        "name": "三级伦理",
-        "url": "/index.php/vod/type/id/57/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/57.html"
+        "name": "时尚",
+        "url": "/discover/article-399-0",
+        "url2": "/discover/article-399-0"
       },
       {
-        "name": "AV解说",
-        "url": "/index.php/vod/type/id/58/page/{{page}}.html",
-        "url2": "/index.php/vod/type/id/58.html"
+        "name": "汽车",
+        "url": "/discover/article-400-0",
+        "url2": "/discover/article-400-0"
       }
     ],
     "list": {
-      "list": "a[href*='/vod/play/id/']",
-      "name": "img@alt||img@title||title||text",
-      "tips": "",
-      "coverUrl": "img@data-src||img@src||.poster img@data-src",
-      "detailUrl": "href"
+      "list": "body@js:function getList(html){\nvar r=[],s={},raw=String(html||'');\nfunction xhr(u){try{var x=new XMLHttpRequest();x.open('GET',u,false);x.setRequestHeader('Accept','application/json');x.setRequestHeader('x-nextjs-data','1');x.setRequestHeader('Referer','https://www.xinpianchang.com/');x.send(null);return x.responseText||''}catch(e){return''}}\nfunction buildId(){var t=xhr('https://www.xinpianchang.com/');var m=t.match(/\"buildId\"\\s*:\\s*\"([^\"]+)\"/);return m?m[1]:''}\nfunction parseList(txt){try{var j=JSON.parse(txt);var list=(j.pageProps&&j.pageProps.discoverArticleData&&j.pageProps.discoverArticleData.list)||[];\nfor(var i=0;i<list.length;i++){var it=list[i],id=it.id,u=it.web_url||('https://www.xinpianchang.com/a'+id);if(s[u])continue;s[u]=1;\nr.push({name:it.title||('作品'+id),id:u,pic:it.cover||'',tips:(it.duration?Math.floor(it.duration/60)+'分':'')});}}catch(e){}}\n// try current page next data first\nvar mm=raw.match(/<script id=\"__NEXT_DATA__\"[^>]*>([\\s\\S]*?)<\\/script>/);\nif(mm){try{var j0=JSON.parse(mm[1]);var list0=(j0.pageProps&&j0.pageProps.discoverArticleData&&j0.pageProps.discoverArticleData.list)||[];\nif(list0.length){for(var i=0;i<list0.length;i++){var it=list0[i],u=it.web_url||('https://www.xinpianchang.com/a'+it.id);if(s[u])continue;s[u]=1;r.push({name:it.title||'',id:u,pic:it.cover||'',tips:''});}return JSON.stringify(r);}}catch(e){}}\n// cate from url\nvar href='';try{href=String(__url||__href||location.href||'')}catch(e){}\nvar cate=(href.match(/article-(\\d+)/)||[])[1]||'0';\nvar page=(href.match(/[?&]page=(\\d+)/)||href.match(/page\\/(\\d+)/)||[])[1]||'1';\nvar b=buildId();\nif(b){var path='/discover/article-'+cate+'-0';if(cate==='0'||cate==='pick')path='/discover/article';\nvar api='https://www.xinpianchang.com/_next/data/'+b+path+'.json';\nif(page&&page!=='1')api+='?page='+page;\nparseList(xhr(api));\n}\n// search\nvar kw=(href.match(/[?&](?:kw|q|keyword)=([^&]+)/)||[])[1];\nif(kw&&!r.length&&b){parseList(xhr('https://www.xinpianchang.com/_next/data/'+b+'/search.json?kw='+kw));}\n// home editor articles fallback\nif(!r.length){try{var t=xhr('https://www.xinpianchang.com/');var m2=t.match(/<script id=\"__NEXT_DATA__\"[^>]*>([\\s\\S]*?)<\\/script>/);if(m2){var j2=JSON.parse(m2[1]);var secs=((j2.pageProps||{}).editorRecommendData||{}).section||[];for(var si=0;si<secs.length;si++){var arts=secs[si].articles||[];for(var ai=0;ai<arts.length;ai++){var it=arts[ai],u=it.web_url||('https://www.xinpianchang.com/a'+it.id);if(s[u])continue;s[u]=1;r.push({name:it.title||'',id:u,pic:it.cover||'',tips:''});}}}}catch(e){}}\nreturn JSON.stringify(r);}getList(__result);",
+      "name": "$.name",
+      "tips": "$.tips",
+      "coverUrl": "$.pic",
+      "detailUrl": "$.id"
     },
     "search": {
-      "url": "/index.php/vod/search.html?wd={{key}}",
-      "list": "a[href*='/vod/play/id/']",
-      "name": "img@alt||title||text",
-      "coverUrl": "img@data-src||img@src",
-      "detailUrl": "href"
+      "url": "/search?kw={{key}}",
+      "list": "body@js:function getList(html){\nvar r=[],s={},raw=String(html||'');\nfunction xhr(u){try{var x=new XMLHttpRequest();x.open('GET',u,false);x.setRequestHeader('Accept','application/json');x.setRequestHeader('x-nextjs-data','1');x.setRequestHeader('Referer','https://www.xinpianchang.com/');x.send(null);return x.responseText||''}catch(e){return''}}\nfunction buildId(){var t=xhr('https://www.xinpianchang.com/');var m=t.match(/\"buildId\"\\s*:\\s*\"([^\"]+)\"/);return m?m[1]:''}\nfunction parseList(txt){try{var j=JSON.parse(txt);var list=(j.pageProps&&j.pageProps.discoverArticleData&&j.pageProps.discoverArticleData.list)||[];\nfor(var i=0;i<list.length;i++){var it=list[i],id=it.id,u=it.web_url||('https://www.xinpianchang.com/a'+id);if(s[u])continue;s[u]=1;\nr.push({name:it.title||('作品'+id),id:u,pic:it.cover||'',tips:(it.duration?Math.floor(it.duration/60)+'分':'')});}}catch(e){}}\n// try current page next data first\nvar mm=raw.match(/<script id=\"__NEXT_DATA__\"[^>]*>([\\s\\S]*?)<\\/script>/);\nif(mm){try{var j0=JSON.parse(mm[1]);var list0=(j0.pageProps&&j0.pageProps.discoverArticleData&&j0.pageProps.discoverArticleData.list)||[];\nif(list0.length){for(var i=0;i<list0.length;i++){var it=list0[i],u=it.web_url||('https://www.xinpianchang.com/a'+it.id);if(s[u])continue;s[u]=1;r.push({name:it.title||'',id:u,pic:it.cover||'',tips:''});}return JSON.stringify(r);}}catch(e){}}\n// cate from url\nvar href='';try{href=String(__url||__href||location.href||'')}catch(e){}\nvar cate=(href.match(/article-(\\d+)/)||[])[1]||'0';\nvar page=(href.match(/[?&]page=(\\d+)/)||href.match(/page\\/(\\d+)/)||[])[1]||'1';\nvar b=buildId();\nif(b){var path='/discover/article-'+cate+'-0';if(cate==='0'||cate==='pick')path='/discover/article';\nvar api='https://www.xinpianchang.com/_next/data/'+b+path+'.json';\nif(page&&page!=='1')api+='?page='+page;\nparseList(xhr(api));\n}\n// search\nvar kw=(href.match(/[?&](?:kw|q|keyword)=([^&]+)/)||[])[1];\nif(kw&&!r.length&&b){parseList(xhr('https://www.xinpianchang.com/_next/data/'+b+'/search.json?kw='+kw));}\n// home editor articles fallback\nif(!r.length){try{var t=xhr('https://www.xinpianchang.com/');var m2=t.match(/<script id=\"__NEXT_DATA__\"[^>]*>([\\s\\S]*?)<\\/script>/);if(m2){var j2=JSON.parse(m2[1]);var secs=((j2.pageProps||{}).editorRecommendData||{}).section||[];for(var si=0;si<secs.length;si++){var arts=secs[si].articles||[];for(var ai=0;ai<arts.length;ai++){var it=arts[ai],u=it.web_url||('https://www.xinpianchang.com/a'+it.id);if(s[u])continue;s[u]=1;r.push({name:it.title||'',id:u,pic:it.cover||'',tips:''});}}}}catch(e){}}\nreturn JSON.stringify(r);}getList(__result);",
+      "name": "$.name",
+      "tips": "$.tips",
+      "coverUrl": "$.pic",
+      "detailUrl": "$.id"
     },
     "detail": {
       "meta": "title@text||h1@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m,u,raw=String(html||'');\nfunction add(n,url){url=(url||'').replace(/&amp;/g,'&').trim();if(!url||s[url])return;if(!/\\.(m3u8|mp4)(\\?|$)/i.test(url)&&url.indexOf('m3u8')<0)return;s[url]=1;r.push({name:n,url:url});}\n// source = '...'\nm=raw.match(/source\\s*=\\s*['\"](https?:[^'\"]+)['\"]/);if(m)add('播放',m[1]);\n// data-url 正片$m3u8\nvar re=/data-url=[\"'](?:正片\\$)?(https?:[^\"']+)[\"']/gi;while((m=re.exec(raw))){add('播放',m[1]);}\n// player_aaaa\nm=raw.match(/\"url\"\\s*:\\s*\"(https?:[^\"]+)\"/);if(m)add('播放',m[1].replace(/\\\\\\//g,'/'));\n// generic\nre=/https?:\\/\\/[^\\\"'\\s|<>]+?\\.(?:m3u8|mp4)[^\\\"'\\s|<>]*/gi;while((m=re.exec(raw))){add('直链',m[0]);}\nreturn r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){\nvar r=[],s={},raw=String(html||'');\nfunction xhr(u){try{var x=new XMLHttpRequest();x.open('GET',u,false);x.setRequestHeader('Accept','application/json');x.setRequestHeader('Referer','https://www.xinpianchang.com/');x.send(null);return x.responseText||''}catch(e){return''}}\nfunction add(n,u){u=String(u||'');if(!u||s[u])return;s[u]=1;r.push({name:n,url:u});}\nvar id='';var m=raw.match(/\\/a(\\d{5,})/)||raw.match(/\"id\"\\s*:\\s*(\\d{5,})/);\nif(m)id=m[1];\ntry{var href=String(__url||__href||location.href||'');var m2=href.match(/\\/a(\\d{5,})/);if(m2)id=m2[1];}catch(e){}\nvar mediaId='',appKey='61a2f329348b3bf77';\n// next data detail\nif(id){var t=xhr('https://www.xinpianchang.com/');var bm=t.match(/\"buildId\"\\s*:\\s*\"([^\"]+)\"/);var b=bm?bm[1]:'';\nif(b){try{var dj=JSON.parse(xhr('https://www.xinpianchang.com/_next/data/'+b+'/a'+id+'.json'));var d=((dj.pageProps||{}).detail)||{};mediaId=d.media_id||d.video_library_id||((d.video||{}).vid)||'';if((d.video||{}).appKey)appKey=d.video.appKey;}catch(e){}}}\n// from current html\nif(!mediaId){m=raw.match(/\"media_id\"\\s*:\\s*\"([^\"]+)\"/)||raw.match(/\"video_library_id\"\\s*:\\s*\"([^\"]+)\"/)||raw.match(/\"vid\"\\s*:\\s*\"([^\"]+)\"/);if(m)mediaId=m[1];}\nif(mediaId){try{var mj=JSON.parse(xhr('https://mod-api.xinpianchang.com/mod/api/v2/media/'+mediaId+'?appKey='+appKey));var prog=(((mj.data||{}).resource||{}).progressive)||[];\nfor(var i=0;i<prog.length;i++){var p=prog[i],u=p.url||p.backupUrl||'';if(u)add(p.profile||p.quality||'播放',u);}}catch(e){}}\n// direct urls in page\nvar re=/https?:\\/\\/[^\\\"'\\s]+?\\.(?:mp4|m3u8)[^\\\"'\\s]*/gi;while((m=re.exec(raw))){add('直链',m[0].replace(/&amp;/g,'&'));}\nr.sort(function(a,b){function sc(n){if(/4k|2160/i.test(n))return 4000;if(/1080/.test(n))return 1080;if(/720/.test(n))return 720;if(/540|480/.test(n))return 480;return 0;}return sc(b.name)-sc(a.name);});\nreturn r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     },
     "toc": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m,u,raw=String(html||'');\nfunction add(n,url){url=(url||'').replace(/&amp;/g,'&').trim();if(!url||s[url])return;if(!/\\.(m3u8|mp4)(\\?|$)/i.test(url)&&url.indexOf('m3u8')<0)return;s[url]=1;r.push({name:n,url:url});}\n// source = '...'\nm=raw.match(/source\\s*=\\s*['\"](https?:[^'\"]+)['\"]/);if(m)add('播放',m[1]);\n// data-url 正片$m3u8\nvar re=/data-url=[\"'](?:正片\\$)?(https?:[^\"']+)[\"']/gi;while((m=re.exec(raw))){add('播放',m[1]);}\n// player_aaaa\nm=raw.match(/\"url\"\\s*:\\s*\"(https?:[^\"]+)\"/);if(m)add('播放',m[1].replace(/\\\\\\//g,'/'));\n// generic\nre=/https?:\\/\\/[^\\\"'\\s|<>]+?\\.(?:m3u8|mp4)[^\\\"'\\s|<>]*/gi;while((m=re.exec(raw))){add('直链',m[0]);}\nreturn r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){\nvar r=[],s={},raw=String(html||'');\nfunction xhr(u){try{var x=new XMLHttpRequest();x.open('GET',u,false);x.setRequestHeader('Accept','application/json');x.setRequestHeader('Referer','https://www.xinpianchang.com/');x.send(null);return x.responseText||''}catch(e){return''}}\nfunction add(n,u){u=String(u||'');if(!u||s[u])return;s[u]=1;r.push({name:n,url:u});}\nvar id='';var m=raw.match(/\\/a(\\d{5,})/)||raw.match(/\"id\"\\s*:\\s*(\\d{5,})/);\nif(m)id=m[1];\ntry{var href=String(__url||__href||location.href||'');var m2=href.match(/\\/a(\\d{5,})/);if(m2)id=m2[1];}catch(e){}\nvar mediaId='',appKey='61a2f329348b3bf77';\n// next data detail\nif(id){var t=xhr('https://www.xinpianchang.com/');var bm=t.match(/\"buildId\"\\s*:\\s*\"([^\"]+)\"/);var b=bm?bm[1]:'';\nif(b){try{var dj=JSON.parse(xhr('https://www.xinpianchang.com/_next/data/'+b+'/a'+id+'.json'));var d=((dj.pageProps||{}).detail)||{};mediaId=d.media_id||d.video_library_id||((d.video||{}).vid)||'';if((d.video||{}).appKey)appKey=d.video.appKey;}catch(e){}}}\n// from current html\nif(!mediaId){m=raw.match(/\"media_id\"\\s*:\\s*\"([^\"]+)\"/)||raw.match(/\"video_library_id\"\\s*:\\s*\"([^\"]+)\"/)||raw.match(/\"vid\"\\s*:\\s*\"([^\"]+)\"/);if(m)mediaId=m[1];}\nif(mediaId){try{var mj=JSON.parse(xhr('https://mod-api.xinpianchang.com/mod/api/v2/media/'+mediaId+'?appKey='+appKey));var prog=(((mj.data||{}).resource||{}).progressive)||[];\nfor(var i=0;i<prog.length;i++){var p=prog[i],u=p.url||p.backupUrl||'';if(u)add(p.profile||p.quality||'播放',u);}}catch(e){}}\n// direct urls in page\nvar re=/https?:\\/\\/[^\\\"'\\s]+?\\.(?:mp4|m3u8)[^\\\"'\\s]*/gi;while((m=re.exec(raw))){add('直链',m[0].replace(/&amp;/g,'&'));}\nr.sort(function(a,b){function sc(n){if(/4k|2160/i.test(n))return 4000;if(/1080/.test(n))return 1080;if(/720/.test(n))return 720;if(/540|480/.test(n))return 480;return 0;}return sc(b.name)-sc(a.name);});\nreturn r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     }
