@@ -447,112 +447,76 @@
     "discoverable": true
   },
   {
-    "name": "🎨笨狗漫画",
+    "name": "🎨风车漫画",
     "type": 12,
-    "api": "https://www.bengou.co",
+    "api": "https://m.qyy158.com",
     "header": {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-      "Referer": "https://www.bengou.co/",
+      "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+      "Referer": "https://m.qyy158.com/",
       "Accept-Language": "zh-CN,zh;q=0.9"
     },
     "categories": [
       {
-        "name": "最新",
-        "url": "/new/"
+        "name": "全部漫画",
+        "url": "/sort/?page={{page}}",
+        "url2": "/sort/"
       },
       {
-        "name": "排行",
-        "url": "/paihang/"
+        "name": "大陆漫画",
+        "url": "/sort/?area=1&page={{page}}",
+        "url2": "/sort/?area=1"
       },
       {
-        "name": "完结",
-        "url": "/wanjie/"
+        "name": "日本漫画",
+        "url": "/sort/?area=2&page={{page}}",
+        "url2": "/sort/?area=2"
       },
       {
-        "name": "连载",
-        "url": "/lianzai/"
+        "name": "韩国漫画",
+        "url": "/sort/?area=3&page={{page}}",
+        "url2": "/sort/?area=3"
       },
       {
-        "name": "全部",
-        "url": "/all/"
+        "name": "欧美漫画",
+        "url": "/sort/?area=4&page={{page}}",
+        "url2": "/sort/?area=4"
       },
       {
-        "name": "少年热血",
-        "url": "/rexue/{{page}}.html",
-        "url2": "/rexue/"
+        "name": "最新更新",
+        "url": "/"
       },
       {
-        "name": "武侠格斗",
-        "url": "/gedou/{{page}}.html",
-        "url2": "/gedou/"
-      },
-      {
-        "name": "科幻魔幻",
-        "url": "/kehuan/{{page}}.html",
-        "url2": "/kehuan/"
-      },
-      {
-        "name": "竞技体育",
-        "url": "/jingji/{{page}}.html",
-        "url2": "/jingji/"
-      },
-      {
-        "name": "爆笑喜剧",
-        "url": "/gaoxiao/{{page}}.html",
-        "url2": "/gaoxiao/"
-      },
-      {
-        "name": "侦探推理",
-        "url": "/tuili/{{page}}.html",
-        "url2": "/tuili/"
-      },
-      {
-        "name": "恐怖灵异",
-        "url": "/kongbu/{{page}}.html",
-        "url2": "/kongbu/"
-      },
-      {
-        "name": "耽美人生",
-        "url": "/danmei/{{page}}.html",
-        "url2": "/danmei/"
-      },
-      {
-        "name": "少女爱情",
-        "url": "/shaonv/{{page}}.html",
-        "url2": "/shaonv/"
-      },
-      {
-        "name": "恋爱生活",
-        "url": "/lianai/{{page}}.html",
-        "url2": "/lianai/"
+        "name": "排行榜",
+        "url": "/rank/"
       }
     ],
     "list": {
-      "list": "p.cover, li p.cover, .icmd_cover_list li, .hotUpdateList li",
-      "name": "a[title]@title||img@alt||a@text",
-      "coverUrl": "img@src||a.pic img@src",
-      "detailUrl": "a.pic@href||a@href",
-      "tips": "span a@text||span@text"
+      "list": ".block-content li, .cartoon-block-box li, li",
+      "name": ".article-info a@text||.cart-info p@text||img@alt||a@text",
+      "coverUrl": "img@src||img@data-original||img@data-src",
+      "detailUrl": "a@href",
+      "tips": ".new-chapter@text||.article-info a:nth-child(3)@text||p@text"
     },
     "search": {
-      "url": "/?key={{key}}",
-      "list": "p.cover, li p.cover",
-      "name": "a[title]@title||img@alt||a@text",
-      "coverUrl": "img@src",
-      "detailUrl": "a.pic@href||a@href"
+      "url": "/search/?searchkey={{key}}",
+      "list": ".block-content li, .cartoon-block-box li, li",
+      "name": ".article-info a@text||.cart-info p@text||img@alt",
+      "coverUrl": "img@src||img@data-original",
+      "detailUrl": "a@href",
+      "tips": ".new-chapter@text||.article-info p@text"
     },
     "detail": {
-      "intro": "h1@text||.intro@text||title@text",
-      "tips": "h1@text"
+      "intro": ".article-desc@text||.comic-infos@text||h1@text",
+      "tips": ".comic-infos li@text||.article-info@text"
     },
     "toc": {
-      "list": ".plist a[href$='.html'], #play_0 a, a[href*='.html']",
+      "list": ".chapter-list li a, .chapter-list li, ul.chapter-list a",
       "name": "text",
-      "url": "href",
-      "reverse": true
+      "url": "href||a@href",
+      "reverse": false
     },
     "content": {
-      "content": "body@js:function getImgs(html){var m=html.match(/qTcms_S_m_murl_e\\s*=\\s*[\"']([^\"']+)[\"']/);if(!m)return'[]';try{var s='';if(typeof atob==='function'){s=decodeURIComponent(escape(atob(m[1])));}else{return'[]';}var parts=s.split(/\\$qingtiandy\\$|\\$qingtian\\$/);var urls=[];for(var i=0;i<parts.length;i++){var u=parts[i].replace(/\\/0$/,'').trim();if(u.indexOf('http')===0)urls.push(u);}return JSON.stringify(urls);}catch(e){return'[]';}getImgs(__result);"
+      "content": "img@data-original||img@data-src||img@src||.comic-page img@data-original||.comic-page img@src"
     },
     "searchable": true,
     "discoverable": true
@@ -640,7 +604,7 @@
       "params": "{\"comic_id\":\"{{$.comic_id}}\"}"
     },
     "search": {
-      "url": "/search/keyword/?keyword={{key}}&page_num={{page}}&page_size=24",
+      "url": "/search/keyword/?keyword={{key}}&page_num=1&page_size=24",
       "list": "$.data.list[*]",
       "name": "$.title",
       "author": "$.author_title",
@@ -650,19 +614,19 @@
       "params": "{\"comic_id\":\"{{$.comic_id}}\"}"
     },
     "detail": {
-      "intro": "$.data.content||$.data.feature",
+      "intro": "$.data.content||$.data.feature||$.data.notice",
       "tips": "$.data.chapter_title||$.data.author_title",
-      "tocUrl": "https://comic.mkzcdn.com/chapter/v1/?comic_id={{$.comic_id}}"
+      "tocUrl": "https://comic.mkzcdn.com/chapter/v1/?comic_id={{comic_id}}"
     },
     "toc": {
       "list": "$.data[*]",
       "name": "$.title",
-      "url": "https://comic.mkzcdn.com/chapter/content/v1/?chapter_id={{$.chapter_id}}&comic_id={{$.comic_id}}&format=1&quality=1&type=1",
+      "url": "https://comic.mkzcdn.com/chapter/content/?chapter_id={{$.chapter_id}}&comic_id={{comic_id}}",
       "reverse": false,
-      "params": "{\"chapter_id\":\"{{$.chapter_id}}\",\"comic_id\":\"{{$.comic_id}}\"}"
+      "params": "{\"chapter_id\":\"{{$.chapter_id}}\",\"comic_id\":\"{{comic_id}}\"}"
     },
     "content": {
-      "content": "$.data.page[*].image"
+      "content": "$.data[*].image||$.data.page[*].image"
     },
     "searchable": true,
     "discoverable": true

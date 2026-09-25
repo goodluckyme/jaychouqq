@@ -1169,6 +1169,7 @@
     "header": {
       "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
       "Referer": "https://18.5lxtv.com/",
+      "Origin": "https://18.5lxtv.com",
       "Accept-Language": "zh-CN,zh;q=0.9",
       "Accept": "*/*"
     },
@@ -1283,12 +1284,12 @@
       "meta": "h1@text||title@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){var slug='',t='',n='',m;m=html.match(/var\\s+slug\\s*=\\s*[\\\"']([^\\\"']+)[\\\"']/);if(m)slug=m[1];if(!slug){m=html.match(/\\/videos\\/([a-zA-Z0-9_\\-]+)/);if(m)slug=m[1];}m=html.match(/var\\s+t\\s*=\\s*(\\d+)/);if(m)t=m[1];m=html.match(/var\\s+n\\s*=\\s*[\\\"']([^\\\"']+)[\\\"']/);if(m)n=m[1];if(!slug||!t||!n)return'[]';var u='https://18.5lxtv.com/api/play/'+encodeURIComponent(slug)+'?t='+t+'&n='+encodeURIComponent(n);return JSON.stringify([{name:'在线播放',url:u}]);}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var slug='',t='',n='',m;m=html.match(/var\\s+slug\\s*=\\s*[\"']([^\"']+)[\"']/);if(m)slug=m[1];if(!slug){m=html.match(/\\/videos\\/([a-zA-Z0-9_\\-]+)/);if(m)slug=m[1];}m=html.match(/var\\s+t\\s*=\\s*(\\d{9,})/);if(m)t=m[1];m=html.match(/var\\s+n\\s*=\\s*[\"']([a-f0-9]{16,})[\"']/i);if(m)n=m[1];if(!slug)return'[]';if(!t||!n){m=html.match(/\\/api\\/play\\/[^\"'?\\s]+\\?t=(\\d+)&n=([a-f0-9]+)/i);if(m){t=m[1];n=m[2];}}if(!t||!n)return'[]';var u='https://18.5lxtv.com/api/play/'+encodeURIComponent(slug)+'?t='+t+'&n='+encodeURIComponent(n);return JSON.stringify([{name:'在线播放',url:u}]);}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     },
     "toc": {
-      "list": "body@js:function getPlay(html){var slug='',t='',n='',m;m=html.match(/var\\s+slug\\s*=\\s*[\\\"']([^\\\"']+)[\\\"']/);if(m)slug=m[1];if(!slug){m=html.match(/\\/videos\\/([a-zA-Z0-9_\\-]+)/);if(m)slug=m[1];}m=html.match(/var\\s+t\\s*=\\s*(\\d+)/);if(m)t=m[1];m=html.match(/var\\s+n\\s*=\\s*[\\\"']([^\\\"']+)[\\\"']/);if(m)n=m[1];if(!slug||!t||!n)return'[]';var u='https://18.5lxtv.com/api/play/'+encodeURIComponent(slug)+'?t='+t+'&n='+encodeURIComponent(n);return JSON.stringify([{name:'在线播放',url:u}]);}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var slug='',t='',n='',m;m=html.match(/var\\s+slug\\s*=\\s*[\"']([^\"']+)[\"']/);if(m)slug=m[1];if(!slug){m=html.match(/\\/videos\\/([a-zA-Z0-9_\\-]+)/);if(m)slug=m[1];}m=html.match(/var\\s+t\\s*=\\s*(\\d{9,})/);if(m)t=m[1];m=html.match(/var\\s+n\\s*=\\s*[\"']([a-f0-9]{16,})[\"']/i);if(m)n=m[1];if(!slug)return'[]';if(!t||!n){m=html.match(/\\/api\\/play\\/[^\"'?\\s]+\\?t=(\\d+)&n=([a-f0-9]+)/i);if(m){t=m[1];n=m[2];}}if(!t||!n)return'[]';var u='https://18.5lxtv.com/api/play/'+encodeURIComponent(slug)+'?t='+t+'&n='+encodeURIComponent(n);return JSON.stringify([{name:'在线播放',url:u}]);}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     }
@@ -1380,37 +1381,32 @@
         "name": "LUXU",
         "url": "/dm34/cn/luxu?page={{page}}",
         "url2": "/dm34/cn/luxu"
-      },
-      {
-        "name": "VR",
-        "url": "/cn/genres/VR?page={{page}}",
-        "url2": "/cn/genres/VR"
       }
     ],
     "list": {
-      "list": "a[href*='/cn/']",
-      "name": "img@alt||@title||text",
-      "tips": "",
-      "coverUrl": "img@data-src||img@src||src",
-      "detailUrl": "href"
+      "list": "body@js:function getList(html){var r=[],s={},m,re=/href=[\"'](https?:\\/\\/missav\\.media(?:\\/dm\\d+)?\\/cn\\/([a-z0-9]+-\\d+[a-z0-9\\-]*))[\"']/gi;while((m=re.exec(html))){var code=m[2].toLowerCase();if(s[code])continue;s[code]=1;var name=code.toUpperCase();var cover='https://fourhoi.mrstcdn.store/'+code+'/cover-t.jpg';r.push({name:name,url:m[1],cover:cover});}return r.length?JSON.stringify(r):'[]';}getList(__result);",
+      "name": "$.name",
+      "coverUrl": "$.cover",
+      "detailUrl": "$.url",
+      "tips": ""
     },
     "search": {
       "url": "/cn/search/{{key}}",
-      "list": "a[href*='/cn/']",
-      "name": "img@alt||@title||text",
-      "coverUrl": "img@data-src||img@src",
-      "detailUrl": "href"
+      "list": "body@js:function getList(html){var r=[],s={},m,re=/href=[\"'](https?:\\/\\/missav\\.media(?:\\/dm\\d+)?\\/cn\\/([a-z0-9]+-\\d+[a-z0-9\\-]*))[\"']/gi;while((m=re.exec(html))){var code=m[2].toLowerCase();if(s[code])continue;s[code]=1;var name=code.toUpperCase();var cover='https://fourhoi.mrstcdn.store/'+code+'/cover-t.jpg';r.push({name:name,url:m[1],cover:cover});}return r.length?JSON.stringify(r):'[]';}getList(__result);",
+      "name": "$.name",
+      "coverUrl": "$.cover",
+      "detailUrl": "$.url"
     },
     "detail": {
       "meta": "h1@text||title@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m;m=html.match(/\\}\\('((?:[^'\\\\]|\\\\.)+)',(\\d+),(\\d+),'((?:[^'\\\\]|\\\\.)+)'\\.split\\('\\|'\\)/);if(m){var p=m[1],a=parseInt(m[2],10),c=parseInt(m[3],10),k=m[4].split('|');function e(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36));}while(c--){if(k[c])p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c]);}var urls=p.match(/https?:\\/\\/[^'\\\\]+\\.m3u8/g)||[];for(var i=0;i<urls.length;i++){var u=urls[i].replace(/\\\\/g,'');if(s[u])continue;s[u]=1;var name='播放';if(u.indexOf('1080')>=0)name='1080P';else if(u.indexOf('720')>=0)name='720P';else if(u.indexOf('playlist')>=0)name='自动';r.push({name:name,url:u});}}if(!r.length){var re=/https?:\\/\\/[^\"'\\\\\\s]+surrit[^\"'\\\\\\s]+\\.m3u8/gi;while((m=re.exec(html))){if(!s[m[0]]){s[m[0]]=1;r.push({name:'播放',url:m[0]});}}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m;m=html.match(/\\}\\('((?:[^'\\\\]|\\\\.)+)',(\\d+),(\\d+),'((?:[^'\\\\]|\\\\.)+)'\\.split\\('\\|'\\)/);if(m){var p=m[1],a=parseInt(m[2],10),c=parseInt(m[3],10),k=m[4].split('|');function e(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36));}while(c--){if(k[c])p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c]);}var urls=p.match(/https?:\\/\\/[^'\\\\]+\\.m3u8/g)||[];for(var i=0;i<urls.length;i++){var u=urls[i].replace(/\\\\/g,'');if(s[u])continue;s[u]=1;var name='播放';if(u.indexOf('1080')>=0)name='1080P';else if(u.indexOf('720')>=0)name='720P';else if(u.indexOf('playlist')>=0)name='自动';r.push({name:name,url:u});}}if(!r.length){var re=/https?:\\/\\/[^\"'\\\\\\s]+(?:surrit|mrstcdn)[^\"'\\\\\\s]+\\.m3u8/gi;while((m=re.exec(html))){if(!s[m[0]]){s[m[0]]=1;r.push({name:'播放',url:m[0]});}}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     },
     "toc": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m;m=html.match(/\\}\\('((?:[^'\\\\]|\\\\.)+)',(\\d+),(\\d+),'((?:[^'\\\\]|\\\\.)+)'\\.split\\('\\|'\\)/);if(m){var p=m[1],a=parseInt(m[2],10),c=parseInt(m[3],10),k=m[4].split('|');function e(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36));}while(c--){if(k[c])p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c]);}var urls=p.match(/https?:\\/\\/[^'\\\\]+\\.m3u8/g)||[];for(var i=0;i<urls.length;i++){var u=urls[i].replace(/\\\\/g,'');if(s[u])continue;s[u]=1;var name='播放';if(u.indexOf('1080')>=0)name='1080P';else if(u.indexOf('720')>=0)name='720P';else if(u.indexOf('playlist')>=0)name='自动';r.push({name:name,url:u});}}if(!r.length){var re=/https?:\\/\\/[^\"'\\\\\\s]+surrit[^\"'\\\\\\s]+\\.m3u8/gi;while((m=re.exec(html))){if(!s[m[0]]){s[m[0]]=1;r.push({name:'播放',url:m[0]});}}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m;m=html.match(/\\}\\('((?:[^'\\\\]|\\\\.)+)',(\\d+),(\\d+),'((?:[^'\\\\]|\\\\.)+)'\\.split\\('\\|'\\)/);if(m){var p=m[1],a=parseInt(m[2],10),c=parseInt(m[3],10),k=m[4].split('|');function e(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36));}while(c--){if(k[c])p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c]);}var urls=p.match(/https?:\\/\\/[^'\\\\]+\\.m3u8/g)||[];for(var i=0;i<urls.length;i++){var u=urls[i].replace(/\\\\/g,'');if(s[u])continue;s[u]=1;var name='播放';if(u.indexOf('1080')>=0)name='1080P';else if(u.indexOf('720')>=0)name='720P';else if(u.indexOf('playlist')>=0)name='自动';r.push({name:name,url:u});}}if(!r.length){var re=/https?:\\/\\/[^\"'\\\\\\s]+(?:surrit|mrstcdn)[^\"'\\\\\\s]+\\.m3u8/gi;while((m=re.exec(html))){if(!s[m[0]]){s[m[0]]=1;r.push({name:'播放',url:m[0]});}}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     }
