@@ -1773,12 +1773,12 @@
     "api": "https://zh.xhamster.com",
     "type": 2,
     "searchable": true,
-    "removeReferer": false,
+    "removeReferer": true,
     "header": {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
       "Referer": "https://zh.xhamster.com/",
       "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+      "Cookie": "cookie_accept_v2=%7B%22e%22%3A1%2C%22f%22%3A1%2C%22t%22%3A1%2C%22a%22%3A1%7D; age_verified=1; ts_age_verified=1; ageVerified=1"
     },
     "categories": [
       {
@@ -1853,10 +1853,10 @@
       }
     ],
     "list": {
-      "list": "a[href*='/videos/'], .thumb-list__item, .video-thumb, .thumb-list .thumb-list__item",
+      "list": "a[href*='/videos/'], .thumb-list__item a, .video-thumb a, article a[href*='/videos/']",
       "name": "title||img@alt||.video-thumb-info__name@text||text",
       "tips": ".thumb-image-container__duration@text||.duration@text",
-      "coverUrl": "img@src||img@data-src||img@data-previewvideo||source@srcset",
+      "coverUrl": "img@src||img@data-src||img@data-previewvideo",
       "detailUrl": "href"
     },
     "search": {
@@ -1871,12 +1871,12 @@
       "meta": "title@text||h1@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m,u;m=html.match(/window\\.initials\\s*=\\s*(\\{)/);if(m){try{var start=html.indexOf('window.initials');var i=html.indexOf('{',start),d=0,end=i;for(;end<html.length;end++){var c=html[end];if(c==='{')d++;else if(c==='}'){d--;if(d===0){end++;break;}}}var j=JSON.parse(html.slice(i,end));function walk(o){if(!o||typeof o!=='object')return;if(o.sources&&Array.isArray(o.sources)){o.sources.forEach(function(x){u=(x.url||x.src||'');if(u&&!s[u]){s[u]=1;r.push({name:(x.label||x.quality||'播放'),url:u});}});}if(o.hls||o.mp4){['hls','mp4','videoUrl','URL'].forEach(function(k){if(o[k]&&!s[o[k]]){s[o[k]]=1;r.push({name:k,url:o[k]});}});}if(Array.isArray(o))o.forEach(walk);else Object.keys(o).forEach(function(k){if(k!=='translations')walk(o[k]);});}walk(j);}catch(e){}}[['setVideoHLS','HLS'],['setVideoUrlHigh','高清'],['setVideoUrlLow','标清']].forEach(function(p){var re=new RegExp(p[0]+\"\\\\(['\\\"]([^'\\\"]+)\");m=html.match(re);if(m){u=m[1];if(!s[u]){s[u]=1;r.push({name:p[1],url:u});}}});var re2=/https?:\\/\\/[^\"'\\\\\\s]+?\\.(?:m3u8|mp4)[^\"'\\\\\\s]*/gi;while((m=re2.exec(html))){u=m[0].replace(/&amp;/g,'&');if(/xhcdn|xhamster/i.test(u)&&!s[u]){s[u]=1;r.push({name:'直链',url:u});}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m,u;function add(n,u){u=String(u||'').replace(/&amp;/g,'&').replace(/\\\\u0026/g,'&').replace(/\\\\\\//g,'/');if(!u||u.indexOf('http')!==0||s[u])return;s[u]=1;r.push({name:n||'播放',url:u});}try{m=String(html).match(/\"sources\"\\s*:\\s*(\\[[\\s\\S]*?\\])/);if(m){JSON.parse(m[1]).forEach(function(x){add((x.label||x.quality||'播放'),x.url||x.src||x.file);});}}catch(e){}try{m=String(html).match(/\"hls\"\\s*:\\s*\"([^\"]+)\"/);if(m)add('HLS',m[1]);}catch(e){}var re=/https?:\\/\\/[a-zA-Z0-9._\\-\\/:%?=&]+(?:m3u8|mp4)[a-zA-Z0-9._\\-\\/:%?=&]*/gi;while((m=re.exec(String(html||'')))){if(/xhcdn|xhamster|xham/i.test(m[0])||/\\.m3u8/i.test(m[0]))add('直链',m[0]);}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     },
     "toc": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m,u;m=html.match(/window\\.initials\\s*=\\s*(\\{)/);if(m){try{var start=html.indexOf('window.initials');var i=html.indexOf('{',start),d=0,end=i;for(;end<html.length;end++){var c=html[end];if(c==='{')d++;else if(c==='}'){d--;if(d===0){end++;break;}}}var j=JSON.parse(html.slice(i,end));function walk(o){if(!o||typeof o!=='object')return;if(o.sources&&Array.isArray(o.sources)){o.sources.forEach(function(x){u=(x.url||x.src||'');if(u&&!s[u]){s[u]=1;r.push({name:(x.label||x.quality||'播放'),url:u});}});}if(o.hls||o.mp4){['hls','mp4','videoUrl','URL'].forEach(function(k){if(o[k]&&!s[o[k]]){s[o[k]]=1;r.push({name:k,url:o[k]});}});}if(Array.isArray(o))o.forEach(walk);else Object.keys(o).forEach(function(k){if(k!=='translations')walk(o[k]);});}walk(j);}catch(e){}}[['setVideoHLS','HLS'],['setVideoUrlHigh','高清'],['setVideoUrlLow','标清']].forEach(function(p){var re=new RegExp(p[0]+\"\\\\(['\\\"]([^'\\\"]+)\");m=html.match(re);if(m){u=m[1];if(!s[u]){s[u]=1;r.push({name:p[1],url:u});}}});var re2=/https?:\\/\\/[^\"'\\\\\\s]+?\\.(?:m3u8|mp4)[^\"'\\\\\\s]*/gi;while((m=re2.exec(html))){u=m[0].replace(/&amp;/g,'&');if(/xhcdn|xhamster/i.test(u)&&!s[u]){s[u]=1;r.push({name:'直链',url:u});}}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m,u;function add(n,u){u=String(u||'').replace(/&amp;/g,'&').replace(/\\\\u0026/g,'&').replace(/\\\\\\//g,'/');if(!u||u.indexOf('http')!==0||s[u])return;s[u]=1;r.push({name:n||'播放',url:u});}try{m=String(html).match(/\"sources\"\\s*:\\s*(\\[[\\s\\S]*?\\])/);if(m){JSON.parse(m[1]).forEach(function(x){add((x.label||x.quality||'播放'),x.url||x.src||x.file);});}}catch(e){}try{m=String(html).match(/\"hls\"\\s*:\\s*\"([^\"]+)\"/);if(m)add('HLS',m[1]);}catch(e){}var re=/https?:\\/\\/[a-zA-Z0-9._\\-\\/:%?=&]+(?:m3u8|mp4)[a-zA-Z0-9._\\-\\/:%?=&]*/gi;while((m=re.exec(String(html||'')))){if(/xhcdn|xhamster|xham/i.test(m[0])||/\\.m3u8/i.test(m[0]))add('直链',m[0]);}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     }
@@ -1886,7 +1886,7 @@
     "api": "https://tinyavideo.com",
     "type": 2,
     "searchable": true,
-    "removeReferer": false,
+    "removeReferer": true,
     "header": {
       "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
       "Referer": "https://tinyavideo.com/",
@@ -1972,12 +1972,12 @@
       "meta": "title@text||h1@text"
     },
     "play": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m,u;m=html.match(/window\\.m3u8List\\s*=\\s*(\\[[^\\]]*\\])/);if(m){try{JSON.parse(m[1]).forEach(function(u,i){u=String(u).replace(/&amp;/g,'&');if(u&&!s[u]){s[u]=1;r.push({name:r.length?'线路'+(r.length+1):'播放',url:u});}});}catch(e){}}var re=/https?:\\/\\/[^\"'\\\\\\s<>]+?\\.m3u8[^\"'\\\\\\s<>]*/gi;while((m=re.exec(html))){u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'播放',url:u});}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m,u,re=/https?:\\/\\/[a-zA-Z0-9._\\-\\/:%?=&]+m3u8[a-zA-Z0-9._\\-\\/:%?=&]*/gi;while((m=re.exec(String(html||'')))){u=m[0].replace(/&amp;/g,'&').replace(/\\\\u0026/g,'&');if(s[u])continue;s[u]=1;r.push({name:r.length?'线路'+(r.length+1):'播放',url:u});}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     },
     "toc": {
-      "list": "body@js:function getPlay(html){var r=[],s={},m,u;m=html.match(/window\\.m3u8List\\s*=\\s*(\\[[^\\]]*\\])/);if(m){try{JSON.parse(m[1]).forEach(function(u,i){u=String(u).replace(/&amp;/g,'&');if(u&&!s[u]){s[u]=1;r.push({name:r.length?'线路'+(r.length+1):'播放',url:u});}});}catch(e){}}var re=/https?:\\/\\/[^\"'\\\\\\s<>]+?\\.m3u8[^\"'\\\\\\s<>]*/gi;while((m=re.exec(html))){u=m[0].replace(/&amp;/g,'&');if(s[u])continue;s[u]=1;r.push({name:'播放',url:u});}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
+      "list": "body@js:function getPlay(html){var r=[],s={},m,u,re=/https?:\\/\\/[a-zA-Z0-9._\\-\\/:%?=&]+m3u8[a-zA-Z0-9._\\-\\/:%?=&]*/gi;while((m=re.exec(String(html||'')))){u=m[0].replace(/&amp;/g,'&').replace(/\\\\u0026/g,'&');if(s[u])continue;s[u]=1;r.push({name:r.length?'线路'+(r.length+1):'播放',url:u});}return r.length?JSON.stringify(r):'[]';}getPlay(__result);",
       "name": "$.name",
       "url": "$.url"
     }
